@@ -26,12 +26,6 @@ class ProductController extends Controller
         return view('detail', ['product'=>$product]);
     }
 
-    public function search(Request $request)
-    {
-        $products = Product::where('name', 'like', '%' .$request->search .'%')->orWhere('description', 'like', '%' .$request->search .'%' )->get();
-        return view('search', ['products'=>$products]);
-    }
-
     public function addToCart($id)
     {
         if (!Session::has('cart'))

@@ -12,6 +12,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
 
+    <link rel="stylesheet" href="/css/chinamax.css"/>
+
     <link href={{ asset('css/jquery.nice-number.css') }} rel="stylesheet">
 	<script src={{ asset('js/jquery.nice-number.js') }}></script>
 
@@ -143,7 +145,7 @@
             padding: 8px 16px;
             border-radius: 50%;
         }
-        
+
     </style>
 </head>
 <body>

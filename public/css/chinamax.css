@@ -1,0 +1,20 @@
+.menuItem {
+    margin: auto;
+    width: 100%;
+    border: 3px solid lightgray;
+    border-radius: 25px;
+    padding: 10px;
+    font-size: 30px;
+}
+
+.menuItemName {
+    font-size: 30px;
+}
+
+.menuItemPrice {
+    font-size: 20px;
+}
+
+.menuItemDescription {
+    font-size: 15px;
+}

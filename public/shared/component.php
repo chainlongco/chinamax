@@ -160,4 +160,33 @@
         return $priceDetail;
     } 
 
+    function orderMenuElement($menus)
+    {
+        $element = "
+            <h1>Menu</h1>
+        ";
+            foreach($menus as $menu) {
+                $element = $element ."
+                    <div class=\"eachMenu\">
+                        <div class=\"menuItem\">
+                            <span class=\"menuItemName\">" .$menu->name ."</span>
+                ";
+                if ((string)($menu->price) !== '0') {
+                    $element = $element ."
+                            <br>
+                            <span class=\"menuItemPrice\">$" .$menu->price ."</span>
+                    ";    
+                }
+                $element = $element ."
+                            <br>
+                        </div>
+                        <span class=\"menuItemDescription\">" .$menu->description ."</span>
+                    </div>
+                    <br>
+                ";
+            }
+
+        echo $element;    
+    }
+
 ?>

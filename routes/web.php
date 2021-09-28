@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\MenuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +43,4 @@ Route::get('/cart-price', [ProductController::class, 'cartPriceDetail']);
 Route::get('/cart-order', [ProductController::class, 'cartRemoveFromOrderList']);
 Route::get('/cart-count', [ProductController::class, 'cartCount']);
 
-Route::get('/login2', function(){
-    return view('login2');
-});
-Route::post('/login2', [UserController::class, 'login']);
+Route::get('/order', [MenuController::class, 'menu']);
