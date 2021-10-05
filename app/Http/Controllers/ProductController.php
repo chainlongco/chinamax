@@ -5,10 +5,69 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
+use App\Shared\Cart;
+
 require_once(public_path() ."/shared/component.php");
 
 class ProductController extends Controller
 {
+    public function orderChoices(Request $request)
+    {        
+        $menuId = $request->menuId;
+        $menuName = "";
+        if (!str_contains($menuId, 'p')) {   // from Menus table
+            $menu = DB::table('menus')->where('id', $menuId)->first();
+            $menuName = $menu->name;
+        } else {    // From Products table
+            $productId = substr($menuId, 0, (strlen($menuId) -1));
+            $product = DB::table('products')->where('id', $productId)->first();
+            $menuName = $product->name;
+        }
+        if ($menuName === "Appetizers") {
+            echo loadAppetizesChoices($menuName);
+        } else if ($menuName === "Drinks") {
+            echo loadDrinksChoices($menuName);
+        } else if ($menuName === "Individual Entree"){
+            echo loadIndividualEntreeChoices($menuName);
+        } else if ($menuName === "Small Platter") {
+            echo loadSmallPlatterChoices($menuName);
+        } else if ($menuName === "Regular Platter") {
+            echo loadRegularPlatterChoices($menuName);
+        } else if ($menuName === "Large Platter") {
+            echo loadLargePlatterChoices($menuName);
+        } else if ($menuName === "Party Tray") {
+            echo loadPartyTrayChoices($menuName);
+        } else if ($menuName === "Kid's Meal") {
+            echo loadKidsMealChoices($menuName);
+        }
+    }
+
+    public function orderAdded(Request $request)
+    {
+        $productId = $request->productId;
+        $quantity = $request->quantity;
+        $subItem = $request->subItem;
+        $product = DB::table('products')->where('id', $productId)->first();
+        $oldCart = null;
+        $count = 0;
+        if (Session::has('cart')) {
+            $oldCart = Session::get('cart');      
+        }
+        $newCart = new Cart($oldCart);
+        $newCart->addNewItem($product, $quantity, $subItem);
+        Session::put('cart', $newCart);
+        $count = $newCart->totalQuantity;
+        echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
+    }
+
+
+
+
+
+
+
+
     public function index()
     {
         /*if (Session::has('user')){

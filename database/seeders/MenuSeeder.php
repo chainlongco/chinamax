@@ -16,23 +16,20 @@ class MenuSeeder extends Seeder
     {
         DB::table('menus')->insert([
             ['name'=>'Appetizers',
-                'price'=>'0',
-                'description'=>'A small dish before main meal'],
+                'description'=>'A small dish before main meal',
+                'level'=>'0'],
             ['name'=>'Drinks',
-                'price'=>'0',
-                'description'=>'Water, Fresh Juice, Soft Drinks...'],
-            ['name'=>'Small Platter',
-                'price'=>'6.40',
-                'description'=>'Any 1 Side & 1 Entree'],
-            ['name'=>'Regular Platter',
-                'price'=>'7.58',
-                'description'=>'Any 1 Side & 2 Entrees'],
-            ['name'=>'Large Platter',
-                'price'=>'8.93',
-                'description'=>'Any 1 Side & 3 Entrees'],
-            ['name'=>'Party Tray',
-                'price'=>'28.99',
-                'description'=>'2 big Sides & 8 Entrees'],     
+                'description'=>'Water, Fresh Juice, Soft Drinks...',
+                'level'=>'0'],
+            ['name'=>'Combo',
+                'description'=>'Side & Entree combination',
+                'level'=>'1'],
+            ['name'=>'Individual Entree',
+                'description'=>'Entree only',
+                'level'=>'0'],
+            ['name'=>"Kid's Meal",
+                'description'=>"Kid's combo meal",
+                'level'=>'1']  
         ]);
     }
 }

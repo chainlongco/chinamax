@@ -1,10 +1,206 @@
 <?php
     use App\Models\Product;
     use Illuminate\Http\Request;
+    use Illuminate\Support\Facades\DB;
+
+    function loadAppetizesChoices($menuName)
+    {
+        $quantity = 0;
+        $html = "";
+        $products = DB::table('products')->where('menu_id', "1")->get();
+        $html .= "<h1>Choices for " .$menuName ."</h1>";
+        $html .= "<div class=\"row\">";
+        foreach ($products as $product) {
+            $html .= "<div class=\"col-md-4 text-center\">";
+                $html .= "<div class=\"choiceItem\">";
+                    $html .= "<img src=\"\\images\\" .$product->gallery ."\" style=\"width:60%\">";
+                    $html .= "<br>";
+                    $html .= "<span class=\"choiceItemName\">" .$product->name ."</span>";
+                    $html .= "<br>";
+                    $html .= "<span class=\"choiceItemPrice\">$" .$product->price ."</span>";
+                    $html .= "<br>";
+                    $html .= "<div class=\"quantityDiv mx-auto\">
+                                <button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$product->id ."\"><i class=\"fas fa-minus\"></i></button>
+                                <input type=\"text\" class=\"form-control w-25 d-inline\" value=\"" .$quantity ."\" id=\"quantity" .$product->id ."\">
+                                <button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$product->id ."\"><i class=\"fas fa-plus\"></i></button>
+                              </div>";
+                    $html .= "<div>
+                                <button type=\"button\" class=\"btn bg-light border addToCart\" disabled id=\"addToCart" .$product->id ."\">Add to Cart</button>
+                              </div>";          
+                $html .= "</div>";
+            $html .= "</div>";
+        }
+        
+        $html .= "</div>";
+        return $html;
+
+        /*
+        <div class="row">
+            @foreach($appetizers as $appetizer)
+            <div class="col-md-4 text-center">
+                <div class="choiceItem">
+                    <img src="\images\{{ $appetizer->gallery }}" style="width:60%">
+                    <br>
+                    <span class="choiceItemName">{{ $appetizer->name }}</span>
+                    <br>
+                    <span class="choiceItemPrice">${{ $appetizer->price }}</span>
+                </div>
+            </div>
+            @endforeach
+        </div>*/
+    }
+
+    function loadDrinksChoices($menuName) 
+    {
+        $html = "";
+        //$products = DB::table('products')->where('menu_id', "1")->get();
+        $html .= "<h1>Choices for " .$menuName ."</h1>";
+
+        return $html;
+    }
+
+    function loadIndividualEntreeChoices($menuName)
+    {
+        $html = "";
+        //$products = DB::table('products')->where('menu_id', "1")->get();
+        $html .= "<h1>Choices for " .$menuName ."</h1>";
+
+        return $html;
+    }
+
+    function loadSmallPlatterChoices($menuName)
+    {
+        $html = "";
+        //$products = DB::table('products')->where('menu_id', "1")->get();
+        $html .= "<h1>Choices for " .$menuName ."</h1>";
+
+        return $html;
+    }
+
+    function loadRegularPlatterChoices($menuName)
+    {
+        $html = "";
+        //$products = DB::table('products')->where('menu_id', "1")->get();
+        $html .= "<h1>Choices for " .$menuName ."</h1>";
+
+        return $html;
+    }
+
+    function loadLargePlatterChoices($menuName)
+    {
+        $html = "";
+        //$products = DB::table('products')->where('menu_id', "1")->get();
+        $html .= "<h1>Choices for " .$menuName ."</h1>";
+
+        return $html;
+    }
+
+    function loadPartyTrayChoices($menuName)
+    {
+        $html = "";
+        //$products = DB::table('products')->where('menu_id', "1")->get();
+        $html .= "<h1>Choices for " .$menuName ."</h1>";
+
+        return $html;
+    }
+
+    function loadKidsMealChoices($menuName)
+    {
+        $html = "";
+        //$products = DB::table('products')->where('menu_id', "1")->get();
+        $html .= "<h1>Choices for " .$menuName ."</h1>";
+
+        return $html;
+    }
+
+    function cartCountSpanElement()
+    {
+        if (Session::has('cart')) {
+            $cart = Session::get('cart');
+            $count = 0;
+            if ($cart) {
+                $count = $cart->totalQuantity;
+            }
+            echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
+        } else {
+            echo "<span id=\"cart_count\" class=\"text-warning bg-light\">0</span>";
+        }
+    }
+
+    function orderListDivElement()
+    {
+        if (Session::has('cart')){
+            /*foreach (Session::get('cart') as $products){
+                $elements = "";
+                $quantity = 0;
+                $product = null;
+                foreach($products as $key=>$value) {              
+                    if ($key == "productId") {
+                        $product = Product::find($value);
+                    }
+                    if ($key == "quantity") {
+                        $quantity = $value;
+                    }            
+                }
+                if ($product != null) {
+                    $elements = $elements .cartElement($product, $quantity);
+                }       
+            }*/
+            /*$items = Session::get('cart');
+            $serialNumbers = array_keys(Session::get('cart'));
+            foreach ($sericalNumbers as $serialNumber) {
+                $elements = $elements .cartElement($item[$serialNumber]->item, $item[$serialNumber]->subItem, $item[$serialNumber]->quantity, $serialNumber);
+            }*/
+            $elements = "";
+            $items = array();
+            foreach (Session::get('cart') as $key=>$value) {
+                echo $key ." ";
+               if ($key == 'serialNumber') {
+                   echo $value ." ";
+               }
+               if ($key == 'totalQuantity') {
+                   echo $value ." ";
+               }
+               if ($key == 'totalPrice') {
+                   echo $value ." ";
+               }
+               if ($key == 'items') {
+                   $items = $value;
+               }
+            }
+            echo "<br>";
+            $keys = array_keys($items);
+            foreach ($keys as $key) {
+                echo $key ." ";
+                $product = $items[$key]['item'];
+                $quantity = $items[$key]['quantity'];
+                $elements = $elements .cartElement($product, $quantity);
+            }
+        } 
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function updateSessionData(Request $request)
     {
-        $id = $request->input('id');
+        /*$id = $request->input('id');
         $quantity = $request->input('quantity');
         $productsArray = Session::get('cart');
         foreach($productsArray as $key=>$value){
@@ -18,37 +214,42 @@
             } else {
                 //print_r("not inside");
             }
-        }
+        }*/
     }
 
     function retrieveIdListFromSession()
     {
-        $idArray = [];
+        /*$idArray = [];
         $productsArray = Session::get('cart');
         foreach($productsArray as $key=>$value){
             array_push($idArray, $productsArray[$key]['productId']);
         }
-        return $idArray;
+        return $idArray;*/
     }
 
-    function cartCountSpanElement()
+    /*function cartCountSpanElement()
     {
         if (Session::has('cart')) {
             $count = 0;
             foreach (Session::get('cart') as $products){
+                echo $products;
                 foreach($products as $key=>$value) {
                     if ($key == "quantity") {
                         $count = $count + (int)$value;
                     }
                 }
             }
+            if ($count == 0) {
+                //Session::put('orderNumber', 0);
+            }
             echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
         } else {
+            //Session::put('orderNumber', 0);
             echo "<span id=\"cart_count\" class=\"text-warning bg-light\">0</span>";
         }
-    }
+    }*/
 
-    function orderListDivElement()
+    /*function orderListDivElement()
     {
         if (Session::has('cart')){
             foreach (Session::get('cart') as $products){
@@ -68,7 +269,7 @@
                 }       
             }     
         } 
-    }
+    }*/
 
     //function cartElement($imageName, $productName, $productDescription, $price, $quantity)
     function cartElement($product, $quantity)

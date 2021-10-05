@@ -18,3 +18,23 @@
 .menuItemDescription {
     font-size: 15px;
 }
+
+.choiceItem {
+    margin: auto;
+    width: 100%;
+    border: 3px solid lightgray;
+    padding: 10px;
+    font-size: 30px;
+}
+
+.choiceItemName {
+    font-size: 20px;
+}
+
+.choiceItemPrice {
+    font-size: 20px;
+}
+
+.quantityDiv {
+    width: 150px;
+}

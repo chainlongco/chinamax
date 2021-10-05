@@ -24,7 +24,7 @@
                 <div class="price-detail py-4">
                     <div id="pricedetail">
                         <?php 
-                            priceDetaiDivElement();
+                            //priceDetaiDivElement();
                         ?>
                     </div>
                 </div>
@@ -38,7 +38,7 @@
         //$('.quantityPlus').on('click', function(e){  This will not work after ajax call, so use this line below
         $(document).on('click','.quantityPlus', function(e){
             e.preventDefault();
-            var productId = retrieveProductId("quantityPlus", this.id);
+            var productId = retrieveId("quantityPlus", this.id);
             var quantityElementId = "#quantity" + productId;
             var quantity = $(quantityElementId).val();
             quantity = Number(quantity) + 1;
@@ -53,7 +53,7 @@
         //$('.quantityMinus').on('click', function(e){  This will not work after ajax call, so use this line below
         $(document).on('click', '.quantityMinus', function(e){           
             e.preventDefault();
-            var productId = retrieveProductId("quantityMinus", this.id);
+            var productId = retrieveId("quantityMinus", this.id);
             var quantityElementId = "#quantity" + productId;
             var quantity = $(quantityElementId).val();
             quantity = Number(quantity) - 1;
@@ -83,7 +83,7 @@
         $(document).on('click', '.remove', function(e){          
             e.preventDefault();
             if (confirm('Are you sure to remove this item?')) {
-                var productId = retrieveProductId("remove", this.id);
+                var productId = retrieveId("remove", this.id);
 
                 // reload cart, price detail and list
                 //fetchOrderListForRemove(productId);
@@ -97,15 +97,6 @@
         $('.quantity').change(function(){
             alert("go");
         });
-
-        function retrieveProductId(elementClass, elementClassId)
-        {
-            var lengthClass = elementClass.length;
-            var lengthClassId = elementClassId.length;
-            var productId = elementClassId.substr(lengthClass, (lengthClassId-lengthClass));
-
-            return productId;
-        }
 
         function fetchCartAndPriceDetail(productId, quantity)
         {
@@ -162,9 +153,9 @@
 
         function loadCartCountElements(priceDetail)
         {
-            $('#cartcount').html("");
+            $('#cartCount').html("");
             var html = '<span id="cart_count" class="text-warning bg-light">' + priceDetail['items'] + '</span>';
-            $('#cartcount').append(html);
+            $('#cartCount').append(html);
         }
 
         function loadOrderListElements(products)
@@ -241,7 +232,7 @@
                 data: {'id': productId, 'quantity': quantity},
                 success: function(response) {
                     console.log(response);      
-                    $('#cartcount').html(response);
+                    $('#cartCount').html(response);
                 }
             });
         }

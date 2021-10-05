@@ -44,3 +44,5 @@ Route::get('/cart-order', [ProductController::class, 'cartRemoveFromOrderList'])
 Route::get('/cart-count', [ProductController::class, 'cartCount']);
 
 Route::get('/order', [MenuController::class, 'menu']);
+Route::get('/order-choices', [ProductController::class, 'orderChoices']);
+Route::get('/order-added', [ProductController::class, 'orderAdded']);

@@ -26,7 +26,7 @@
                 <a href="/cart" class="nav-item nav-link active">
                     <h5 class="px-5 cart">
                         <i class="fas fa-shopping-cart"></i>Cart
-                        <span id="cartcount">        
+                        <span id="cartCount">        
                             <?php
                                 require_once(public_path() ."/shared/component.php");
                                 cartCountSpanElement();
