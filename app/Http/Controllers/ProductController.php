@@ -61,6 +61,28 @@ class ProductController extends Controller
         echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
     }
 
+    public function cartQuantityUpdated(Request $request)
+    {
+        $serialNumber = $request->serialNumber;
+        $quantity = $request->quantity;
+        $oldCart = Session::get('cart');
+        $newCart = new Cart($oldCart);
+        $newCart->updateItemQuantity($serialNumber, $quantity);
+        Session::put('cart', $newCart);
+        $priceDetail = retrievePriceDetail();
+        $items = $newCart->items;   //$storedItem = ['item'=>$item, 'subItem'=>$subItem, 'quantity'=>$quantity];
+        return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -130,7 +152,7 @@ class ProductController extends Controller
         return view('cart');
     }
 
-    public function cartData(Request $request)
+    /*public function cartData(Request $request)
     {
         updateSessionData($request);
         
@@ -179,7 +201,7 @@ class ProductController extends Controller
             'products' => $productArray,
             'price' => $priceArray,
         ]);
-    }
+    }*/
 
 
 
@@ -203,7 +225,7 @@ class ProductController extends Controller
                 //print_r("not inside");
             }
         }
-        echo (priceDetaiDivElement());
+        echo (priceDetailDivElement());
     }
 
     public function cartRemoveFromOrderList(Request $request)

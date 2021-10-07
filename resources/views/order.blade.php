@@ -10,9 +10,6 @@
         <div class="row">
             <div class="col-md-3 text-center">
                 <div id="orderMenu">
-                    <?php
-                        //orderMenuElement($menus);
-                    ?>
                     <h1>Menu</h1>
                     @foreach($products as $product)
                         <div class="eachMenu" id="eachMenu{{ $product->id }}p">

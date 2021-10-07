@@ -2,6 +2,7 @@
     use App\Models\Product;
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\DB;
+    use App\Shared\Cart;
 
     function loadAppetizesChoices($menuName)
     {
@@ -21,7 +22,7 @@
                     $html .= "<br>";
                     $html .= "<div class=\"quantityDiv mx-auto\">
                                 <button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$product->id ."\"><i class=\"fas fa-minus\"></i></button>
-                                <input type=\"text\" class=\"form-control w-25 d-inline\" value=\"" .$quantity ."\" id=\"quantity" .$product->id ."\">
+                                <input type=\"text\" class=\"form-control w-25 d-inline text-center\" value=\"" .$quantity ."\" id=\"quantity" .$product->id ."\" disabled>
                                 <button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$product->id ."\"><i class=\"fas fa-plus\"></i></button>
                               </div>";
                     $html .= "<div>
@@ -130,151 +131,34 @@
     function orderListDivElement()
     {
         if (Session::has('cart')){
-            /*foreach (Session::get('cart') as $products){
-                $elements = "";
-                $quantity = 0;
-                $product = null;
-                foreach($products as $key=>$value) {              
-                    if ($key == "productId") {
-                        $product = Product::find($value);
-                    }
-                    if ($key == "quantity") {
-                        $quantity = $value;
-                    }            
-                }
-                if ($product != null) {
-                    $elements = $elements .cartElement($product, $quantity);
-                }       
-            }*/
-            /*$items = Session::get('cart');
-            $serialNumbers = array_keys(Session::get('cart'));
-            foreach ($sericalNumbers as $serialNumber) {
-                $elements = $elements .cartElement($item[$serialNumber]->item, $item[$serialNumber]->subItem, $item[$serialNumber]->quantity, $serialNumber);
-            }*/
             $elements = "";
             $items = array();
+            $totalQuantity = 0;
+            $totalPrice = 0;
+            $subItem = array();
             foreach (Session::get('cart') as $key=>$value) {
-                echo $key ." ";
-               if ($key == 'serialNumber') {
-                   echo $value ." ";
-               }
                if ($key == 'totalQuantity') {
-                   echo $value ." ";
+                   $totalQuantity = $value;
                }
                if ($key == 'totalPrice') {
-                   echo $value ." ";
+                   $totalPrice = $value;
                }
                if ($key == 'items') {
                    $items = $value;
                }
             }
-            echo "<br>";
             $keys = array_keys($items);
-            foreach ($keys as $key) {
-                echo $key ." ";
+            foreach ($keys as $key) {   // $key is serialNumber
                 $product = $items[$key]['item'];
                 $quantity = $items[$key]['quantity'];
-                $elements = $elements .cartElement($product, $quantity);
+                $subItem = $items[$key]['subItem'];
+                $elements = $elements .cartElement($key, $product, $quantity, $subItem);
             }
         } 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    function updateSessionData(Request $request)
-    {
-        /*$id = $request->input('id');
-        $quantity = $request->input('quantity');
-        $productsArray = Session::get('cart');
-        foreach($productsArray as $key=>$value){
-            if($productsArray[$key]['productId'] == $id) {
-                if ($quantity != 0) {
-                    Session::pull('cart.' .$key);
-                    Session::push('cart', array('productId'=>$id, 'quantity'=>(int)$quantity));
-                } else {
-                    Session::forget('cart.' .$key);
-                }
-            } else {
-                //print_r("not inside");
-            }
-        }*/
-    }
-
-    function retrieveIdListFromSession()
-    {
-        /*$idArray = [];
-        $productsArray = Session::get('cart');
-        foreach($productsArray as $key=>$value){
-            array_push($idArray, $productsArray[$key]['productId']);
-        }
-        return $idArray;*/
-    }
-
-    /*function cartCountSpanElement()
-    {
-        if (Session::has('cart')) {
-            $count = 0;
-            foreach (Session::get('cart') as $products){
-                echo $products;
-                foreach($products as $key=>$value) {
-                    if ($key == "quantity") {
-                        $count = $count + (int)$value;
-                    }
-                }
-            }
-            if ($count == 0) {
-                //Session::put('orderNumber', 0);
-            }
-            echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
-        } else {
-            //Session::put('orderNumber', 0);
-            echo "<span id=\"cart_count\" class=\"text-warning bg-light\">0</span>";
-        }
-    }*/
-
-    /*function orderListDivElement()
-    {
-        if (Session::has('cart')){
-            foreach (Session::get('cart') as $products){
-                $elements = "";
-                $quantity = 0;
-                $product = null;
-                foreach($products as $key=>$value) {              
-                    if ($key == "productId") {
-                        $product = Product::find($value);
-                    }
-                    if ($key == "quantity") {
-                        $quantity = $value;
-                    }            
-                }
-                if ($product != null) {
-                    $elements = $elements .cartElement($product, $quantity);
-                }       
-            }     
-        } 
-    }*/
-
-    //function cartElement($imageName, $productName, $productDescription, $price, $quantity)
-    function cartElement($product, $quantity)
-    {
-        //print_r($imageName);
+    function cartElement($key, $product, $quantity, $subItem)
+    {   // $key is serialNumber, using serialNumber instead of productId is the example like User can order many Regular Platters with different Sides and Entrees. But they are the same productId.
         $element = "
             <form action=\"/cart\" method=\"get\" class=\"cart-items\">
                 <div class=\"border rounded\">
@@ -288,15 +172,15 @@
                             <small class=\"text-secondary\">" .$product->description ."</small>
                             <h5 class=\"pt-1\">$" .$product->price ."</h5>
                             <div class=\"pb-1\">
-                                <button type=\"submit\" class=\"btn btn-warning\">Save for Later</button>
-                                <button type=\"button\" class=\"btn btn-danger mx-2 remove\" id=\"remove" .$product->id ."\">Remove</button>
+                                <button type=\"submit\" class=\"btn btn-warning\">Edit</button>
+                                <button type=\"button\" class=\"btn btn-danger mx-2 remove\" id=\"remove" .$key ."AND" .$product->id ."\">Remove</button>
                             </div>
                         </div>
                         <div class=\"col-md-3\">
                             <div class=\"py-5\">
-                                <button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$product->id ."\"><i class=\"fas fa-minus\"></i></button>
-                                <input type=\"text\" class=\"form-control w-25 d-inline\" value=\"" .$quantity ."\" id=\"quantity" .$product->id ."\">
-                                <button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$product->id ."\"><i class=\"fas fa-plus\"></i></button>
+                                <button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$key ."AND" .$product->id ."\"><i class=\"fas fa-minus\"></i></button>
+                                <input type=\"text\" class=\"form-control w-25 d-inline text-center\" value=\"" .$quantity ."\" id=\"quantity" .$key ."AND" .$product->id ."\" disabled>
+                                <button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$key ."AND" .$product->id ."\"><i class=\"fas fa-plus\"></i></button>
                             </div>
                         </div>
                     </div>
@@ -306,7 +190,7 @@
         echo $element;
     }
 
-    function priceDetaiDivElement()
+    function priceDetailDivElement()
     {
         $priceDetail = retrievePriceDetail();
         $element = "
@@ -314,13 +198,13 @@
             <hr>
             <div class=\"row px-5\">
                 <div class=\"col-md-6 text-start\">
-                    <h5>Price (" .$priceDetail['items'] ." items)</h5>
+                    <h5>Price (" .$priceDetail['totalQuantity'] ." items)</h5>
                     <h5>Tax</h5>
                     <hr>
                     <h3>Order Total</h3>
                 </div>
                 <div class=\"col-md-6 text-end\">
-                    <h5>$" .$priceDetail['subtotal'] ."</h5>
+                    <h5>$" .$priceDetail['totalPrice'] ."</h5>
                     <h5>$" .$priceDetail['tax'] ."</h5>
                     <hr>
                     <h4>$" .$priceDetail['total'] ."</h4>
@@ -332,62 +216,28 @@
 
     function retrievePriceDetail()
     {
-        $subtotal = 0;
-        $items = 0;
+        $totalQuantity = 0;
+        $totalPrice = 0;
         $tax = 0;
         $total = 0;
         $taxRate = 0.0825;
         if (Session::has('cart')){
-            foreach (Session::get('cart') as $products){
-                $quantity = 0;
-                $product = null;
-                foreach($products as $key=>$value) {              
-                    if ($key == "productId") {
-                        $product = Product::find($value);
-                    }
-                    if ($key == "quantity") {
-                        $quantity = $value;
-                    }        
-                }
-                if ($product != null) {
-                    $items += $quantity;
-                    $subtotal += (floatval($product->price)) * $quantity;
-                }       
-            }
-            $tax = round(($subtotal * $taxRate), 2);
-            $total = $subtotal + $tax;
+            $cart = new Cart(Session::get('cart'));
+            $totalQuantity = $cart->totalQuantity;
+            $totalPrice = $cart->totalPrice; 
+            /*foreach (Session::get('cart') as $key=>$value) {
+               if ($key == 'totalQuantity') {
+                   $totalQuantity = $value;
+               }
+               if ($key == 'totalPrice') {
+                   $totalPrice = $value;
+               }
+            }*/
         }
-        $priceDetail = array('items'=>$items, 'subtotal'=>number_format($subtotal, 2, '.', ','), 'tax'=>number_format($tax, 2, '.', ','), 'total'=>number_format($total, 2, '.', ','));
+        $tax = round(($totalPrice * $taxRate), 2);
+        $total = $totalPrice + $tax;
+        $priceDetail = array('totalQuantity'=>$totalQuantity, 'totalPrice'=>number_format($totalPrice, 2, '.', ','), 'tax'=>number_format($tax, 2, '.', ','), 'total'=>number_format($total, 2, '.', ','));
         return $priceDetail;
-    } 
-
-    function orderMenuElement($menus)
-    {
-        $element = "
-            <h1>Menu</h1>
-        ";
-            foreach($menus as $menu) {
-                $element = $element ."
-                    <div class=\"eachMenu\">
-                        <div class=\"menuItem\">
-                            <span class=\"menuItemName\">" .$menu->name ."</span>
-                ";
-                if ((string)($menu->price) !== '0') {
-                    $element = $element ."
-                            <br>
-                            <span class=\"menuItemPrice\">$" .$menu->price ."</span>
-                    ";    
-                }
-                $element = $element ."
-                            <br>
-                        </div>
-                        <span class=\"menuItemDescription\">" .$menu->description ."</span>
-                    </div>
-                    <br>
-                ";
-            }
-
-        echo $element;    
     }
 
 ?>
