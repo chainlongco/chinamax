@@ -19,15 +19,16 @@
     font-size: 15px;
 }
 
-.choiceItem {
+.choiceItem, .choiceItemSide, .choiceItemEntree{
     margin: auto;
     width: 100%;
     border: 3px solid lightgray;
+    border-radius: 25px;
     padding: 10px;
     font-size: 30px;
 }
 
-.choiceItemName {
+.choiceItemName, .choiceItemSideName, .choiceItemEntreeName {
     font-size: 20px;
 }
 

@@ -4,7 +4,7 @@ namespace App\Shared;
 
 Class Cart {
     public $serialNumber = 0;
-    public $items = null;
+    public $items = array();
     public $totalQuantity = 0;
     public $totalPrice = 0;
 

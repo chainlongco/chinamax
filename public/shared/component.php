@@ -60,7 +60,7 @@
         return $html;
     }
 
-    function loadIndividualEntreeChoices($menuName)
+    function loadIndividualSideEntreeChoices($menuName)
     {
         $html = "";
         //$products = DB::table('products')->where('menu_id', "1")->get();
@@ -74,6 +74,7 @@
         $html = "";
         //$products = DB::table('products')->where('menu_id', "1")->get();
         $html .= "<h1>Choices for " .$menuName ."</h1>";
+        $html .= "<h3 class=\"text-left\">Choose One Side</h3>";
 
         return $html;
     }

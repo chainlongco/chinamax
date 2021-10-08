@@ -28,8 +28,8 @@ class ProductController extends Controller
             echo loadAppetizesChoices($menuName);
         } else if ($menuName === "Drinks") {
             echo loadDrinksChoices($menuName);
-        } else if ($menuName === "Individual Entree"){
-            echo loadIndividualEntreeChoices($menuName);
+        } else if ($menuName === "Individual Side/Entree"){
+            echo loadIndividualSideEntreeChoices($menuName);
         } else if ($menuName === "Small Platter") {
             echo loadSmallPlatterChoices($menuName);
         } else if ($menuName === "Regular Platter") {
