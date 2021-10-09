@@ -36,6 +36,7 @@
                 </div>    
             </div>
             <div class="col-md-9 text-center ">
+
                 <!--<h1>Choices</h1>-->
                 <div class="orderChoices">
                     
@@ -43,7 +44,7 @@
                     <div class="row">
                         <div class="text-start">
                             <br>
-                            <h3>Choose One Side</h3>
+                            <h3>Choose One Side (or Half and Half)</h3>
                             <br>
                         </div>
                         @foreach($sides as $side)
@@ -51,7 +52,10 @@
                                 <div class="choiceItemSide" id="choiceItemSide{{ $side->id }}">
                                     <img src="\images\{{ $side->gallery }}" style="width:60%">
                                     <br>
-                                    <span class="choiceItemSideName" id="choiceItemSideName{{ $side->id }}">{{ $side->name }}</span>  
+                                    <span class="choiceItemSideName" id="choiceItemSideName{{ $side->id }}">{{ $side->name }}</span>
+                                </div>
+                                <div class="selectedDiv">
+                                    <h3 class="sideSelected" id="sideSelected{{ $side->id }}"></h3>
                                 </div>
                             </div>
                         @endforeach
@@ -69,6 +73,10 @@
                                     <br>
                                     <span class="choiceItemEntreeName" id="choiceItemEntreeName{{ $chickenEntree->id }}">{{ $chickenEntree->name }}</span>  
                                 </div>
+                                <div class="selectedDiv">
+                                    <h3 class="entreeSelected" id="entreeSelected{{ $chickenEntree->id }}"></h3>
+                                </div>
+                                <br>
                             </div>
                         @endforeach
 
@@ -83,6 +91,9 @@
                                     <br>
                                     <span class="choiceItemEntreeName" id="choiceItemEntreeName{{ $beefEntree->id }}">{{ $beefEntree->name }}</span>  
                                 </div>
+                                <div class="selectedDiv">
+                                    <h3 class="entreeSelected" id="entreeSelected{{ $beefEntree->id }}"></h3>
+                                </div>
                             </div>
                         @endforeach
 
@@ -96,6 +107,9 @@
                                     <img src="\images\{{ $shrimpEntree->gallery }}" style="width:60%">
                                     <br>
                                     <span class="choiceItemEntreeName" id="choiceItemEntreeName{{ $shrimpEntree->id }}">{{ $shrimpEntree->name }}</span>  
+                                </div>
+                                <div class="selectedDiv">
+                                    <h3 class="entreeSelected" id="entreeSelected{{ $shrimpEntree->id }}"></h3>
                                 </div>
                             </div>
                         @endforeach
@@ -210,9 +224,18 @@
                 var sideId = retrieveId("choiceItemSide", this.id)
                 $("#choiceItemSideName" + sideId).css("text-decoration","none");
             });
+            $(document).on('click', '.choiceItemSide', function(e){
+                e.preventDefault();
+                var sideId = retrieveId("choiceItemSide", this.id);
+                //$(".choiceItemSide").css("border","3px solid lightgray");
+                //$("#choiceItemSide" + sideId).css("border","5px solid red");
+                //$("#sideSelected" + sideId).text("One Selected");
+
+                checkSelectedSideItem(sideId);
+            });
             <!-- Side End -->
 
-            <!-- Side Start -->
+            <!-- Entree Start -->
             $(document).on('mouseover', '.choiceItemEntree', function(e){
                 e.preventDefault();
                 var sideId = retrieveId("choiceItemEntree", this.id);
@@ -223,12 +246,21 @@
                 var sideId = retrieveId("choiceItemEntree", this.id)
                 $("#choiceItemEntreeName" + sideId).css("text-decoration","none");
             });
-            <!-- Side End -->
+            $(document).on('click', '.choiceItemEntree', function(e){
+                e.preventDefault();
+                var entreeId = retrieveId("choiceItemEntree", this.id);
+                $(".choiceItemEntree").css("border","3px solid lightgray");
+                $("#choiceItemEntree" + entreeId).css("border","5px solid red");
+                $("#entreeSelected" + entreeId).text("One Selected");
+            });
+            <!-- Entree End -->
 
 
             //$("#eachMenu1").trigger('click');
         });
 
+
+        <!-- Menu Start -->
         function retrieveChoices(menuId) {
             $.ajax({
                 type:'GET',
@@ -239,7 +271,9 @@
                 }
             });
         }
+        <!-- Menu End -->
 
+        <!-- Appetizer Start -->
         function addNewItemToCart(productId, quantity, subItem) {
             $.ajax({
                 type:'GET',
@@ -250,5 +284,74 @@
                 }
             });
         }
+        <<!-- Appetizer End -->
+
+        <!-- Side Start -->
+        function checkSelectedSideItem(sideId) {
+            //$(".choiceItemSide").css("border","3px solid lightgray");
+            //$("#choiceItemSide" + sideId).css("border","5px solid red");
+            //$("#sideSelected" + sideId).text("One Selected");
+            if ($("#sideSelected" + sideId).text() == "One Selected") {
+                $("#sideSelected" + sideId).text("");
+                $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
+            } else if ($("#sideSelected" + sideId).text() == "") {
+                if (numberOfOneSelectedSide() == 1) {
+                    $("#sideSelected" + sideId).text("Half Selected");
+                    $("#choiceItemSide" + sideId).css("border","5px solid red");
+                    disableRestOfSideChoices();
+                } else {
+                    $("#sideSelected" + sideId).text("One Selected");
+                    $("#choiceItemSide" + sideId).css("border","5px solid red");
+                }
+            } else if ($("#sideSelected" + sideId).text() == "Half Selected") {
+                $("#sideSelected" + sideId).text("");
+                $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
+                changeFromHalfToOneSelectedSide();
+                enableAllSideChoices();
+            }
+        }
+
+        function numberOfOneSelectedSide() {
+            numberOfOneSelected = 0;
+            var sideElements = $(".choiceItemSide").toArray();
+            sideElements.forEach(function(sideElement) {
+                var sideId = retrieveId("choiceItemSide", sideElement.id);
+                if ($("#sideSelected" + sideId).text() == "One Selected") {
+                    $("#sideSelected" + sideId).text("Half Selected");
+                    numberOfOneSelected++;
+                }
+            });
+            return numberOfOneSelected;
+        }
+
+        function changeFromHalfToOneSelectedSide() {
+            var sideElements = $(".choiceItemSide").toArray()
+            sideElements.forEach(function(sideElement) {
+                var sideId = retrieveId("choiceItemSide", sideElement.id);
+                if ($("#sideSelected" + sideId).text() == "Half Selected") {
+                    $("#sideSelected" + sideId).text("One Selected");
+                }
+            });
+        }
+
+        function disableRestOfSideChoices() {
+            var sideElements = $(".choiceItemSide").toArray()
+            sideElements.forEach(function(sideElement) {
+                var sideId = retrieveId("choiceItemSide", sideElement.id);
+                if ($("#sideSelected" + sideId).text() != "Half Selected") {
+                    $("#choiceItemSide" + sideId).prop('disabled', true);
+                }
+            });
+        }
+
+        function enableAllSideChoices() {
+            var sideElements = $(".choiceItemSide").toArray()
+            sideElements.forEach(function(sideElement) {
+                var sideId = retrieveId("choiceItemSide", sideElement.id);
+                $("#choiceItemSide" + sideId).prop('disabled', false);
+            });
+        }
+        <!-- Side End -->
+
     </script>
 @endsection

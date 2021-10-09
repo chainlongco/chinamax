@@ -19,7 +19,7 @@
     font-size: 15px;
 }
 
-.choiceItem, .choiceItemSide, .choiceItemEntree{
+.choiceItem, .choiceItemSide, .choiceItemEntree{  
     margin: auto;
     width: 100%;
     border: 3px solid lightgray;
@@ -38,4 +38,16 @@
 
 .quantityDiv {
     width: 170px;
+}
+
+.selectedDiv {
+    width: 100%;
+}
+.sideSelected, .entreeSelected{
+    width:200px;
+    margin: auto;
+    margin-top:-15px;
+    background: white;
+    font-size: 20px;
+    color: red;
 }
