@@ -13,13 +13,13 @@ require_once(public_path() ."/shared/component.php");
 class ProductController extends Controller
 {
     public function orderChoices(Request $request)
-    {        
+    {   // ToDo -- Needs to rewrite.......
         $menuId = $request->menuId;
         $menuName = "";
-        if (!str_contains($menuId, 'p')) {   // from Menus table
+        if (!str_contains($menuId, 'p')) {   // from Menus table -- for Appetizer, Drink, Individual Side/Entree
             $menu = DB::table('menus')->where('id', $menuId)->first();
             $menuName = $menu->name;
-        } else {    // From Products table
+        } else {    // From Products table -- Small Platter, Regular Platter, Large Platter, Kid's Meal, Party Tray
             $productId = substr($menuId, 0, (strlen($menuId) -1));
             $product = DB::table('products')->where('id', $productId)->first();
             $menuName = $product->name;
@@ -31,7 +31,7 @@ class ProductController extends Controller
         } else if ($menuName === "Individual Side/Entree"){
             echo loadIndividualSideEntreeChoices($menuName);
         } else if ($menuName === "Small Platter") {
-            echo loadSmallPlatterChoices($menuName);
+            echo loadSmallPlatterChoices($product);
         } else if ($menuName === "Regular Platter") {
             echo loadRegularPlatterChoices($menuName);
         } else if ($menuName === "Large Platter") {

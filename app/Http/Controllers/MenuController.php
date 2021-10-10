@@ -18,6 +18,7 @@ class MenuController extends Controller
         //return view('order', compact('menus', 'products'));
 
 
+        $product = DB::table('products')->where('id', 12)->first();
         $sides = DB::table('sides')->get();
         $chickenEntrees = DB::table('entrees')->where('category', 'Chicken')->get();
         $beefEntrees = DB::table('entrees')->where('category', 'Beef')->get();

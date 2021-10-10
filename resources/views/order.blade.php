@@ -94,6 +94,7 @@
                                 <div class="selectedDiv">
                                     <h3 class="entreeSelected" id="entreeSelected{{ $beefEntree->id }}"></h3>
                                 </div>
+                                <br>
                             </div>
                         @endforeach
 
@@ -111,18 +112,19 @@
                                 <div class="selectedDiv">
                                     <h3 class="entreeSelected" id="entreeSelected{{ $shrimpEntree->id }}"></h3>
                                 </div>
+                                <br>
                             </div>
                         @endforeach
 
                         <div class="col-md-4 my-auto">
                             <div class="quantityDiv mx-auto">
-                                <button type="button" class="btn bg-light border rounded-circle quantityMinus" id="quantityMinus"><i class="fas fa-minus"></i></button>
-                                <input type="text" class="form-control w-25 d-inline text-center" value="0" id="quantity" disabled>
-                                <button type="button" class="btn bg-light border rounded-circle quantityPlus" id="quantityPlus"><i class="fas fa-plus"></i></button>
+                                <button type="button" class="btn bg-light border rounded-circle quantityMinus" id="quantityMinus{{ $product->id }}"><i class="fas fa-minus"></i></button>
+                                <input type="text" class="form-control w-25 d-inline text-center" value="1" id="quantity{{ $product->id }}" disabled>
+                                <button type="button" class="btn bg-light border rounded-circle quantityPlus" id="quantityPlus{{ $product->id }}"><i class="fas fa-plus"></i></button>
                             </div>
                             <div>
                                 <br>
-                                <button type="button" class="btn bg-light border addToCart" disabled id="addToCart">Add to Cart</button>
+                                <button type="button" class="btn bg-light border addToCart" disabled id="addToCart{{ $product->id }}">Add to Cart</button>
                             </div>
                         </div>
                     </div>
@@ -209,15 +211,27 @@
                 $(addToCartElementId).prop('disabled', true);
                 $(addToCartElementId).css("color","orange");
                 $(quantityElementId).val(0);
-                addNewItemToCart(productId, quantity, null);
+                addNewItemToCart(productId, quantity, new Array());
             });    
             <!-- Appetizers End -->
 
             <!-- Side Start -->
             $(document).on('mouseover', '.choiceItemSide', function(e){
                 e.preventDefault();
+
+                // from https://stackoverflow.com/questions/9421208/how-to-compare-colors-in-javascript
+                /*var compareHex = (hex) => {
+                    var hexString = document.createElement('div')
+                    hexString.style.backgroundColor = `${hex}`
+                    return hexString.style.backgroundColor
+                }
+                var current_color = $("#choiceItemSide" + sideId).css("background-color");
+                if (current_color !== compareHex('#d3d3d3')) {*/
+
                 var sideId = retrieveId("choiceItemSide", this.id);
-                $("#choiceItemSideName" + sideId).css("text-decoration","underline");
+                if ($("#choiceItemSide" + sideId).prop("disabled") != true) {
+                    $("#choiceItemSideName" + sideId).css("text-decoration","underline");
+                }
             });
             $(document).on('mouseout', '.choiceItemSide', function(e){
                 e.preventDefault();
@@ -227,10 +241,6 @@
             $(document).on('click', '.choiceItemSide', function(e){
                 e.preventDefault();
                 var sideId = retrieveId("choiceItemSide", this.id);
-                //$(".choiceItemSide").css("border","3px solid lightgray");
-                //$("#choiceItemSide" + sideId).css("border","5px solid red");
-                //$("#sideSelected" + sideId).text("One Selected");
-
                 checkSelectedSideItem(sideId);
             });
             <!-- Side End -->
@@ -238,20 +248,20 @@
             <!-- Entree Start -->
             $(document).on('mouseover', '.choiceItemEntree', function(e){
                 e.preventDefault();
-                var sideId = retrieveId("choiceItemEntree", this.id);
-                $("#choiceItemEntreeName" + sideId).css("text-decoration","underline");
+                var entreeId = retrieveId("choiceItemEntree", this.id);
+                if ($("#choiceItemEntree" + entreeId).prop("disabled") != true) {
+                    $("#choiceItemEntreeName" + entreeId).css("text-decoration","underline");
+                }
             });
             $(document).on('mouseout', '.choiceItemEntree', function(e){
                 e.preventDefault();
-                var sideId = retrieveId("choiceItemEntree", this.id)
-                $("#choiceItemEntreeName" + sideId).css("text-decoration","none");
+                var entreeId = retrieveId("choiceItemEntree", this.id)
+                $("#choiceItemEntreeName" + entreeId).css("text-decoration","none");
             });
             $(document).on('click', '.choiceItemEntree', function(e){
                 e.preventDefault();
                 var entreeId = retrieveId("choiceItemEntree", this.id);
-                $(".choiceItemEntree").css("border","3px solid lightgray");
-                $("#choiceItemEntree" + entreeId).css("border","5px solid red");
-                $("#entreeSelected" + entreeId).text("One Selected");
+                checkSelectedEntreeItem(entreeId);
             });
             <!-- Entree End -->
 
@@ -284,7 +294,7 @@
                 }
             });
         }
-        <<!-- Appetizer End -->
+        <!-- Appetizer End -->
 
         <!-- Side Start -->
         function checkSelectedSideItem(sideId) {
@@ -295,7 +305,7 @@
                 $("#sideSelected" + sideId).text("");
                 $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
             } else if ($("#sideSelected" + sideId).text() == "") {
-                if (numberOfOneSelectedSide() == 1) {
+                if (findOneSelectedSideAndChangeToHalf()) {
                     $("#sideSelected" + sideId).text("Half Selected");
                     $("#choiceItemSide" + sideId).css("border","5px solid red");
                     disableRestOfSideChoices();
@@ -311,17 +321,20 @@
             }
         }
 
-        function numberOfOneSelectedSide() {
-            numberOfOneSelected = 0;
+        function findOneSelectedSideAndChangeToHalf() {
+            var isOneSelected = false;
             var sideElements = $(".choiceItemSide").toArray();
             sideElements.forEach(function(sideElement) {
                 var sideId = retrieveId("choiceItemSide", sideElement.id);
                 if ($("#sideSelected" + sideId).text() == "One Selected") {
                     $("#sideSelected" + sideId).text("Half Selected");
-                    numberOfOneSelected++;
+                    //alert("inside");
+                    isOneSelected = true;
                 }
+                //alert("inside but not one");
             });
-            return numberOfOneSelected;
+            //alert("outside");
+            return isOneSelected;
         }
 
         function changeFromHalfToOneSelectedSide() {
@@ -340,6 +353,7 @@
                 var sideId = retrieveId("choiceItemSide", sideElement.id);
                 if ($("#sideSelected" + sideId).text() != "Half Selected") {
                     $("#choiceItemSide" + sideId).prop('disabled', true);
+                    $("#choiceItemSide" + sideId).css('background-color', 'lightgray');
                 }
             });
         }
@@ -349,9 +363,48 @@
             sideElements.forEach(function(sideElement) {
                 var sideId = retrieveId("choiceItemSide", sideElement.id);
                 $("#choiceItemSide" + sideId).prop('disabled', false);
+                $("#choiceItemSide" + sideId).css('background-color', 'white');
             });
         }
         <!-- Side End -->
+
+
+        <!-- Entree Start -->
+        function checkSelectedEntreeItem(entreeId) {
+            //$(".choiceItemEntree").css("border","3px solid lightgray");
+            //$("#choiceItemEntree" + entreeId).css("border","5px solid red");
+            //$("#entreeSelected" + entreeId).text("One Selected");
+            if ($("#entreeSelected" + entreeId).text() == "One Selected") {
+                $("#entreeSelected" + entreeId).text("");
+                $("#choiceItemEntree" + entreeId).css("border","3px solid lightgray");
+                enableAllEntreeChoices();
+            } else if ($("#entreeSelected" + entreeId).text() == "") {
+                $("#entreeSelected" + entreeId).text("One Selected");
+                $("#choiceItemEntree" + entreeId).css("border","5px solid red");
+                disableRestOfEntreeChoices();
+            }
+        }
+
+        function enableAllEntreeChoices() {
+            var entreeElements = $(".choiceItemEntree").toArray()
+            entreeElements.forEach(function(entreeElement) {
+                var entreeId = retrieveId("choiceItemEntree", entreeElement.id);
+                $("#choiceItemEntree" + entreeId).prop('disabled', false);
+                $("#choiceItemEntree" + entreeId).css('background-color', 'white');
+            });
+        }
+
+        function disableRestOfEntreeChoices() {
+            var entreeElements = $(".choiceItemEntree").toArray()
+            entreeElements.forEach(function(entreeElement) {
+                var entreeId = retrieveId("choiceItemEntree", entreeElement.id);
+                if ($("#entreeSelected" + entreeId).text() != "One Selected") {
+                    $("#choiceItemEntree" + entreeId).prop('disabled', true);
+                    $("#choiceItemEntree" + entreeId).css('background-color', 'lightgray');
+                }
+            });
+        }
+        <!-- Entree End -->
 
     </script>
 @endsection

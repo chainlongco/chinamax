@@ -51,11 +51,11 @@
         </div>*/
     }
 
-    function loadDrinksChoices($menuName) 
+    function loadDrinksChoices($product) 
     {
         $html = "";
         //$products = DB::table('products')->where('menu_id', "1")->get();
-        $html .= "<h1>Choices for " .$menuName ."</h1>";
+        $html .= "<h1>Choices for " .$product->name ."</h1>";
 
         return $html;
     }

@@ -87,7 +87,7 @@ class ProductSeeder extends Seeder
                 'menu_id'=>'3'],
             ['name'=>'Party Tray',
                 'price'=>'23.99',
-                'description'=>'3 side & 8 entrees',
+                'description'=>'3 side & 3 large entrees',
                 'gallery'=>'',
                 'menu_id'=>'3'],
             ['name'=>'Side Small',
