@@ -22,7 +22,7 @@
                     $html .= "<br>";
                     $html .= "<div class=\"quantityDiv mx-auto\">
                                 <button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$product->id ."\"><i class=\"fas fa-minus\"></i></button>
-                                <input type=\"text\" class=\"form-control w-25 d-inline text-center\" value=\"" .$quantity ."\" id=\"quantity" .$product->id ."\" disabled>
+                                <input type=\"text\" class=\"form-control w-25 d-inline text-center quantity\" value=\"" .$quantity ."\" id=\"quantity" .$product->id ."\" disabled>
                                 <button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$product->id ."\"><i class=\"fas fa-plus\"></i></button>
                               </div>";
                     $html .= "<div>
@@ -51,11 +51,11 @@
         </div>*/
     }
 
-    function loadDrinksChoices($product) 
+    function loadDrinksChoices($menuName)
     {
         $html = "";
         //$products = DB::table('products')->where('menu_id', "1")->get();
-        $html .= "<h1>Choices for " .$product->name ."</h1>";
+        $html .= "<h1>Choices for " .$menuName ."</h1>";
 
         return $html;
     }
@@ -69,14 +69,242 @@
         return $html;
     }
 
-    function loadSmallPlatterChoices($menuName)
+    function loadComboChoices($product)
     {
+        $sides = DB::table('sides')->get();
+        $chickenEntrees = DB::table('entrees')->where('category', 'Chicken')->get();
+        $beefEntrees = DB::table('entrees')->where('category', 'Beef')->get();
+        $shrimpEntrees = DB::table('entrees')->where('category', 'Shrimp')->get();
+        $combo = DB::table('combos')->where('product_id', $product->id)->first();
+        $sideQuantitySummary = "Choose " .$combo->side ." Side";
+        $entreeQuantitySummary = "Choose " .$combo->entree ." Entree";
+        if ($combo->side == 1) {
+            $sideQuantitySummary .= " (or Half and Half)";
+        } else {
+            $sideQuantitySummary .= "s";
+        }
+        if ($combo->entree > 1) {
+            $entreeQuantitySummary .= "s";
+        }
+
         $html = "";
-        //$products = DB::table('products')->where('menu_id', "1")->get();
-        $html .= "<h1>Choices for " .$menuName ."</h1>";
-        $html .= "<h3 class=\"text-left\">Choose One Side</h3>";
+        $html .= "<h1>Choices for " .$product->name ."</h1>";
+        $html .= "<div class=\"row\">";
+        $html .=    "<div class=\"text-start\">";
+        $html .=        "<br>";
+        $html .=        "<h3>" .$sideQuantitySummary ."</h3>";
+        $html .=        "<input type=\"hidden\" id=\"sideMaxQuantity\" value=\"" .$combo->side ."\"/>";
+        $html .=        "<br>";
+        $html .=    "</div>";
+                    foreach($sides as $side) {
+        $html .=        "<div class=\"col-md-4 text-center\">";
+        $html .=            "<div class=\"choiceItemSide\" id=\"choiceItemSide" .$side->id ."\">";
+        $html .=                "<img src=\"\\images\\" .$side->gallery ."\" style=\"width:60%\">";
+        $html .=                "<br>";
+        $html .=                "<span class=\"choiceItemSideName\" id=\"choiceItemSideName" .$side->id ."\">" .$side->name ."</span>";
+        $html .=            "</div>";
+        $html .=            "<div class=\"selectedDiv\">";
+        $html .=                "<h3 class=\"sideSelected\" id=\"sideSelected" .$side->id ."\"></h3>";
+        $html .=                "<div class=\"sideQuantityIncrementDiv mx-auto\" id=\"sideQuantityIncrementDiv" .$side->id ."\" style=\"display: none;\">";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle sideQuantityMinus\" id=\"sideQuantityMinus" .$side->id ."\"><i class=\"fas fa-minus\"></i></button>";
+        $html .=                    "<input type=\"text\" class=\"form-control w-25 d-inline text-center sideQuantity\" value=\"0\" id=\"sideQuantity" .$side->id ."\" disabled>";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle sideQuantityPlus\" id=\"sideQuantityPlus" .$side->id ."\"><i class=\"fas fa-plus\"></i></button>";
+        $html .=                "</div>";
+        $html .=            "</div>";
+        $html .=        "</div>";
+                    }   
+        $html .=    "<div class=\"text-start\">";
+        $html .=        "<br>";
+        $html .=        "<br>";
+        $html .=        "<h3>" .$entreeQuantitySummary ."</h3>";
+        $html .=        "<input type=\"hidden\" id=\"entreeMaxQuantity\" value=\"" .$combo->entree ."\"/>";
+        $html .=        "<h5>Chicken</h5>";
+        $html .=    "</div>";
+                    foreach($chickenEntrees as $chickenEntree) {
+        $html .=        "<div class=\"col-md-4 text-center\">";
+        $html .=            "<div class=\"choiceItemEntree\" id=\"choiceItemEntree" .$chickenEntree->id ."\">";
+        $html .=                "<img src=\"\\images\\" .$chickenEntree->gallery ."\" style=\"width:60%\">";
+        $html .=                "<br>";
+        $html .=                "<span class=\"choiceItemEntreeName\" id=\"choiceItemEntreeName" .$chickenEntree->id ."\">" .$chickenEntree->name ."</span>";  
+        $html .=            "</div>";
+        $html .=            "<div class=\"selectedDiv\">";
+        $html .=                "<h3 class=\"entreeSelected\" id=\"entreeSelected" .$chickenEntree->id ."\"></h3>";
+        $html .=                "<div class=\"entreeQuantityIncrementDiv mx-auto\" id=\"entreeQuantityIncrementDiv" .$chickenEntree->id ."\" style=\"display: none;\">";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle entreeQuantityMinus\" id=\"entreeQuantityMinus" .$chickenEntree->id ."\"><i class=\"fas fa-minus\"></i></button>";
+        $html .=                    "<input type=\"text\" class=\"form-control w-25 d-inline text-center entreeQuantity\" value=\"0\" id=\"entreeQuantity" .$chickenEntree->id ."\" disabled>";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle entreeQuantityPlus\" id=\"entreeQuantityPlus" .$chickenEntree->id ."\"><i class=\"fas fa-plus\"></i></button>";
+        $html .=                "</div>";
+        $html .=            "</div>";
+        $html .=            "<br>";
+        $html .=        "</div>";
+                    }
+        $html .=    "<div class=\"text-start\">";
+        $html .=        "<br>";
+        $html .=        "<h5>Beef</h5>";
+        $html .=    "</div>";
+                    foreach($beefEntrees as $beefEntree) {
+        $html .=        "<div class=\"col-md-4 text-center\">";
+        $html .=            "<div class=\"choiceItemEntree\" id=\"choiceItemEntree" .$beefEntree->id ."\">";
+        $html .=                "<img src=\"\\images\\" .$beefEntree->gallery ."\" style=\"width:60%\">";
+        $html .=                "<br>";
+        $html .=                "<span class=\"choiceItemEntreeName\" id=\"choiceItemEntreeName" .$beefEntree->id ."\">" .$beefEntree->name ."</span>";  
+        $html .=            "</div>";
+        $html .=            "<div class=\"selectedDiv\">";
+        $html .=                "<h3 class=\"entreeSelected\" id=\"entreeSelected" .$beefEntree->id ."\"></h3>";
+        $html .=                "<div class=\"entreeQuantityIncrementDiv mx-auto\" id=\"entreeQuantityIncrementDiv" .$beefEntree->id ."\" style=\"display: none;\">";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle entreeQuantityMinus\" id=\"entreeQuantityMinus" .$beefEntree->id ."\"><i class=\"fas fa-minus\"></i></button>";
+        $html .=                    "<input type=\"text\" class=\"form-control w-25 d-inline text-center entreeQuantity\" value=\"0\" id=\"entreeQuantity" .$beefEntree->id ."\" disabled>";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle entreeQuantityPlus\" id=\"entreeQuantityPlus" .$beefEntree->id ."\"><i class=\"fas fa-plus\"></i></button>";
+        $html .=                "</div>";
+        $html .=            "</div>";
+        $html .=            "<br>";
+        $html .=        "</div>";
+                    }
+        $html .=        "<div class=\"text-start\">";
+        $html .=            "<br>";
+        $html .=            "<h5>Shrimp</h5>";
+        $html .=        "</div>";
+                    foreach($shrimpEntrees as $shrimpEntree) {
+        $html .=        "<div class=\"col-md-4 text-center\">";
+        $html .=            "<div class=\"choiceItemEntree\" id=\"choiceItemEntree" .$shrimpEntree->id ."\">";
+        $html .=                "<img src=\"\\images\\" .$shrimpEntree->gallery ."\" style=\"width:60%\">";
+        $html .=                "<br>";
+        $html .=                "<span class=\"choiceItemEntreeName\" id=\"choiceItemEntreeName" .$shrimpEntree->id ."\">" .$shrimpEntree->name ."</span>";  
+        $html .=            "</div>";
+        $html .=            "<div class=\"selectedDiv\">";
+        $html .=                "<h3 class=\"entreeSelected\" id=\"entreeSelected" .$shrimpEntree->id ."\"></h3>";
+        $html .=                "<div class=\"entreeQuantityIncrementDiv mx-auto\" id=\"entreeQuantityIncrementDiv" .$shrimpEntree->id ."\" style=\"display: none;\">";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle entreeQuantityMinus\" id=\"entreeQuantityMinus" .$shrimpEntree->id ."\"><i class=\"fas fa-minus\"></i></button>";
+        $html .=                    "<input type=\"text\" class=\"form-control w-25 d-inline text-center entreeQuantity\" value=\"0\" id=\"entreeQuantity" .$shrimpEntree->id ."\" disabled>";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle entreeQuantityPlus\" id=\"entreeQuantityPlus" .$shrimpEntree->id ."\"><i class=\"fas fa-plus\"></i></button>";
+        $html .=                "</div>";
+        $html .=            "</div>";
+        $html .=            "<br>";
+        $html .=        "</div>";
+                    }
+        $html .=    "<div class=\"col-md-4 my-auto\">";
+        $html .=        "<div class=\"quantityDiv mx-auto\">";
+        $html .=            "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$product->id ."\"><i class=\"fas fa-minus\"></i></button>";
+        $html .=            "<input type=\"text\" class=\"form-control w-25 d-inline text-center quantity\" value=\"1\" id=\"quantity" .$product->id ."\" disabled>";
+        $html .=            "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$product->id ."\"><i class=\"fas fa-plus\"></i></button>";
+        $html .=        "</div>";
+        $html .=        "<div>";
+        $html .=            "<br>";
+        $html .=            "<button type=\"button\" class=\"btn bg-light border addToCart\" id=\"addToCart" .$product->id ."\">Add to Cart</button>";
+        $html .=        "</div>";
+        $html .=    "</div>";
+        $html .= "</div>";
 
         return $html;
+
+
+                    /*<div class="row">
+                        <div class="text-start">
+                            <br>
+                            <h3>Choose One Side (or Half and Half)</h3>
+                            <br>
+                        </div>
+                        @foreach($sides as $side)
+                            <div class="col-md-4 text-center">
+                                <div class="choiceItemSide" id="choiceItemSide{{ $side->id }}">
+                                    <img src="\images\{{ $side->gallery }}" style="width:60%">
+                                    <br>
+                                    <span class="choiceItemSideName" id="choiceItemSideName{{ $side->id }}">{{ $side->name }}</span>
+                                </div>
+                                <div class="selectedDiv">
+                                    <h3 class="sideSelected" id="sideSelected{{ $side->id }}"></h3>
+                                    <div class="sideQuantityIncrementDiv mx-auto" id="sideQuantityIncrementDiv{{ $side->id }}" style="display: none;">
+                                        <button type="button" class="btn bg-light border rounded-circle sideQuantityMinus" id="sideQuantityMinus{{ $side->id }}"><i class="fas fa-minus"></i></button>
+                                        <input type="text" class="form-control w-25 d-inline text-center sideQuantity" value="1" id="sideQuantity{{ $side->id }}" disabled>
+                                        <button type="button" class="btn bg-light border rounded-circle sideQuantityPlus" id="sideQuantityPlus{{ $side->id }}"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+
+                        <div class="text-start">
+                            <br>
+                            <br>
+                            <h3>Choose One Entree</h3>
+                            <h5>Chicken</h5>
+                        </div>
+                        @foreach($chickenEntrees as $chickenEntree)
+                            <div class="col-md-4 text-center">
+                                <div class="choiceItemEntree" id="choiceItemEntree{{ $chickenEntree->id }}">
+                                    <img src="\images\{{ $chickenEntree->gallery }}" style="width:60%">
+                                    <br>
+                                    <span class="choiceItemEntreeName" id="choiceItemEntreeName{{ $chickenEntree->id }}">{{ $chickenEntree->name }}</span>  
+                                </div>
+                                <div class="selectedDiv">
+                                    <h3 class="entreeSelected" id="entreeSelected{{ $chickenEntree->id }}"></h3>
+                                    <div class="entreeQuantityIncrementDiv mx-auto" id="entreeQuantityIncrementDiv{{ $chickenEntree->id }}" style="display: none;">
+                                        <button type="button" class="btn bg-light border rounded-circle entreeQuantityMinus" id="entreeQuantityMinus{{ $chickenEntree->id }}"><i class="fas fa-minus"></i></button>
+                                        <input type="text" class="form-control w-25 d-inline text-center entreeQuantity" value="1" id="entreeQuantity{{ $chickenEntree->id }}" disabled>
+                                        <button type="button" class="btn bg-light border rounded-circle entreeQuantityPlus" id="entreeQuantityPlus{{ $chickenEntree->id }}"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                        @endforeach
+
+                        <div class="text-start">
+                            <br>
+                            <h5>Beef</h5>
+                        </div>
+                        @foreach($beefEntrees as $beefEntree)
+                            <div class="col-md-4 text-center">
+                                <div class="choiceItemEntree" id="choiceItemEntree{{ $beefEntree->id }}">
+                                    <img src="\images\{{ $beefEntree->gallery }}" style="width:60%">
+                                    <br>
+                                    <span class="choiceItemEntreeName" id="choiceItemEntreeName{{ $beefEntree->id }}">{{ $beefEntree->name }}</span>  
+                                </div>
+                                <div class="selectedDiv">
+                                    <h3 class="entreeSelected" id="entreeSelected{{ $beefEntree->id }}"></h3>
+                                    <div class="entreeQuantityIncrementDiv mx-auto" id="entreeQuantityIncrementDiv{{ $beefEntree->id }}" style="display: none;">
+                                        <button type="button" class="btn bg-light border rounded-circle entreeQuantityMinus" id="entreeQuantityMinus{{ $beefEntree->id }}"><i class="fas fa-minus"></i></button>
+                                        <input type="text" class="form-control w-25 d-inline text-center entreeQuantity" value="1" id="entreeQuantity{{ $beefEntree->id }}" disabled>
+                                        <button type="button" class="btn bg-light border rounded-circle entreeQuantityPlus" id="entreeQuantityPlus{{ $beefEntree->id }}"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                        @endforeach
+
+                        <div class="text-start">
+                            <br>
+                            <h5>Shrimp</h5>
+                        </div>
+                        @foreach($shrimpEntrees as $shrimpEntree)
+                            <div class="col-md-4 text-center">
+                                <div class="choiceItemEntree" id="choiceItemEntree{{ $shrimpEntree->id }}">
+                                    <img src="\images\{{ $shrimpEntree->gallery }}" style="width:60%">
+                                    <br>
+                                    <span class="choiceItemEntreeName" id="choiceItemEntreeName{{ $shrimpEntree->id }}">{{ $shrimpEntree->name }}</span>  
+                                </div>
+                                <div class="selectedDiv">
+                                    <h3 class="entreeSelected" id="entreeSelected{{ $shrimpEntree->id }}"></h3>
+                                    <div class="entreeQuantityIncrementDiv mx-auto" id="entreeQuantityIncrementDiv{{ $shrimpEntree->id }}" style="display: none;">
+                                        <button type="button" class="btn bg-light border rounded-circle entreeQuantityMinus" id="entreeQuantityMinus{{ $shrimpEntree->id }}"><i class="fas fa-minus"></i></button>
+                                        <input type="text" class="form-control w-25 d-inline text-center entreeQuantity" value="1" id="entreeQuantity{{ $shrimpEntree->id }}" disabled>
+                                        <button type="button" class="btn bg-light border rounded-circle entreeQuantityPlus" id="entreeQuantityPlus{{ $shrimpEntree->id }}"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                        @endforeach
+
+                        <div class="col-md-4 my-auto">
+                            <div class="quantityDiv mx-auto">
+                                <button type="button" class="btn bg-light border rounded-circle quantityMinus" id="quantityMinus{{ $product->id }}"><i class="fas fa-minus"></i></button>
+                                <input type="text" class="form-control w-25 d-inline text-center quantity" value="1" id="quantity{{ $product->id }}" disabled>
+                                <button type="button" class="btn bg-light border rounded-circle quantityPlus" id="quantityPlus{{ $product->id }}"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <div>
+                                <br>
+                                <button type="button" class="btn bg-light border addToCart" id="addToCart{{ $product1->id }}">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>*/
     }
 
     function loadRegularPlatterChoices($menuName)
@@ -115,6 +343,24 @@
         return $html;
     }
 
+    function loadSideChoices($sides)
+    {
+        $html = "";
+        foreach($sides as $side) {
+            $html .=        "<div class=\"col-md-4 text-center\">";
+            $html .=            "<div class=\"choiceItemSide\" id=\"choiceItemSide" .$side->id ."\">";
+            $html .=                "<img src=\"\\images\\" .$side->gallery ."\" style=\"width:60%\">";
+            $html .=                "<br>";
+            $html .=                "<span class=\"choiceItemSideName\" id=\"choiceItemSideName" .$side->id ."\">" .$side->name ."</span>";
+            $html .=            "</div>";
+            $html .=            "<div class=\"selectedDiv\">";
+            $html .=                "<h3 class=\"sideSelected\" id=\"sideSelected" .$side->id ."\"></h3>";
+            $html .=            "</div>";
+            $html .=        "</div>";
+        }
+        return $html;
+    }
+
     function cartCountSpanElement()
     {
         if (Session::has('cart')) {
@@ -136,7 +382,7 @@
             $items = array();
             $totalQuantity = 0;
             $totalPrice = 0;
-            $subItem = array();
+            $subItems = array();
             foreach (Session::get('cart') as $key=>$value) {
                if ($key == 'totalQuantity') {
                    $totalQuantity = $value;
@@ -152,14 +398,15 @@
             foreach ($keys as $key) {   // $key is serialNumber
                 $product = $items[$key]['item'];
                 $quantity = $items[$key]['quantity'];
-                $subItem = $items[$key]['subItem'];
-                $elements = $elements .cartElement($key, $product, $quantity, $subItem);
+                $subItems = $items[$key]['subItems'];
+                $elements = $elements .cartElement($key, $product, $quantity, $subItems);
             }
         } 
     }
 
-    function cartElement($key, $product, $quantity, $subItem)
+    function cartElement($key, $product, $quantity, $subItems)
     {   // $key is serialNumber, using serialNumber instead of productId is the example like User can order many Regular Platters with different Sides and Entrees. But they are the same productId.
+        $orderSummary = retrieveSummary($subItems);
         $element = "
             <form action=\"/cart\" method=\"get\" class=\"cart-items\">
                 <div class=\"border rounded\">
@@ -169,8 +416,8 @@
                                       
                         </div>
                         <div class=\"col-md-6\">
-                            <h5 class=\"pt-2\">" .$product->name ."</h5>
-                            <small class=\"text-secondary\">" .$product->description ."</small>
+                            <h5 class=\"pt-2\">" .$product->name ." <small> (" .$product->description .")</small> </h5>
+                            <h5><small style=\"color:red\">" .$orderSummary ."</small> </h5>
                             <h5 class=\"pt-1\">$" .$product->price ."</h5>
                             <div class=\"pb-1\">
                                 <button type=\"submit\" class=\"btn btn-warning\">Edit</button>
@@ -188,14 +435,50 @@
                 </div>
             </form>
         ";
+        
         echo $element;
+    }
+
+    function retrieveSummary($subItems) {
+        $summary = "";
+        $drink = "";
+        $side = "";
+        $entree = "";
+
+        $keys = array_keys($subItems);
+        foreach ($keys as $key) {         
+            $category = $subItems[$key]['category'];
+            $quantity = $subItems[$key]['quantity'];
+            $item = $subItems[$key]['item'];
+            
+            if ($quantity == 0.5) {
+                $quantity = "1/2";
+            }
+            if ($category == "Side") {
+                $side = $side .$item->name ."(" .$quantity .") ";
+            }
+            if ($category == "Entree") {
+                $entree = $entree .$item->name ."(" .$quantity .") ";
+            }
+        }
+
+        if ($side != "") {
+            $summary .= "Side: " .$side;
+        }
+        if ($entree != "") {
+            $summary .= "Entree: " .$entree;
+        }
+
+        return $summary;
     }
 
     function priceDetailDivElement()
     {
         $priceDetail = retrievePriceDetail();
         $element = "
-            <h5>Price Detail</h5>
+            <div class=\"py-1\">
+                <h5>Price Detail</h5>
+            </div>
             <hr>
             <div class=\"row px-5\">
                 <div class=\"col-md-6 text-start\">
@@ -241,4 +524,15 @@
         return $priceDetail;
     }
 
+    function loadQuantityIncrementDivElelemt()
+    {
+        $html = "";
+        $html .=    "<div class=\"quantityDiv mx-auto\">";
+        $html .=        "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$product->id ."\"><i class=\"fas fa-minus\"></i></button>";
+        $html .=        "<input type=\"text\" class=\"form-control w-25 d-inline text-center quantity\" value=\"1\" id=\"quantity" .$product->id ."\" disabled>";
+        $html .=        "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$product->id ."\"><i class=\"fas fa-plus\"></i></button>";
+        $html .=    "</div>";
+
+        return $html;
+    }
 ?>

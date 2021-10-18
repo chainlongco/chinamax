@@ -11,7 +11,14 @@
         <div class="row px-5">
             <div class="col-md-7">
                 <div class="shopping-cart py-4">
-                    <h5>My Cart</h5>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <h5>My Cart</h5>
+                        </div>
+                        <div class="col-md-10 text-center">
+                            <button style="width: 30%" type="button" class="btn btn-primary addMoreItems">Add More Items</button>
+                        </div>
+                    </div>
                     <hr>
                     <div id="orderlist">
                         <?php
@@ -35,6 +42,12 @@
 
 <script>
     $(document).ready(function(){
+        $(document).on('click', '.addMoreItems', function(e){ 
+            e.preventDefault();
+            const base_path = '{{ url('/') }}\/';
+            window.location.href = base_path + 'order';
+        }); 
+
         //$('.quantityPlus').on('click', function(e){  This will not work after ajax call, so use this line below
         $(document).on('click','.quantityPlus', function(e){
             e.preventDefault();

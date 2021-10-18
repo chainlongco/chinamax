@@ -2,6 +2,9 @@
 
 namespace App\Shared;
 
+use Illuminate\Support\Facades\DB;
+
+
 Class Cart {
     public $serialNumber = 0;
     public $items = array();
@@ -17,10 +20,11 @@ Class Cart {
         }
     }
 
-    public function addNewItem($item, $quantity, $subItem) {
-        if (!$this->canNewItemBeMerged($item, $quantity, $subItem)) {
+    public function addNewItem($item, $quantity, $subItems) {
+        $subItems = $this->processSubItems($subItems);
+        if (!$this->canNewItemBeMerged($item, $quantity, $subItems)) {
             $newItemSerialNumber = $this->serialNumber+1;
-            $storedItem = ['item'=>$item, 'subItem'=>$subItem, 'quantity'=>$quantity];
+            $storedItem = ['item'=>$item, 'subItems'=>$subItems, 'quantity'=>$quantity];
             $this->items[$newItemSerialNumber] = $storedItem;
             $this->totalQuantity += $quantity;
             $this->totalPrice += ((double)($item->price) * $quantity);
@@ -31,11 +35,11 @@ Class Cart {
     public function updateItemQuantity($serialNumber, $quantity) {
         $originalStoredItem = $this->items[$serialNumber];
         $originalItem = $originalStoredItem['item'];
-        $originalSubItem = $originalStoredItem['subItem'];
+        $originalSubItems = $originalStoredItem['subItems'];
         $originalQuantity = $originalStoredItem['quantity'];
         $quantityChanged = $quantity - $originalQuantity;
         $priceChanged = $originalItem->price * $quantityChanged;
-        $newStoredItem = ['item'=>$originalItem, 'subItem'=>$originalSubItem, 'quantity'=>$quantity];
+        $newStoredItem = ['item'=>$originalItem, 'subItems'=>$originalSubItems, 'quantity'=>$quantity];
         $this->items[$serialNumber] = $newStoredItem;
         $this->totalQuantity += $quantityChanged;
         $this->totalPrice += $priceChanged;
@@ -44,11 +48,11 @@ Class Cart {
         }
     }
 
-    protected function canNewItemBeMerged($item, $quantity, $subItem) {
+    protected function canNewItemBeMerged($item, $quantity, $subItems) {
         $keys = Array_keys($this->items);
         foreach ($keys as $key) {
             if ($this->items[$key]['item']->id == $item->id) {
-                if ($this->areSubItemsSame($this->items[$key]['subItem'], $subItem)) {    
+                if ($this->areSubItemsSame($this->items[$key]['subItems'], $subItems)) {    
                     $this->items[$key]['quantity'] += $quantity;
                     $this->totalQuantity += $quantity;
                     $this->totalPrice += $this->items[$key]['item']->price * $quantity;
@@ -59,10 +63,29 @@ Class Cart {
         return false;
     }
 
-    protected function areSubItemsSame($originalSubItem, $newSubItem) {    // ToDo Needs to verify how to check the subItem is the same
-        if ($originalSubItem == $newSubItem) {
+    protected function areSubItemsSame($originalSubItems, $newSubItems) {    // ToDo Needs to verify how to check the subItem is the same
+        if ($originalSubItems == $newSubItems) {
             return true;
         }
         return false;
+    }
+
+    protected function processSubItems($subItems) {
+        $newSubItems = array();
+        $item = null;
+        $keys = Array_keys($subItems);
+
+        foreach ($keys as $key) {
+            $category = $subItems[$key]['category'];
+            $quantity = $subItems[$key]['quantity'];
+            $id = $subItems[$key]['id'];
+            if ($category == 'Side') {
+                $item = DB::table('sides')->where('id', $id)->first();
+            } else if ($category == "Entree") {
+                $item = DB::table('entrees')->where('id', $id)->first();
+            }
+            array_push($newSubItems, ['category'=>$category, 'item'=>$item, 'quantity'=>$quantity]);
+        }
+        return $newSubItems;
     }
 }

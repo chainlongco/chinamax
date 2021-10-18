@@ -18,11 +18,11 @@ class MenuController extends Controller
         //return view('order', compact('menus', 'products'));
 
 
-        $product = DB::table('products')->where('id', 12)->first();
+        $product1 = DB::table('products')->where('id', 13)->first();
         $sides = DB::table('sides')->get();
         $chickenEntrees = DB::table('entrees')->where('category', 'Chicken')->get();
         $beefEntrees = DB::table('entrees')->where('category', 'Beef')->get();
         $shrimpEntrees = DB::table('entrees')->where('category', 'Shrimp')->get();
-        return view('order', compact('menus', 'products', 'sides', 'chickenEntrees', 'beefEntrees', 'shrimpEntrees'));
+        return view('order', compact('menus', 'products', 'sides', 'chickenEntrees', 'beefEntrees', 'shrimpEntrees', 'product1'));
     }
 }

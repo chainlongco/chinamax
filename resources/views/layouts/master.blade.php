@@ -14,6 +14,7 @@
 
     <link rel="stylesheet" href="/css/chinamax.css"/>
     <script src="/js/common.js"></script>
+    <script src="/js/ChoiceSelection.js"></script>
 
     <link href={{ asset('css/jquery.nice-number.css') }} rel="stylesheet">
 	<script src={{ asset('js/jquery.nice-number.js') }}></script>

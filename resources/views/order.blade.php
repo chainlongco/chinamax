@@ -36,100 +36,10 @@
                 </div>    
             </div>
             <div class="col-md-9 text-center ">
-
-                <!--<h1>Choices</h1>-->
                 <div class="orderChoices">
                     
-                    <h1>Choices</h1>
-                    <div class="row">
-                        <div class="text-start">
-                            <br>
-                            <h3>Choose One Side (or Half and Half)</h3>
-                            <br>
-                        </div>
-                        @foreach($sides as $side)
-                            <div class="col-md-4 text-center">
-                                <div class="choiceItemSide" id="choiceItemSide{{ $side->id }}">
-                                    <img src="\images\{{ $side->gallery }}" style="width:60%">
-                                    <br>
-                                    <span class="choiceItemSideName" id="choiceItemSideName{{ $side->id }}">{{ $side->name }}</span>
-                                </div>
-                                <div class="selectedDiv">
-                                    <h3 class="sideSelected" id="sideSelected{{ $side->id }}"></h3>
-                                </div>
-                            </div>
-                        @endforeach
-
-                        <div class="text-start">
-                            <br>
-                            <br>
-                            <h3>Choose One Entree</h3>
-                            <h5>Chicken</h5>
-                        </div>
-                        @foreach($chickenEntrees as $chickenEntree)
-                            <div class="col-md-4 text-center">
-                                <div class="choiceItemEntree" id="choiceItemEntree{{ $chickenEntree->id }}">
-                                    <img src="\images\{{ $chickenEntree->gallery }}" style="width:60%">
-                                    <br>
-                                    <span class="choiceItemEntreeName" id="choiceItemEntreeName{{ $chickenEntree->id }}">{{ $chickenEntree->name }}</span>  
-                                </div>
-                                <div class="selectedDiv">
-                                    <h3 class="entreeSelected" id="entreeSelected{{ $chickenEntree->id }}"></h3>
-                                </div>
-                                <br>
-                            </div>
-                        @endforeach
-
-                        <div class="text-start">
-                            <br>
-                            <h5>Beef</h5>
-                        </div>
-                        @foreach($beefEntrees as $beefEntree)
-                            <div class="col-md-4 text-center">
-                                <div class="choiceItemEntree" id="choiceItemEntree{{ $beefEntree->id }}">
-                                    <img src="\images\{{ $beefEntree->gallery }}" style="width:60%">
-                                    <br>
-                                    <span class="choiceItemEntreeName" id="choiceItemEntreeName{{ $beefEntree->id }}">{{ $beefEntree->name }}</span>  
-                                </div>
-                                <div class="selectedDiv">
-                                    <h3 class="entreeSelected" id="entreeSelected{{ $beefEntree->id }}"></h3>
-                                </div>
-                                <br>
-                            </div>
-                        @endforeach
-
-                        <div class="text-start">
-                            <br>
-                            <h5>Shrimp</h5>
-                        </div>
-                        @foreach($shrimpEntrees as $shrimpEntree)
-                            <div class="col-md-4 text-center">
-                                <div class="choiceItemEntree" id="choiceItemEntree{{ $shrimpEntree->id }}">
-                                    <img src="\images\{{ $shrimpEntree->gallery }}" style="width:60%">
-                                    <br>
-                                    <span class="choiceItemEntreeName" id="choiceItemEntreeName{{ $shrimpEntree->id }}">{{ $shrimpEntree->name }}</span>  
-                                </div>
-                                <div class="selectedDiv">
-                                    <h3 class="entreeSelected" id="entreeSelected{{ $shrimpEntree->id }}"></h3>
-                                </div>
-                                <br>
-                            </div>
-                        @endforeach
-
-                        <div class="col-md-4 my-auto">
-                            <div class="quantityDiv mx-auto">
-                                <button type="button" class="btn bg-light border rounded-circle quantityMinus" id="quantityMinus{{ $product->id }}"><i class="fas fa-minus"></i></button>
-                                <input type="text" class="form-control w-25 d-inline text-center" value="1" id="quantity{{ $product->id }}" disabled>
-                                <button type="button" class="btn bg-light border rounded-circle quantityPlus" id="quantityPlus{{ $product->id }}"><i class="fas fa-plus"></i></button>
-                            </div>
-                            <div>
-                                <br>
-                                <button type="button" class="btn bg-light border addToCart" disabled id="addToCart{{ $product->id }}">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
                     
-                    
+
                 </div>
             </div>
         </div>
@@ -187,13 +97,6 @@
                     $(quantityElementId).val(quantity);
                     $(addToCartElementId).prop('disabled', true);
                     $(addToCartElementId).css("color","gray");
-                    /*if (confirm('Are you sure to remove this item?')) {   
-                        $(quantityElementId).val(quantity);
-                        $(addToCartElementId).prop('disabled', true);
-                        $(addToCartElementId).css("color","gray");
-                    } else {
-                        $(quantityElementId).val(Number(quantity)+1);
-                    }*/
                 } else if (quantity < 0) {
                     $(quantityElementId).val(0);
                 } else {
@@ -202,16 +105,21 @@
                 }
             });
 
+            // Need to go into the input box to change the value. Otherwise, it will not trigger this change event
+            $(document).on('click', ".quantity", function(){
+                alert("go");
+            });
+
             $(document).on('click', '.addToCart', function(e){
                 var productId = retrieveId("addToCart", this.id);
                 var quantityElementId = "#quantity" + productId;
                 var quantity = $(quantityElementId).val();
-                //alert("button clicked: " + this.id + " Quantity: " + quantity);
                 var addToCartElementId = "#addToCart" + productId;
                 $(addToCartElementId).prop('disabled', true);
                 $(addToCartElementId).css("color","orange");
-                $(quantityElementId).val(0);
-                addNewItemToCart(productId, quantity, new Array());
+                //$(quantityElementId).val(0);
+                var subItems = retrieveSubItems();
+                addNewItemToCart(productId, quantity, subItems);
             });    
             <!-- Appetizers End -->
 
@@ -267,6 +175,8 @@
 
 
             //$("#eachMenu1").trigger('click');
+            //$("#eachMenu12p").trigger('click');
+            $("#eachMenu15p").trigger('click');
         });
 
 
@@ -284,13 +194,26 @@
         <!-- Menu End -->
 
         <!-- Appetizer Start -->
-        function addNewItemToCart(productId, quantity, subItem) {
+        function addNewItemToCart(productId, quantity, subItems) {
             $.ajax({
                 type:'GET',
                 url:'/order-added',
-                data:{'productId':productId, 'quantity':quantity, 'subItem':subItem},
+                data:{'productId':productId, 'quantity':quantity, 'subItems':subItems},
+                datatype: 'JSON',
+                contentType: "application/json; charset=utf-8",
                 success: function(response) {
-                    $('#cartCount').html(response);
+                    if (response.status == 0){
+                        alert(response.message);
+                        var addToCartElementId = "#addToCart" + productId;
+                        $(addToCartElementId).prop('disabled', false);
+                        $(addToCartElementId).css("color","black");
+                        var quantityElementId = "#quantity" + productId;
+                        $(quantityElementId).val(1);
+                    } else {
+                        $('#cartCount').html(response);
+                        //const base_path = '{{ url('/') }}\/';
+                        //window.location.href = base_path + 'cart';
+                    }    
                 }
             });
         }
@@ -298,46 +221,58 @@
 
         <!-- Side Start -->
         function checkSelectedSideItem(sideId) {
-            //$(".choiceItemSide").css("border","3px solid lightgray");
-            //$("#choiceItemSide" + sideId).css("border","5px solid red");
-            //$("#sideSelected" + sideId).text("One Selected");
-            if ($("#sideSelected" + sideId).text() == "One Selected") {
-                $("#sideSelected" + sideId).text("");
-                $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
-            } else if ($("#sideSelected" + sideId).text() == "") {
-                if (findOneSelectedSideAndChangeToHalf()) {
-                    $("#sideSelected" + sideId).text("Half Selected");
-                    $("#choiceItemSide" + sideId).css("border","5px solid red");
-                    disableRestOfSideChoices();
-                } else {
-                    $("#sideSelected" + sideId).text("One Selected");
-                    $("#choiceItemSide" + sideId).css("border","5px solid red");
-                }
-            } else if ($("#sideSelected" + sideId).text() == "Half Selected") {
-                $("#sideSelected" + sideId).text("");
-                $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
-                changeFromHalfToOneSelectedSide();
-                enableAllSideChoices();
+            sideMaxQuantity = $("#sideMaxQuantity").val();
+            if (sideMaxQuantity == 1) {
+                choiceSelection = new ChoiceSelection("side", "sideSelected", "choiceItemSide", sideId, 0, sideMaxQuantity);
+                choiceSelection.showSelected();
+                /*if ($("#sideSelected" + sideId).text() == "One Selected") {
+                    $("#sideSelected" + sideId).text("");
+                    $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
+                } else if ($("#sideSelected" + sideId).text() == "") {
+                    if (findOneSelectedSideAndChangeToHalf()) {
+                        $("#sideSelected" + sideId).text("Half Selected");
+                        $("#choiceItemSide" + sideId).css("border","5px solid red");
+                        disableRestOfSideChoices();
+                    } else {
+                        $("#sideSelected" + sideId).text("One Selected");
+                        $("#choiceItemSide" + sideId).css("border","5px solid red");
+                    }
+                } else if ($("#sideSelected" + sideId).text() == "Half Selected") {
+                    $("#sideSelected" + sideId).text("");
+                    $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
+                    changeFromHalfToOneSelectedSide();
+                    enableAllSideChoices();
+                }*/
+            } else {
+                choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, 0, sideMaxQuantity);
+                choiceSelection.showSelected();
+                // So far, only 3 items are the max
+                //$("#sideQuantityIncrementDiv" + sideId).css("display", "block");
+                // if none of them is selected then
+                //$("#sideQuantity" + sideId).val(sideMaxQuantity);
+
+                // if one of them already selected then
+                //$("#sideQuantity" + sideId).val("1");
+                // change selected one to "1"
+
+                //if two of the 
             }
         }
 
-        function findOneSelectedSideAndChangeToHalf() {
+        /*function findOneSelectedSideAndChangeToHalf() {
             var isOneSelected = false;
             var sideElements = $(".choiceItemSide").toArray();
             sideElements.forEach(function(sideElement) {
                 var sideId = retrieveId("choiceItemSide", sideElement.id);
                 if ($("#sideSelected" + sideId).text() == "One Selected") {
                     $("#sideSelected" + sideId).text("Half Selected");
-                    //alert("inside");
                     isOneSelected = true;
                 }
-                //alert("inside but not one");
             });
-            //alert("outside");
             return isOneSelected;
-        }
+        }*/
 
-        function changeFromHalfToOneSelectedSide() {
+        /*function changeFromHalfToOneSelectedSide() {
             var sideElements = $(".choiceItemSide").toArray()
             sideElements.forEach(function(sideElement) {
                 var sideId = retrieveId("choiceItemSide", sideElement.id);
@@ -345,9 +280,9 @@
                     $("#sideSelected" + sideId).text("One Selected");
                 }
             });
-        }
+        }*/
 
-        function disableRestOfSideChoices() {
+        /*function disableRestOfSideChoices() {
             var sideElements = $(".choiceItemSide").toArray()
             sideElements.forEach(function(sideElement) {
                 var sideId = retrieveId("choiceItemSide", sideElement.id);
@@ -356,33 +291,43 @@
                     $("#choiceItemSide" + sideId).css('background-color', 'lightgray');
                 }
             });
-        }
+        }*/
 
-        function enableAllSideChoices() {
+        /*function enableAllSideChoices() {
             var sideElements = $(".choiceItemSide").toArray()
             sideElements.forEach(function(sideElement) {
                 var sideId = retrieveId("choiceItemSide", sideElement.id);
                 $("#choiceItemSide" + sideId).prop('disabled', false);
                 $("#choiceItemSide" + sideId).css('background-color', 'white');
             });
-        }
+        }*/
         <!-- Side End -->
 
 
         <!-- Entree Start -->
         function checkSelectedEntreeItem(entreeId) {
-            //$(".choiceItemEntree").css("border","3px solid lightgray");
-            //$("#choiceItemEntree" + entreeId).css("border","5px solid red");
-            //$("#entreeSelected" + entreeId).text("One Selected");
-            if ($("#entreeSelected" + entreeId).text() == "One Selected") {
-                $("#entreeSelected" + entreeId).text("");
-                $("#choiceItemEntree" + entreeId).css("border","3px solid lightgray");
-                enableAllEntreeChoices();
-            } else if ($("#entreeSelected" + entreeId).text() == "") {
-                $("#entreeSelected" + entreeId).text("One Selected");
-                $("#choiceItemEntree" + entreeId).css("border","5px solid red");
-                disableRestOfEntreeChoices();
+            entreeMaxQuantity = $("#entreeMaxQuantity").val();
+            if (entreeMaxQuantity == 1) {
+                choiceSelection = new ChoiceSelection("entree", "entreeSelected", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
+                choiceSelection.showSelected();
+            } else {
+                choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
+                choiceSelection.showSelected();
             }
+            /*if (entreeQuantityRequired == 1) {
+                if ($("#entreeSelected" + entreeId).text() == "One Selected") {
+                    $("#entreeSelected" + entreeId).text("");
+                    $("#choiceItemEntree" + entreeId).css("border","3px solid lightgray");
+                    enableAllEntreeChoices();
+                } else if ($("#entreeSelected" + entreeId).text() == "") {
+                    $("#entreeSelected" + entreeId).text("One Selected");
+                    $("#choiceItemEntree" + entreeId).css("border","5px solid red");
+                    disableRestOfEntreeChoices();
+                }
+            } else {
+
+            }*/
+            
         }
 
         function enableAllEntreeChoices() {
@@ -405,6 +350,36 @@
             });
         }
         <!-- Entree End -->
+
+        <!-- SubItem Start -->
+        function retrieveSubItems() {
+            var subItems = [];
+
+            // For side
+            var sideElements = $(".choiceItemSide").toArray()
+            sideElements.forEach(function(sideElement) {
+                var sideId = retrieveId("choiceItemSide", sideElement.id);
+                if ($("#sideSelected" + sideId).text() == "Half Selected") {
+                    sideArray = {'category':'Side', 'id':sideId, 'quantity':0.5};
+                    subItems.push(sideArray);
+                } else if ($("#sideSelected" + sideId).text() == "One Selected") {
+                    sideArray = {'category':'Side', 'id':sideId, 'quantity':1};
+                    subItems.push(sideArray);
+                }
+            });
+
+            // For entree
+            var entreeElements = $(".choiceItemEntree").toArray()
+            entreeElements.forEach(function(entreeElement) {
+                var entreeId = retrieveId("choiceItemEntree", entreeElement.id);
+                if ($("#entreeSelected" + entreeId).text() == "One Selected") {
+                    entreeArray = {'category':'Entree', 'id':entreeId, 'quantity':1};
+                    subItems.push(entreeArray);
+                }
+            });
+            return JSON.stringify(subItems);
+        }    
+        <!-- SubItem End -->
 
     </script>
 @endsection

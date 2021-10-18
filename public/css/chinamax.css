@@ -43,11 +43,18 @@
 .selectedDiv {
     width: 100%;
 }
-.sideSelected, .entreeSelected{
+.sideSelected, .entreeSelected {
     width:200px;
     margin: auto;
     margin-top:-15px;
     background: white;
     font-size: 20px;
     color: red;
+}
+
+.sideQuantityIncrementDiv, .entreeQuantityIncrementDiv {
+    width:200px;
+    margin: auto;
+    margin-top:2px;
+    background: white;
 }

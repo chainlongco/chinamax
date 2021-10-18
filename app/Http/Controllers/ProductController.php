@@ -31,13 +31,13 @@ class ProductController extends Controller
         } else if ($menuName === "Individual Side/Entree"){
             echo loadIndividualSideEntreeChoices($menuName);
         } else if ($menuName === "Small Platter") {
-            echo loadSmallPlatterChoices($product);
+            echo loadComboChoices($product);
         } else if ($menuName === "Regular Platter") {
-            echo loadRegularPlatterChoices($menuName);
+            echo loadComboChoices($product);
         } else if ($menuName === "Large Platter") {
-            echo loadLargePlatterChoices($menuName);
+            echo loadComboChoices($product);
         } else if ($menuName === "Party Tray") {
-            echo loadPartyTrayChoices($menuName);
+            echo loadComboChoices($product);
         } else if ($menuName === "Kid's Meal") {
             echo loadKidsMealChoices($menuName);
         }
@@ -47,7 +47,14 @@ class ProductController extends Controller
     {
         $productId = $request->productId;
         $quantity = $request->quantity;
-        $subItem = $request->subItem;
+        $subItems = json_decode($request->subItems, true);
+
+        $combo = DB::table('combos')->where('product_id', $productId)->first();
+        $pass = $this->validateSideAndEntree($productId, $subItems);
+        if(!$pass) {
+            return response()->json(['status'=>0, 'message'=>"Please select side and entree before you add order to cart."]);
+        }
+        
         $product = DB::table('products')->where('id', $productId)->first();
         $oldCart = null;
         $count = 0;
@@ -55,11 +62,52 @@ class ProductController extends Controller
             $oldCart = Session::get('cart');      
         }
         $newCart = new Cart($oldCart);
-        $newCart->addNewItem($product, $quantity, $subItem);
+        $newCart->addNewItem($product, $quantity, $subItems);
         Session::put('cart', $newCart);
         $count = $newCart->totalQuantity;
         echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
     }
+
+    protected function validateSideAndEntree($productId, $subItems)
+    {
+        $pass = true;
+        $combo = DB::table('combos')->where('product_id', $productId)->first();
+        if(!is_null($combo)) {
+            $side = $combo->side;
+            $entree = $combo->entree;
+            $quantityOfSubItems = $this->retrieveQuantityOfSubItems($subItems);
+            if (($quantityOfSubItems['side'] == $side) && ($quantityOfSubItems['entree'] == $entree)) {
+                $pass = true;
+            } else {
+                $pass = false;
+            }
+        }
+        return $pass;
+    }
+
+    protected function retrieveQuantityOfSubItems($subItems)
+    {
+        $quantityOfSubItems = [];
+        $side = 0;
+        $entree = 0;
+
+        $keys = array_keys($subItems);
+        foreach ($keys as $key) {         
+            $category = $subItems[$key]['category'];
+            $quantity = $subItems[$key]['quantity'];
+            
+            if ($category == "Side") {
+                $side += $quantity;
+            }
+            if ($category == "Entree") {
+                $entree += $quantity;
+            }
+        }
+        $quantityOfSubItems['side'] = $side;
+        $quantityOfSubItems['entree'] = $entree;
+        return $quantityOfSubItems;
+    }
+    
 
     public function cartQuantityUpdated(Request $request)
     {
