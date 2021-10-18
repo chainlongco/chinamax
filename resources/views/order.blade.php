@@ -225,82 +225,12 @@
             if (sideMaxQuantity == 1) {
                 choiceSelection = new ChoiceSelection("side", "sideSelected", "choiceItemSide", sideId, 0, sideMaxQuantity);
                 choiceSelection.showSelected();
-                /*if ($("#sideSelected" + sideId).text() == "One Selected") {
-                    $("#sideSelected" + sideId).text("");
-                    $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
-                } else if ($("#sideSelected" + sideId).text() == "") {
-                    if (findOneSelectedSideAndChangeToHalf()) {
-                        $("#sideSelected" + sideId).text("Half Selected");
-                        $("#choiceItemSide" + sideId).css("border","5px solid red");
-                        disableRestOfSideChoices();
-                    } else {
-                        $("#sideSelected" + sideId).text("One Selected");
-                        $("#choiceItemSide" + sideId).css("border","5px solid red");
-                    }
-                } else if ($("#sideSelected" + sideId).text() == "Half Selected") {
-                    $("#sideSelected" + sideId).text("");
-                    $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
-                    changeFromHalfToOneSelectedSide();
-                    enableAllSideChoices();
-                }*/
             } else {
                 choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, 0, sideMaxQuantity);
                 choiceSelection.showSelected();
-                // So far, only 3 items are the max
-                //$("#sideQuantityIncrementDiv" + sideId).css("display", "block");
-                // if none of them is selected then
-                //$("#sideQuantity" + sideId).val(sideMaxQuantity);
-
-                // if one of them already selected then
-                //$("#sideQuantity" + sideId).val("1");
-                // change selected one to "1"
-
-                //if two of the 
             }
         }
 
-        /*function findOneSelectedSideAndChangeToHalf() {
-            var isOneSelected = false;
-            var sideElements = $(".choiceItemSide").toArray();
-            sideElements.forEach(function(sideElement) {
-                var sideId = retrieveId("choiceItemSide", sideElement.id);
-                if ($("#sideSelected" + sideId).text() == "One Selected") {
-                    $("#sideSelected" + sideId).text("Half Selected");
-                    isOneSelected = true;
-                }
-            });
-            return isOneSelected;
-        }*/
-
-        /*function changeFromHalfToOneSelectedSide() {
-            var sideElements = $(".choiceItemSide").toArray()
-            sideElements.forEach(function(sideElement) {
-                var sideId = retrieveId("choiceItemSide", sideElement.id);
-                if ($("#sideSelected" + sideId).text() == "Half Selected") {
-                    $("#sideSelected" + sideId).text("One Selected");
-                }
-            });
-        }*/
-
-        /*function disableRestOfSideChoices() {
-            var sideElements = $(".choiceItemSide").toArray()
-            sideElements.forEach(function(sideElement) {
-                var sideId = retrieveId("choiceItemSide", sideElement.id);
-                if ($("#sideSelected" + sideId).text() != "Half Selected") {
-                    $("#choiceItemSide" + sideId).prop('disabled', true);
-                    $("#choiceItemSide" + sideId).css('background-color', 'lightgray');
-                }
-            });
-        }*/
-
-        /*function enableAllSideChoices() {
-            var sideElements = $(".choiceItemSide").toArray()
-            sideElements.forEach(function(sideElement) {
-                var sideId = retrieveId("choiceItemSide", sideElement.id);
-                $("#choiceItemSide" + sideId).prop('disabled', false);
-                $("#choiceItemSide" + sideId).css('background-color', 'white');
-            });
-        }*/
         <!-- Side End -->
 
 
@@ -314,20 +244,6 @@
                 choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
                 choiceSelection.showSelected();
             }
-            /*if (entreeQuantityRequired == 1) {
-                if ($("#entreeSelected" + entreeId).text() == "One Selected") {
-                    $("#entreeSelected" + entreeId).text("");
-                    $("#choiceItemEntree" + entreeId).css("border","3px solid lightgray");
-                    enableAllEntreeChoices();
-                } else if ($("#entreeSelected" + entreeId).text() == "") {
-                    $("#entreeSelected" + entreeId).text("One Selected");
-                    $("#choiceItemEntree" + entreeId).css("border","5px solid red");
-                    disableRestOfEntreeChoices();
-                }
-            } else {
-
-            }*/
-            
         }
 
         function enableAllEntreeChoices() {
@@ -359,11 +275,16 @@
             var sideElements = $(".choiceItemSide").toArray()
             sideElements.forEach(function(sideElement) {
                 var sideId = retrieveId("choiceItemSide", sideElement.id);
+                var quantityValue = Number($("#sideQuantity" + sideId).val());
                 if ($("#sideSelected" + sideId).text() == "Half Selected") {
                     sideArray = {'category':'Side', 'id':sideId, 'quantity':0.5};
                     subItems.push(sideArray);
                 } else if ($("#sideSelected" + sideId).text() == "One Selected") {
                     sideArray = {'category':'Side', 'id':sideId, 'quantity':1};
+                    subItems.push(sideArray);
+                } else if (quantityValue != 0) {
+                    alert("SideId: " + sideId + " Quantity: " + quantityValue);
+                    sideArray = {'category':'Side', 'id':sideId, 'quantity':quantityValue};
                     subItems.push(sideArray);
                 }
             });
@@ -372,8 +293,13 @@
             var entreeElements = $(".choiceItemEntree").toArray()
             entreeElements.forEach(function(entreeElement) {
                 var entreeId = retrieveId("choiceItemEntree", entreeElement.id);
+                var quantityValue = Number($("#entreeQuantity" + entreeId).val());
                 if ($("#entreeSelected" + entreeId).text() == "One Selected") {
                     entreeArray = {'category':'Entree', 'id':entreeId, 'quantity':1};
+                    subItems.push(entreeArray);
+                } else if (quantityValue != 0) {
+                    alert("EntreeId: " + entreeId + " Quantity: " + quantityValue)
+                    entreeArray = {'category':'Entree', 'id':entreeId, 'quantity':quantityValue};
                     subItems.push(entreeArray);
                 }
             });

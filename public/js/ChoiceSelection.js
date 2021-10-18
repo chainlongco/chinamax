@@ -53,7 +53,7 @@ class ChoiceSelection {
             $("#" + this.elementIdPrefix + this.id).text("");
             $("#" + this.divElementIdPrefix + this.id).css("border","3px solid lightgray");
             this.changeFromHalfToOneSelectedSide();
-            this.enableAllSideChoices();
+            this.enableAllChoices();
         }
 
         /*if ($("#sideSelected" + sideId).text() == "One Selected") {
@@ -72,7 +72,7 @@ class ChoiceSelection {
             $("#sideSelected" + sideId).text("");
             $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
             changeFromHalfToOneSelectedSide();
-            enableAllSideChoices();
+            enableAllChoices();
         }*/
     }
 
@@ -118,11 +118,6 @@ class ChoiceSelection {
             return isOneSelected;
         }*/
 
-    enableAllSideChoices() {
-        $('.' + this.divElementIdPrefix).prop('disabled', false);
-        $('.' + this.divElementIdPrefix).css('background-color', 'white');
-    }
-
     changeFromHalfToOneSelectedSide() {
         var sideElements = $("." + this.divElementIdPrefix).toArray();
         var divElementName = this.divElementIdPrefix;
@@ -157,7 +152,12 @@ class ChoiceSelection {
     }
     /* Max One ******************** End */
 
-
+    /* Shared ********* Start */
+    enableAllChoices() {
+        $('.' + this.divElementIdPrefix).prop('disabled', false);
+        $('.' + this.divElementIdPrefix).css('background-color', 'white');
+    }
+    /* Shared ********* End */
 
     /* Max Three ******************** Start */
     // if maxQuantity > 2, then
@@ -165,28 +165,32 @@ class ChoiceSelection {
         // divElementIdPrefix is choiceItemSide or choiceItemEntree
     handleThreeSelected() {
         if ($("#" + this.elementIdPrefix + this.id).val() == 0) {
-            // None of side is selected
+            // None of side/entree is selected
             if (this.isAllZeroQuantity()) {
                 $("#" + this.incrementDiv + this.id).css("display", "block");
-                $("#" + this.elementIdPrefix + this.id).val(sideMaxQuantity);
+                $("#" + this.elementIdPrefix + this.id).val(this.maxQuantity);
                 $("#" + this.divElementIdPrefix + this.id).css("border", "5px solid red");
-            } else if (this.doesOneSideHaveThree()) {  // One of side is selected == 3
+            } else if (this.doesOneChoiceHaveThree()) {  // One of side/entree is selected == 3
                 $("#" + this.incrementDiv + this.id).css("display", "block");
                 $("#" + this.elementIdPrefix + this.id).val(1);
                 $("#" + this.divElementIdPrefix + this.id).css("border", "5px solid red");
-            } else if (this.doesOneSideHaveTwoAndOneSideHaveOne()) {    // two of side are selected, one is 2, one is 1
+            } else if (this.doesOneChoiceHaveTwoAndOneChoiceHaveOne()) {    // two of side/entree are selected, one is 2, one is 1
                 $("#" + this.incrementDiv + this.id).css("display", "block");
                 $("#" + this.elementIdPrefix + this.id).val(1);
                 $("#" + this.divElementIdPrefix + this.id).css("border", "5px solid red");
+                this.disableRestOfChoices();
             }
-        } else if ($("#sideQuantity" + this.id).val() != 0) {
-            var sideQuantity = $("#" + this.elementIdPrefix + this.id).val();
-            if (sideQuantity != 3) {
-                this.addSideQuantityToOther(sideQuantity, this.id);
-            } 
+        } else if (Number($("#" + this.elementIdPrefix + this.id).val()) != 0) {
+            var choiceQuantity = Number($("#" + this.elementIdPrefix + this.id).val());
             $("#" + this.incrementDiv + this.id).css("display", "none");    
             $("#" + this.elementIdPrefix + this.id).val(0);   
             $("#" + this.divElementIdPrefix + this.id).css("border", "3px solid lightgray");
+            if (choiceQuantity != 3) {
+                this.addChoiceQuantityToOther(choiceQuantity, this.id);
+            }
+            if (choiceQuantity == 1) {
+                this.enableAllChoices();    // Only for 3 entrees all of them have 1 quantity
+            }
 
         }
 
@@ -194,13 +198,13 @@ class ChoiceSelection {
             // None of side is selected
             if (this.isAllZeroQuantity()) {
                 $("#sideQuantityIncrementDiv" + this.id).css("display", "block");
-                $("#sideQuantity" + this.id).val(sideMaxQuantity);
+                $("#sideQuantity" + this.id).val(maxQuantity);
                 $("#choiceItemSide" + this.id).css("border", "5px solid red");
-            } else if (this.doesOneSideHaveThree()) {  // One of side is selected == 3
+            } else if (this.doesOneChoiceHaveThree()) {  // One of side is selected == 3
                 $("#sideQuantityIncrementDiv" + this.id).css("display", "block");
                 $("#sideQuantity" + this.id).val(1);
                 $("#choiceItemSide" + this.id).css("border", "5px solid red");
-            } else if (this.doesOneSideHaveTwoAndOneSideHaveOne()) {    // two of side are selected, one is 2, one is 1
+            } else if (this.doesOneChoiceHaveTwoAndOneChoiceHaveOne()) {    // two of side/entree are selected, one is 2, one is 1
                 $("#sideQuantityIncrementDiv" + this.id).css("display", "block");
                 $("#sideQuantity" + this.id).val(1);
                 $("#choiceItemSide" + this.id).css("border", "5px solid red");
@@ -229,7 +233,7 @@ class ChoiceSelection {
         return isAllZero;
     }
 
-    doesOneSideHaveThree() {
+    doesOneChoiceHaveThree() {
         var exists = false;
         var elementName = this.elementIdPrefix; // It does not work this.elementIdPrefix in the forEach loop
         var sideElements = $("." + this.elementIdPrefix).toArray();
@@ -243,7 +247,7 @@ class ChoiceSelection {
         return exists;
     }
 
-    doesOneSideHaveTwoAndOneSideHaveOne() {
+    doesOneChoiceHaveTwoAndOneChoiceHaveOne() {
         var oneExists = false;
         var twoExists = false;
         var sideIdOfTwo = 0;
@@ -265,16 +269,29 @@ class ChoiceSelection {
         return oneExists && twoExists;
     }
 
-    addSideQuantityToOther(sideQuantity, currentId) {
-        var unselectedQuantity = sideQuantity;
+    addChoiceQuantityToOther(choiceQuantity, currentId) {
+        var unselectedQuantity = choiceQuantity;
         var elementName = this.elementIdPrefix; // It does not work this.elementIdPrefix in the forEach loop
-        var sideElements = $("." + this.elementIdPrefix).toArray();
-        sideElements.forEach(function(sideElement) {
-            var sideId = retrieveId(elementName, sideElement.id);
-            if (($("#" + elementName + sideId).val() != 0) && (sideId != currentId)) {   // (sideId != currentId) is not adding the quantity to the side which will be removed
-                var originalQuantity = $("#" + elementName + sideId).val();
-                $("#" + elementName + sideId).val(Number(originalQuantity) + Number(unselectedQuantity));
+        var choiceElements = $("." + this.elementIdPrefix).toArray();
+        choiceElements.forEach(function(choiceElement) {
+            var choiceId = retrieveId(elementName, choiceElement.id);
+            if (($("#" + elementName + choiceId).val() != 0) && (choiceId != currentId)) {   // (choiceId != currentId) is not adding the quantity to the side which will be removed
+                var originalQuantity = $("#" + elementName + choiceId).val();
+                $("#" + elementName + choiceId).val(Number(originalQuantity) + Number(unselectedQuantity));
                 unselectedQuantity = 0;   // only add one time. I use this method is because we cannot out of loop using break.
+            }
+        });
+    }
+
+    disableRestOfChoices() {
+        var choiceElements = $("." + this.divElementIdPrefix).toArray()
+        var divElementName = this.divElementIdPrefix;
+        var elementName = this.elementIdPrefix;
+        choiceElements.forEach(function(choiceElement) {
+            var choiceId = retrieveId(divElementName, choiceElement.id);
+            if (Number($("#" + elementName + choiceId).val()) == 0) {
+                $("#" + divElementName + choiceId).prop('disabled', true);
+                $("#" + divElementName + choiceId).css('background-color', 'lightgray');
             }
         });
     }
