@@ -23,17 +23,35 @@ class ChoiceSelection {
 
     showSelected() {
         //var count = $('.' + this.elementIdPrefix).length;
-        if (this.maxQuantity == 1) {
-            if (this.category == 'side') {
-                this.handleMaxOneSideSelected();
-            } else if (this.category == 'entree') {
-                this.handleMaxOneEntreeSelected();
+        if (this.quantity == 0) {   // This handles when clicks side or entree elements
+            if (this.maxQuantity == 1) {
+                if (this.category == 'side') {
+                    this.handleMaxOneSideSelected();
+                } else if (this.category == 'entree') {
+                    this.handleMaxOneEntreeSelected();
+                }
+            } else if (this.maxQuantity == 2) { // Only for entree
+                this.handleTwoSelected();
+            } else if (this.maxQuantity == 3) { // For both side and entree
+                this.handleThreeSelected();
             }
-        } else if (this.maxQuantity == 2) { // Only for entree
-            this.handleTwoSelected();
-        } else if (this.maxQuantity == 3) { // For both side and entree
-            this.handleThreeSelected();
+        } else if (this.quantity == 1) {
+            if (!this.reachMaxQuantity()) {
+                var originalValue = Number($("#" + this.elementIdPrefix + this.id).val());
+                $("#" + this.elementIdPrefix + this.id).val(originalValue + 1);
+            }
+            
+        } else if (this.quantity == -1) {
+            var originalValue = Number($("#" + this.elementIdPrefix + this.id).val());
+            $("#" + this.elementIdPrefix + this.id).val(originalValue -1);
+            if (originalValue == 1) {
+                $("#" + this.divElementIdPrefix + this.id).css("border","3px solid lightgray");
+                $("#" + this.incrementDiv + this.id).css("display", "none");
+            }
+            this.addChoiceQuantityToOther(1, this.id);
+            this.enableAllChoices();
         }
+        
         
     }
 
@@ -41,6 +59,21 @@ class ChoiceSelection {
     enableAllChoices() {
         $('.' + this.divElementIdPrefix).prop('disabled', false);
         $('.' + this.divElementIdPrefix).css('background-color', 'white');
+    }
+
+    reachMaxQuantity() {
+        var totalQuantity = 0;
+        var elementName = this.elementIdPrefix;
+        var choiceElements = $("." + this.elementIdPrefix).toArray();
+        choiceElements.forEach(function(choiceElement) {
+            var choiceId = retrieveId(elementName, choiceElement.id);
+            totalQuantity += Number($("#" + elementName + choiceId).val());     
+        });
+        if (totalQuantity == this.maxQuantity) {
+            return true;
+        } else {
+            return false;
+        }
     }
     /* Shared ********* End */
 
@@ -179,6 +212,13 @@ class ChoiceSelection {
                 $("#" + this.elementIdPrefix + this.id).val(1);
                 $("#" + this.divElementIdPrefix + this.id).css("border", "5px solid red");
                 this.disableRestOfChoices();
+            } else if (!this.reachMaxQuantity()) {  // This scenario is if maxQuantity is 2, there is 2 quantity entree selected. Clicking Minus button to 1 quantity. Then, it become 1 quantity available to select.
+                $("#" + this.incrementDiv + this.id).css("display", "block");
+                $("#" + this.elementIdPrefix + this.id).val(1);
+                $("#" + this.divElementIdPrefix + this.id).css("border", "5px solid red");
+                if (this.reachMaxQuantity) {
+                    this.disableRestOfChoices();
+                }
             }
         } else if (Number($("#" + this.elementIdPrefix + this.id).val()) != 0) {
             var choiceQuantity = Number($("#" + this.elementIdPrefix + this.id).val());
@@ -228,6 +268,10 @@ class ChoiceSelection {
                 $("#" + this.elementIdPrefix + this.id).val(1);
                 $("#" + this.divElementIdPrefix + this.id).css("border", "5px solid red");
                 this.disableRestOfChoices();
+            } else {    // One has 2, or One has 1 -- this scenario will come from clicking Minus button
+                $("#" + this.incrementDiv + this.id).css("display", "block");
+                $("#" + this.elementIdPrefix + this.id).val(1);
+                $("#" + this.divElementIdPrefix + this.id).css("border", "5px solid red");
             }
         } else if (Number($("#" + this.elementIdPrefix + this.id).val()) != 0) {
             var choiceQuantity = Number($("#" + this.elementIdPrefix + this.id).val());

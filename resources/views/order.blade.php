@@ -151,6 +151,21 @@
                 var sideId = retrieveId("choiceItemSide", this.id);
                 checkSelectedSideItem(sideId);
             });
+            $(document).on('click','.sideQuantityPlus', function(e){
+                e.preventDefault();
+                var sideId = retrieveId("sideQuantityPlus", this.id);
+                sideMaxQuantity = $("#sideMaxQuantity").val();
+                choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, +1, sideMaxQuantity);
+                choiceSelection.showSelected();
+            });
+
+            $(document).on('click', '.sideQuantityMinus', function(e){       
+                e.preventDefault();
+                var sideId = retrieveId("sideQuantityMinus", this.id);
+                sideMaxQuantity = $("#sideMaxQuantity").val();
+                choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, -1, sideMaxQuantity);
+                choiceSelection.showSelected();
+            });
             <!-- Side End -->
 
             <!-- Entree Start -->
@@ -170,6 +185,21 @@
                 e.preventDefault();
                 var entreeId = retrieveId("choiceItemEntree", this.id);
                 checkSelectedEntreeItem(entreeId);
+            });
+            $(document).on('click','.entreeQuantityPlus', function(e){
+                e.preventDefault();
+                var entreeId = retrieveId("entreeQuantityPlus", this.id);
+                entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, +1, entreeMaxQuantity);
+                choiceSelection.showSelected();
+            });
+
+            $(document).on('click', '.entreeQuantityMinus', function(e){       
+                e.preventDefault();
+                var entreeId = retrieveId("entreeQuantityMinus", this.id);
+                entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, -1, entreeMaxQuantity);
+                choiceSelection.showSelected();
             });
             <!-- Entree End -->
 
@@ -231,7 +261,6 @@
                 choiceSelection.showSelected();
             }
         }
-
         <!-- Side End -->
 
 
