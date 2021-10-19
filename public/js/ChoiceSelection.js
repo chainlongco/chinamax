@@ -29,11 +29,21 @@ class ChoiceSelection {
             } else if (this.category == 'entree') {
                 this.handleMaxOneEntreeSelected();
             }
-        } else if (this.maxQuantity == 3) {
+        } else if (this.maxQuantity == 2) { // Only for entree
+            this.handleTwoSelected();
+        } else if (this.maxQuantity == 3) { // For both side and entree
             this.handleThreeSelected();
         }
         
     }
+
+    /* Shared ********* Start */
+    enableAllChoices() {
+        $('.' + this.divElementIdPrefix).prop('disabled', false);
+        $('.' + this.divElementIdPrefix).css('background-color', 'white');
+    }
+    /* Shared ********* End */
+
 
     /* Max One ******************** Start */
     handleMaxOneSideSelected() {
@@ -151,16 +161,55 @@ class ChoiceSelection {
         });
     }
     /* Max One ******************** End */
+        
 
-    /* Shared ********* Start */
-    enableAllChoices() {
-        $('.' + this.divElementIdPrefix).prop('disabled', false);
-        $('.' + this.divElementIdPrefix).css('background-color', 'white');
+    /* Max Two ******************** Start */
+    // if maxQuantity >= 2, then
+        // elementIdPrefix is sideQuantity or entreeQuantity (this indicates the quantity, sideQuantityIncrementDiv/entreeQuantityIncrementDiv, sideQuantityPlus/entreeQuantityPlus, sideQuantityMinus/entreeQuantityMinus)
+        // divElementIdPrefix is choiceItemSide or choiceItemEntree
+    handleTwoSelected() {
+        if ($("#" + this.elementIdPrefix + this.id).val() == 0) {
+            // None of entree is selected
+            if (this.isAllZeroQuantity()) {
+                $("#" + this.incrementDiv + this.id).css("display", "block");
+                $("#" + this.elementIdPrefix + this.id).val(this.maxQuantity);
+                $("#" + this.divElementIdPrefix + this.id).css("border", "5px solid red");
+            } else if (this.doesOneChoiceHaveTwo()) {  // One of side/entree is selected == 2
+                $("#" + this.incrementDiv + this.id).css("display", "block");
+                $("#" + this.elementIdPrefix + this.id).val(1);
+                $("#" + this.divElementIdPrefix + this.id).css("border", "5px solid red");
+                this.disableRestOfChoices();
+            }
+        } else if (Number($("#" + this.elementIdPrefix + this.id).val()) != 0) {
+            var choiceQuantity = Number($("#" + this.elementIdPrefix + this.id).val());
+            $("#" + this.incrementDiv + this.id).css("display", "none");    
+            $("#" + this.elementIdPrefix + this.id).val(0);   
+            $("#" + this.divElementIdPrefix + this.id).css("border", "3px solid lightgray");
+            if (choiceQuantity == 1) {
+                this.addChoiceQuantityToOther(choiceQuantity, this.id);
+                this.enableAllChoices();    // Only for 2 entrees all of them have 1 quantity
+            }
+        }
     }
-    /* Shared ********* End */
+
+    doesOneChoiceHaveTwo() {
+        var exists = false;
+        var elementName = this.elementIdPrefix; // It does not work this.elementIdPrefix in the forEach loop
+        var sideElements = $("." + this.elementIdPrefix).toArray();
+        sideElements.forEach(function(sideElement) {
+            var sideId = retrieveId(elementName, sideElement.id);
+            if ($("#" + elementName + sideId).val() == 2) {
+                $("#" + elementName + sideId).val(1);
+                exists = true;
+            }
+        });
+        return exists;
+    }
+    /* Max Two ******************** End */
+
 
     /* Max Three ******************** Start */
-    // if maxQuantity > 2, then
+    // if maxQuantity >= 2, then
         // elementIdPrefix is sideQuantity or entreeQuantity (this indicates the quantity, sideQuantityIncrementDiv/entreeQuantityIncrementDiv, sideQuantityPlus/entreeQuantityPlus, sideQuantityMinus/entreeQuantityMinus)
         // divElementIdPrefix is choiceItemSide or choiceItemEntree
     handleThreeSelected() {
@@ -191,7 +240,6 @@ class ChoiceSelection {
             if (choiceQuantity == 1) {
                 this.enableAllChoices();    // Only for 3 entrees all of them have 1 quantity
             }
-
         }
 
         /*if ($("#sideQuantity" + this.id).val() == 0) {

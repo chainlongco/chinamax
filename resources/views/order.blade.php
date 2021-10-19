@@ -176,7 +176,8 @@
 
             //$("#eachMenu1").trigger('click');
             //$("#eachMenu12p").trigger('click');
-            $("#eachMenu15p").trigger('click');
+            //$("#eachMenu15p").trigger('click');
+            $("#eachMenu13p").trigger('click');
         });
 
 
@@ -222,10 +223,10 @@
         <!-- Side Start -->
         function checkSelectedSideItem(sideId) {
             sideMaxQuantity = $("#sideMaxQuantity").val();
-            if (sideMaxQuantity == 1) {
+            if (sideMaxQuantity == 1) { // Using sideSelected element to display Half/One Selected
                 choiceSelection = new ChoiceSelection("side", "sideSelected", "choiceItemSide", sideId, 0, sideMaxQuantity);
                 choiceSelection.showSelected();
-            } else {
+            } else {    // Using sideQuantity element to display the number of sides selected
                 choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, 0, sideMaxQuantity);
                 choiceSelection.showSelected();
             }
@@ -237,16 +238,16 @@
         <!-- Entree Start -->
         function checkSelectedEntreeItem(entreeId) {
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
-            if (entreeMaxQuantity == 1) {
+            if (entreeMaxQuantity == 1) {   // Using entreeSelected to dispaly One Selected
                 choiceSelection = new ChoiceSelection("entree", "entreeSelected", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
                 choiceSelection.showSelected();
-            } else {
+            } else {    // Using entreeQuantity to display the number of entrees selected
                 choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
                 choiceSelection.showSelected();
             }
         }
 
-        function enableAllEntreeChoices() {
+        /*function enableAllEntreeChoices() {
             var entreeElements = $(".choiceItemEntree").toArray()
             entreeElements.forEach(function(entreeElement) {
                 var entreeId = retrieveId("choiceItemEntree", entreeElement.id);
@@ -264,7 +265,7 @@
                     $("#choiceItemEntree" + entreeId).css('background-color', 'lightgray');
                 }
             });
-        }
+        }*/
         <!-- Entree End -->
 
         <!-- SubItem Start -->
@@ -283,7 +284,6 @@
                     sideArray = {'category':'Side', 'id':sideId, 'quantity':1};
                     subItems.push(sideArray);
                 } else if (quantityValue != 0) {
-                    alert("SideId: " + sideId + " Quantity: " + quantityValue);
                     sideArray = {'category':'Side', 'id':sideId, 'quantity':quantityValue};
                     subItems.push(sideArray);
                 }
@@ -298,7 +298,6 @@
                     entreeArray = {'category':'Entree', 'id':entreeId, 'quantity':1};
                     subItems.push(entreeArray);
                 } else if (quantityValue != 0) {
-                    alert("EntreeId: " + entreeId + " Quantity: " + quantityValue)
                     entreeArray = {'category':'Entree', 'id':entreeId, 'quantity':quantityValue};
                     subItems.push(entreeArray);
                 }

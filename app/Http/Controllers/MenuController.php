@@ -15,14 +15,14 @@ class MenuController extends Controller
             array_push($ids, $level->id);
         }
         $products = DB::table('products')->whereIn('menu_id', $ids)->get();
-        //return view('order', compact('menus', 'products'));
+        return view('order', compact('menus', 'products'));
 
 
-        $product1 = DB::table('products')->where('id', 13)->first();
+        /*$product1 = DB::table('products')->where('id', 13)->first();
         $sides = DB::table('sides')->get();
         $chickenEntrees = DB::table('entrees')->where('category', 'Chicken')->get();
         $beefEntrees = DB::table('entrees')->where('category', 'Beef')->get();
         $shrimpEntrees = DB::table('entrees')->where('category', 'Shrimp')->get();
-        return view('order', compact('menus', 'products', 'sides', 'chickenEntrees', 'beefEntrees', 'shrimpEntrees', 'product1'));
+        return view('order', compact('menus', 'products', 'sides', 'chickenEntrees', 'beefEntrees', 'shrimpEntrees', 'product1'));*/
     }
 }
