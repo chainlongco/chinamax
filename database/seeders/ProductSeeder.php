@@ -90,6 +90,11 @@ class ProductSeeder extends Seeder
                 'description'=>'3 side & 3 large entrees',
                 'gallery'=>'',
                 'menu_id'=>'3'],
+            ['name'=>"Kid's Meal",
+                'price'=>'4.99',
+                'description'=>'One small drink, one side and one entree',
+                'gallery'=>'',
+                'menu_id'=>3],    
             ['name'=>'Side Small',
                 'price'=>'2.49',
                 'description'=>'Small size of side',
@@ -149,12 +154,7 @@ class ProductSeeder extends Seeder
                 'price'=>'7.49',
                 'description'=>'Large size of shrimp entree',
                 'gallery'=>'',
-                'menu_id'=>'4'],    
-            ['name'=>"Kid's Meal",
-                'price'=>'4.99',
-                'description'=>'One small drink, one side and one entree',
-                'gallery'=>'',
-                'menu_id'=>5]         
+                'menu_id'=>'4']         
         ]);
     }
 }

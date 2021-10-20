@@ -190,7 +190,7 @@
         $html .=        "</div>";
         $html .=        "<div>";
         $html .=            "<br>";
-        $html .=            "<button type=\"button\" class=\"btn bg-light border addToCart\" id=\"addToCart" .$product->id ."\">Add to Cart</button>";
+        $html .=            "<button type=\"button\" class=\"btn bg-light border addToCart\" id=\"addToCart" .$product->id ."\" disabled>Add to Cart</button>";
         $html .=        "</div>";
         $html .=    "</div>";
         $html .= "</div>";
@@ -305,6 +305,31 @@
                             </div>
                         </div>
                     </div>*/
+
+
+                    // Old Menu above
+                    /*@foreach($products as $product)
+                        <div class="eachMenu" id="eachMenu{{ $product->id }}p">
+                            <div class="menuItem" id="menuItem{{ $product->id }}p">
+                                <span class="menuItemName{{ $product->id }}p">{{ $product->name }}</span>
+                                <br>
+                                <span class="menuItemPrice">${{ $product->price }}</span>
+                                <br>
+                                <span class="menuItemDescription">{{ $product->description }}</span>            
+                            </div>      
+                        </div>
+                        <br>
+                    @endforeach
+                    @foreach($menus as $menu)
+                        <div class="eachMenu" id="eachMenu{{ $menu->id }}">
+                            <div class="menuItem" id="menuItem{{ $menu->id }}">
+                                <span class="menuItemName{{ $menu->id }}">{{ $menu->name }}</span>
+                                <br>
+                                <span class="menuItemDescription">{{ $menu->description }}</span>            
+                            </div>      
+                        </div>
+                        <br>
+                    @endforeach*/	
     }
 
     function loadRegularPlatterChoices($menuName)

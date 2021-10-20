@@ -51,8 +51,6 @@ class ChoiceSelection {
             this.addChoiceQuantityToOther(1, this.id);
             this.enableAllChoices();
         }
-        
-        
     }
 
     /* Shared ********* Start */

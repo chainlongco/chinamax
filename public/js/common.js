@@ -103,4 +103,56 @@ function orderListElement(key, product, quantity, subItem)
     return html;
 }
 
+function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity) {
+    var orderQuantity = $(".quantity").val();
+    if (orderQuantity == 0) {
+        $(".addToCart").prop('disabled', false);
+        return;
+    }
+    
+    // For side
+    var totalSideQuantity = retrieveTotalSideQuantity();
+
+    // For entree
+    var totalEntreeQuantity = retrieveTotalEntreeQuantity();
+
+    if ((totalSideQuantity == sideMaxQuantity) && (totalEntreeQuantity == entreeMaxQuantity)) {
+        $(".addToCart").prop('disabled', false);
+    } else {
+        $(".addToCart").prop('disabled', true);
+    }
+}
+
+function retrieveTotalSideQuantity() {
+    var totalSideQuantity = 0;
+    var sideElements = $(".choiceItemSide").toArray()
+    sideElements.forEach(function(sideElement) {
+        var sideId = retrieveId("choiceItemSide", sideElement.id);
+        var quantityValue = Number($("#sideQuantity" + sideId).val());
+        if ($("#sideSelected" + sideId).text() == "Half Selected") {
+            totalSideQuantity += 0.5;
+        } else if ($("#sideSelected" + sideId).text() == "One Selected") {
+            totalSideQuantity += 1;
+        } else if (quantityValue != 0) {
+            totalSideQuantity += quantityValue;
+        }
+    });
+    return totalSideQuantity;
+}
+
+function retrieveTotalEntreeQuantity() {
+    var totalEntreeQuantity = 0;
+    var entreeElements = $(".choiceItemEntree").toArray()
+    entreeElements.forEach(function(entreeElement) {
+        var entreeId = retrieveId("choiceItemEntree", entreeElement.id);
+        var quantityValue = Number($("#entreeQuantity" + entreeId).val());
+        if ($("#entreeSelected" + entreeId).text() == "One Selected") {
+            totalEntreeQuantity += 1;
+        } else if (quantityValue != 0) {
+            totalEntreeQuantity += quantityValue;
+        }
+    });
+    return totalEntreeQuantity;
+}
+
 

@@ -19,6 +19,27 @@
     font-size: 15px;
 }
 
+.productItem {
+    margin: auto;
+    width: 100%;
+    border: 3px solid lightgray;
+    border-radius: 25px;
+    padding: 10px;
+    font-size: 20px;
+}
+
+.productItemName {
+    font-size: 20px;
+}
+
+.productItemPrice {
+    font-size: 15px;
+}
+
+.productItemDescription {
+    font-size: 15px;
+}
+
 .choiceItem, .choiceItemSide, .choiceItemEntree{  
     margin: auto;
     width: 100%;

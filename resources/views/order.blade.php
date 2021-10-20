@@ -11,14 +11,23 @@
             <div class="col-md-3 text-center">
                 <div id="orderMenu">
                     <h1>Menu</h1>
-                    @foreach($products as $product)
-                        <div class="eachMenu" id="eachMenu{{ $product->id }}p">
-                            <div class="menuItem" id="menuItem{{ $product->id }}p">
-                                <span class="menuItemName{{ $product->id }}p">{{ $product->name }}</span>
-                                <br>
-                                <span class="menuItemPrice">${{ $product->price }}</span>
-                                <br>
-                                <span class="menuItemDescription">{{ $product->description }}</span>            
+                    <?php
+                        $keys = array_keys($level1Arrays);
+                    ?>
+                    @foreach($keys as $key)
+                        <div class="eachMenuWithProducts" id="eachMenuWithProducts{{ $level1Arrays[$key]['menu']->id }}">
+                            <div class="menuItem" id="menuItem{{ $level1Arrays[$key]['menu']->id }}">
+                                <span class="menuItemName{{ $level1Arrays[$key]['menu']->id }}">{{ $level1Arrays[$key]['menu']->name }}</span>
+                                <!--<br>-->
+                                <p class="menuItemDescription">{{ $level1Arrays[$key]['menu']->description }}</p>
+                                @foreach($level1Arrays[$key]['products'] as $product)
+                                    <div class="productItem" id="productItem{{ $product->id }}">
+                                        <span class="productItemName{{ $product->id }}">{{ $product->name }}</span>
+                                        <br>
+                                        <span class="productItemDescription">{{ $product->description }} -- </span> 
+                                        <span class="productItemPrice">${{ $product->price }}</span>           
+                                    </div>
+                                @endforeach         
                             </div>      
                         </div>
                         <br>
@@ -27,8 +36,8 @@
                         <div class="eachMenu" id="eachMenu{{ $menu->id }}">
                             <div class="menuItem" id="menuItem{{ $menu->id }}">
                                 <span class="menuItemName{{ $menu->id }}">{{ $menu->name }}</span>
-                                <br>
-                                <span class="menuItemDescription">{{ $menu->description }}</span>            
+                                <!--<br>-->
+                                <p class="menuItemDescription">{{ $menu->description }}</p>            
                             </div>      
                         </div>
                         <br>
@@ -38,8 +47,6 @@
             <div class="col-md-9 text-center ">
                 <div class="orderChoices">
                     
-                    
-
                 </div>
             </div>
         </div>
@@ -49,6 +56,17 @@
     <script>
         $(document).ready(function(){
             <!-- Menu Start -->
+            $(document).on('mouseover', '.eachMenuWithProducts', function(e){
+                e.preventDefault();
+                var menuId = retrieveId("eachMenuWithProducts", this.id);
+                $(".menuItemName" + menuId).css("text-decoration","underline");
+            });
+            $(document).on('mouseout', '.eachMenuWithProducts', function(e){
+                e.preventDefault();
+                var menuId = retrieveId("eachMenuWithProducts", this.id)
+                $(".menuItemName" + menuId).css("text-decoration","none");
+            });
+
             $(document).on('mouseover', '.eachMenu', function(e){
                 e.preventDefault();
                 var menuId = retrieveId("eachMenu", this.id);
@@ -66,7 +84,27 @@
                 //$("#menuItem" + menuId).css("background-color","yellow");
                 $(".menuItem").css("border","3px solid lightgray");
                 $("#menuItem" + menuId).css("border","5px solid red");
+                $(".productItem").css("border","3px solid lightgray");
                 retrieveChoices(menuId);
+            });
+
+            $(document).on('mouseover', '.productItem', function(e){
+                e.preventDefault();
+                var productId = retrieveId("productItem", this.id);
+                $(".productItemName" + productId).css("text-decoration","underline");
+            });
+            $(document).on('mouseout', '.productItem', function(e){
+                e.preventDefault();
+                var productId = retrieveId("productItem", this.id)
+                $(".productItemName" + productId).css("text-decoration","none");
+            });
+            $(document).on('click', '.productItem', function(e){
+                e.preventDefault();
+                var productId = retrieveId("productItem", this.id)
+                $(".productItem").css("border","3px solid lightgray");
+                $("#productItem" + productId).css("border","5px solid red");
+                $(".menuItem").css("border","3px solid lightgray");
+                retrieveChoices(productId + "p");
             });
             <!-- Menu End-->
 
@@ -83,10 +121,18 @@
                 //document.getElementById("addToCart1").style.color = "red";                
                 $(addToCartElementId).prop("disabled", false);
                 $(addToCartElementId).css("color","red");
-                
+
+                // ToDo *********
+                // this for Combos products -- ToDo: needs to modify for other products
+                if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                    sideMaxQuantity = $("#sideMaxQuantity").val();
+                    entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                    enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
+                }
+
             });
 
-            $(document).on('click', '.quantityMinus', function(e){       
+            $(document).on('click', '.quantityMinus', function(e){
                 e.preventDefault();
                 var productId = retrieveId("quantityMinus", this.id);
                 var quantityElementId = "#quantity" + productId;
@@ -157,6 +203,9 @@
                 sideMaxQuantity = $("#sideMaxQuantity").val();
                 choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, +1, sideMaxQuantity);
                 choiceSelection.showSelected();
+
+                entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
             });
 
             $(document).on('click', '.sideQuantityMinus', function(e){       
@@ -165,6 +214,9 @@
                 sideMaxQuantity = $("#sideMaxQuantity").val();
                 choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, -1, sideMaxQuantity);
                 choiceSelection.showSelected();
+
+                entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
             });
             <!-- Side End -->
 
@@ -192,6 +244,9 @@
                 entreeMaxQuantity = $("#entreeMaxQuantity").val();
                 choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, +1, entreeMaxQuantity);
                 choiceSelection.showSelected();
+
+                sideMaxQuantity = $("#sideMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
             });
 
             $(document).on('click', '.entreeQuantityMinus', function(e){       
@@ -200,6 +255,9 @@
                 entreeMaxQuantity = $("#entreeMaxQuantity").val();
                 choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, -1, entreeMaxQuantity);
                 choiceSelection.showSelected();
+
+                sideMaxQuantity = $("#sideMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
             });
             <!-- Entree End -->
 
@@ -207,7 +265,7 @@
             //$("#eachMenu1").trigger('click');
             //$("#eachMenu12p").trigger('click');
             //$("#eachMenu15p").trigger('click');
-            $("#eachMenu13p").trigger('click');
+            //$("#eachMenu13p").trigger('click');
         });
 
 
@@ -260,6 +318,8 @@
                 choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, 0, sideMaxQuantity);
                 choiceSelection.showSelected();
             }
+            entreeMaxQuantity = $("#entreeMaxQuantity").val();
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
         }
         <!-- Side End -->
 
@@ -274,6 +334,8 @@
                 choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
                 choiceSelection.showSelected();
             }
+            sideMaxQuantity = $("#sideMaxQuantity").val();
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
         }
 
         /*function enableAllEntreeChoices() {

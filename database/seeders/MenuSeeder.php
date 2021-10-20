@@ -26,10 +26,7 @@ class MenuSeeder extends Seeder
                 'level'=>'1'],
             ['name'=>'Individual Side/Entree',
                 'description'=>'Side or Entree only',
-                'level'=>'0'],
-            ['name'=>"Kid's Meal",
-                'description'=>"Kid's combo meal",
-                'level'=>'1']  
+                'level'=>'0']
         ]);
     }
 }
