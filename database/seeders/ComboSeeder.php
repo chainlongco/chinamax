@@ -15,10 +15,11 @@ class ComboSeeder extends Seeder
     public function run()
     {
         DB::table('combos')->insert([
-            ['product_id'=>12, 'side'=>1, 'entree'=>1],
-            ['product_id'=>13, 'side'=>1, 'entree'=>2],
-            ['product_id'=>14, 'side'=>1, 'entree'=>3],
-            ['product_id'=>15, 'side'=>3, 'entree'=>3]
+            ['product_id'=>12, 'side'=>1, 'entree'=>1, 'drink'=>0],
+            ['product_id'=>13, 'side'=>1, 'entree'=>2, 'drink'=>0],
+            ['product_id'=>14, 'side'=>1, 'entree'=>3, 'drink'=>0],
+            ['product_id'=>15, 'side'=>3, 'entree'=>3, 'drink'=>0],
+            ['product_id'=>16, 'side'=>1, 'entree'=>1, 'drink'=>1],
         ]);
     }
 }

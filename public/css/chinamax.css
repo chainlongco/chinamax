@@ -40,7 +40,7 @@
     font-size: 15px;
 }
 
-.choiceItem, .choiceItemSide, .choiceItemEntree{  
+.choiceItem, .choiceItemSide, .choiceItemEntree, .choiceItemDrink, .choiceItemDrinkWithSelect{  
     margin: auto;
     width: 100%;
     border: 3px solid lightgray;
@@ -49,7 +49,7 @@
     font-size: 30px;
 }
 
-.choiceItemName, .choiceItemSideName, .choiceItemEntreeName {
+.choiceItemName, .choiceItemSideName, .choiceItemEntreeName, .choiceItemDrinkName {
     font-size: 20px;
 }
 
@@ -64,7 +64,7 @@
 .selectedDiv {
     width: 100%;
 }
-.sideSelected, .entreeSelected {
+.sideSelected, .entreeSelected, .drinkSelected {
     width:200px;
     margin: auto;
     margin-top:-15px;

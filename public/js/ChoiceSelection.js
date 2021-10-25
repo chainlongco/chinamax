@@ -29,6 +29,8 @@ class ChoiceSelection {
                     this.handleMaxOneSideSelected();
                 } else if (this.category == 'entree') {
                     this.handleMaxOneEntreeSelected();
+                } else if (this.category == 'drink') {
+                    this.handleMaxOneDrinkSelected();
                 }
             } else if (this.maxQuantity == 2) { // Only for entree
                 this.handleTwoSelected();
@@ -190,6 +192,42 @@ class ChoiceSelection {
                 $("#" + divElementName + sideId).css('background-color', 'lightgray');
             }
         });
+    }
+
+    handleMaxOneDrinkSelected() {
+        var index = this.divElementIdPrefix.indexOf("WithSelect");
+        if ($('#' + this.elementIdPrefix + this.id).text() == "One Selected") {
+            if (index >= 0) {
+                if ($('.comboDrink').val() == 0) {
+                    $('#' + this.elementIdPrefix + this.id).text("");
+                    $('#' + this.divElementIdPrefix + this.id).css("border", "3px solid lightgray");
+                }
+            } else {
+                $('#' + this.elementIdPrefix + this.id).text("");
+                $('#' + this.divElementIdPrefix + this.id).css("border", "3px solid lightgray");
+            }
+        } else {
+            if (index >= 0) {
+                // Remove all
+                var divElementIdPrefixWithoutSelect = this.divElementIdPrefix.substr(0, index);
+                $('.' + this.elementIdPrefix).text("");
+                $('.' + this.divElementIdPrefix).css("border", "3px solid lightgray");
+                $('.' + divElementIdPrefixWithoutSelect).css("border", "3px solid lightgray");
+                // Select One
+                $('#' + this.elementIdPrefix + this.id).text("One Selected");
+                $('#' + this.divElementIdPrefix + this.id).css("border", "5px solid red");
+            } else {
+                // Remove all
+                $('.' + this.elementIdPrefix).text("");
+                $('.' + this.divElementIdPrefix).css("border", "3px solid lightgray");
+                $('.' + this.divElementIdPrefix + "WithSelect").css("border", "3px solid lightgray");
+                $('.comboDrink').val(0);
+                // Select One
+                $('#' + this.elementIdPrefix + this.id).text("One Selected");
+                $('#' + this.divElementIdPrefix + this.id).css("border", "5px solid red");
+            }
+            
+        }
     }
     /* Max One ******************** End */
         

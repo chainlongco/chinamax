@@ -160,10 +160,10 @@
         $html .=            "<br>";
         $html .=        "</div>";
                     }
-        $html .=        "<div class=\"text-start\">";
-        $html .=            "<br>";
-        $html .=            "<h5>Shrimp</h5>";
-        $html .=        "</div>";
+        $html .=    "<div class=\"text-start\">";
+        $html .=        "<br>";
+        $html .=        "<h5>Shrimp</h5>";
+        $html .=    "</div>";
                     foreach($shrimpEntrees as $shrimpEntree) {
         $html .=        "<div class=\"col-md-4 text-center\">";
         $html .=            "<div class=\"choiceItemEntree\" id=\"choiceItemEntree" .$shrimpEntree->id ."\">";
@@ -182,21 +182,72 @@
         $html .=            "<br>";
         $html .=        "</div>";
                     }
+
+        // For Kid's Meal drink
+        if ($combo->drink > 0) {
+            //$productFountain = DB::table('products')->where('id', 29)->first();
+            //$productWater = DB::table('products')->where('id', 5)->first();
+            //$fountains = DB::table('fountains')->get();
+            $drinkQuantitySummary = "Choose " .$combo->drink ." Drink (Default: Small Fountain Drink)";
+            $comboDrinks = DB::table('combodrinks')->get();
+
+            $html .=    "<div class=\"text-start\">";
+            $html .=        "<br>";
+            $html .=        "<h3>" .$drinkQuantitySummary ."</h3>";
+            $html .=        "<input type=\"hidden\" id=\"drinkMaxQuantity\" value=\"" .$combo->drink ."\"/>";
+            $html .=        "<br>";
+            $html .=    "</div>";
+                        foreach($comboDrinks as $comboDrink) {
+                            if ($comboDrink->tablename != "") {
+                                $tableNameForSelect = $comboDrink->tablename;
+                                $listItems = DB::table($tableNameForSelect)->get(); 
+            $html .=            "<div class=\"col-md-4 text-center\">";
+            $html .=                "<div class=\"choiceItemDrinkWithSelect\" id=\"choiceItemDrinkWithSelect" .$comboDrink->id ."\">";
+            $html .=                    "<img src=\"\\images\\" .$comboDrink->gallery ."\" style=\"width:60%\">";                          
+            $html .=                    "<div style=\"padding-top:10px; font-size:20px;\">";
+            $html .=                        "<span class=\"choiceItemDrinkName\" id=\"choiceItemDrinkName" .$comboDrink->id ."\">" .$comboDrink->name ."</span>";
+            $html .=                        "<select name=\"comboDrink\" class=\"comboDrink\" id=\"comboDrink" .$comboDrink->id ."\" style=\"height: 37px; padding: 4px 10px; margin: 0px 10px\">";
+            $html .=                            "<option value = \"0\" selected disable>Choose the flavor</option>";
+                                                foreach ($listItems as $listItem) {
+            $html .=                                "<option value=" .$listItem->id .">" .$listItem->name ."</option>";
+                                                }
+            $html .=                        "</select>";
+            $html .=                    "</div>"; 
+            $html .=                "</div>";
+            $html .=                "<div class=\"selectedDiv\">";
+            $html .=                    "<h3 class=\"drinkSelected\" id=\"drinkSelected" .$comboDrink->id ."\"></h3>";
+            $html .=                "</div>";
+            $html .=            "</div>";
+                            } else {
+            $html .=            "<div class=\"col-md-4 text-center\">";
+            $html .=                "<div class=\"choiceItemDrink\" id=\"choiceItemDrink" .$comboDrink->id ."\">";
+            $html .=                    "<img src=\"\\images\\" .$comboDrink->gallery ."\" style=\"width:60%\">";
+            $html .=                    "<br>";
+                                        $displayExtraCharge = ($comboDrink->price > 0) ? (" - Extra Charge: $" .$comboDrink->price) : "";                                        
+            $html .=                    "<span class=\"choiceItemDrinkName\" id=\"choiceItemDrinkName" .$comboDrink->id ."\">" .$comboDrink->name .$displayExtraCharge ."</span>";
+            $html .=                "</div>";
+            $html .=                "<div class=\"selectedDiv\">";
+            $html .=                    "<h3 class=\"drinkSelected\" id=\"drinkSelected" .$comboDrink->id ."\"></h3>";
+            $html .=                "</div>";
+            $html .=            "</div>";
+                            }
+                        }
+        }
+
         $html .=    "<div class=\"col-md-4 my-auto\">";
         $html .=        "<div class=\"quantityDiv mx-auto\">";
         $html .=            "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$product->id ."\"><i class=\"fas fa-minus\"></i></button>";
-        $html .=            "<input type=\"text\" class=\"form-control w-25 d-inline text-center quantity\" value=\"1\" id=\"quantity" .$product->id ."\" disabled>";
+        $html .=            "<input type=\"text\" class=\"form-control w-25 d-inline text-center quantity\" value=\"1\" id=\"quantity" .$product->id ."\" disabled style=\"margin: 0px 10px\">";
         $html .=            "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$product->id ."\"><i class=\"fas fa-plus\"></i></button>";
         $html .=        "</div>";
         $html .=        "<div>";
         $html .=            "<br>";
-        $html .=            "<button type=\"button\" class=\"btn bg-light border addToCart\" id=\"addToCart" .$product->id ."\" disabled>Add to Cart</button>";
+        $html .=            "<button type=\"button\" class=\"btn bg-light border addToCart\" disabled id=\"addToCart" .$product->id ."\">Add to Cart</button>";
         $html .=        "</div>";
         $html .=    "</div>";
         $html .= "</div>";
 
         return $html;
-
 
                     /*<div class="row">
                         <div class="text-start">
@@ -306,6 +357,25 @@
                         </div>
                     </div>*/
 
+                    // Kid's Meal small drink
+                    /*<h1>Choices for {{ $product->name }} </h1>
+                    <div class="text-start">
+                        <br>
+                        <h3>Choose Flavour of Small Drink</h3>
+                        <br>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="choiceItemDrink" id="choiceItemDrink{{ $productFountain->id }}">
+                            <img src="\images\{{ $productFountain->gallery }}" style="width:60%">
+                            <div style="padding-top:10px; font-size:25px;">
+                                <select name="fountains" id="fountains">
+                                    @foreach ($fountains as $fountain)
+                                        <option value={{ $fountain->id }}>{{ $fountain->name }}</option>
+                                    @endforeach
+                            </select>
+                            </div>
+                        </div>
+                    </div>*/
 
                     // Old Menu above
                     /*@foreach($products as $product)
@@ -330,33 +400,6 @@
                         </div>
                         <br>
                     @endforeach*/	
-    }
-
-    function loadRegularPlatterChoices($menuName)
-    {
-        $html = "";
-        //$products = DB::table('products')->where('menu_id', "1")->get();
-        $html .= "<h1>Choices for " .$menuName ."</h1>";
-
-        return $html;
-    }
-
-    function loadLargePlatterChoices($menuName)
-    {
-        $html = "";
-        //$products = DB::table('products')->where('menu_id', "1")->get();
-        $html .= "<h1>Choices for " .$menuName ."</h1>";
-
-        return $html;
-    }
-
-    function loadPartyTrayChoices($menuName)
-    {
-        $html = "";
-        //$products = DB::table('products')->where('menu_id', "1")->get();
-        $html .= "<h1>Choices for " .$menuName ."</h1>";
-
-        return $html;
     }
 
     function loadKidsMealChoices($menuName)
@@ -424,14 +467,23 @@
                 $product = $items[$key]['item'];
                 $quantity = $items[$key]['quantity'];
                 $subItems = $items[$key]['subItems'];
-                $elements = $elements .cartElement($key, $product, $quantity, $subItems);
+                $totalPricePerItem = $items[$key]['totalPricePerItem'];
+                $elements = $elements .cartElement($key, $product, $quantity, $subItems, $totalPricePerItem);
             }
         } 
     }
 
-    function cartElement($key, $product, $quantity, $subItems)
+    function cartElement($key, $product, $quantity, $subItems, $totalPricePerItem)
     {   // $key is serialNumber, using serialNumber instead of productId is the example like User can order many Regular Platters with different Sides and Entrees. But they are the same productId.
         $orderSummary = retrieveSummary($subItems);
+        $extraCharge = retrieveExtraCharge($subItems);
+        //$totalPrice = $product->price + (double)($extraCharge);
+        $totalPriceDisplay = "";
+        if ($extraCharge > 0) {
+            $totalPriceDisplay = "$" .$product->price ." + $" .$extraCharge ." = $" .$totalPricePerItem;
+        } else {
+            $totalPriceDisplay = "$" .$product->price;
+        }
         $element = "
             <form action=\"/cart\" method=\"get\" class=\"cart-items\">
                 <div class=\"border rounded\">
@@ -443,7 +495,7 @@
                         <div class=\"col-md-6\">
                             <h5 class=\"pt-2\">" .$product->name ." <small> (" .$product->description .")</small> </h5>
                             <h5><small style=\"color:red\">" .$orderSummary ."</small> </h5>
-                            <h5 class=\"pt-1\">$" .$product->price ."</h5>
+                            <h5 class=\"pt-1\">" .$totalPriceDisplay ."</h5>
                             <div class=\"pb-1\">
                                 <button type=\"submit\" class=\"btn btn-warning\">Edit</button>
                                 <button type=\"button\" class=\"btn btn-danger mx-2 remove\" id=\"remove" .$key ."AND" .$product->id ."\">Remove</button>
@@ -466,9 +518,9 @@
 
     function retrieveSummary($subItems) {
         $summary = "";
-        $drink = "";
         $side = "";
         $entree = "";
+        $drink = "";
 
         $keys = array_keys($subItems);
         foreach ($keys as $key) {         
@@ -485,6 +537,18 @@
             if ($category == "Entree") {
                 $entree = $entree .$item->name ."(" .$quantity .") ";
             }
+            if ($category == "Drink") {
+                $selectDrinkSummary = "";
+                if (array_key_exists('selectDrink', $subItems[$key])) {
+                     $selectDrink = $subItems[$key]['selectDrink'];
+                     $selectDrinkSummary = " - " .$selectDrink->name;
+                }
+                if ($item->price > 0) {
+                    $drink = $drink .$item->name ." - extra charge: $" .$item->price ."(" .$quantity .") ";
+                } else {
+                    $drink = $drink .$item->name .$selectDrinkSummary ."(" .$quantity .") ";
+                }
+            }
         }
 
         if ($side != "") {
@@ -493,8 +557,30 @@
         if ($entree != "") {
             $summary .= "Entree: " .$entree;
         }
+        if ($drink != "") {
+            $summary .= "Drink: " .$drink;
+        }
 
         return $summary;
+    }
+
+    function retrieveExtraCharge($subItems) {
+        $extraCharge = 0;
+
+        $keys = array_keys($subItems);
+        foreach ($keys as $key) {         
+            $category = $subItems[$key]['category'];
+            $quantity = $subItems[$key]['quantity'];
+            $item = $subItems[$key]['item'];
+            
+            if ($category == "Drink") {
+                if ($item->price > 0) {
+                    $extraCharge = $extraCharge + $item->price; // This item is from combodrinks table
+                }
+            }
+        }
+
+        return $extraCharge;
     }
 
     function priceDetailDivElement()

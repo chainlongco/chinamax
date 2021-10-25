@@ -46,7 +46,7 @@
             </div>
             <div class="col-md-9 text-center ">
                 <div class="orderChoices">
-                    
+                         
                 </div>
             </div>
         </div>
@@ -127,7 +127,8 @@
                 if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
                     sideMaxQuantity = $("#sideMaxQuantity").val();
                     entreeMaxQuantity = $("#entreeMaxQuantity").val();
-                    enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
+                    drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                    enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
                 }
 
             });
@@ -205,7 +206,8 @@
                 choiceSelection.showSelected();
 
                 entreeMaxQuantity = $("#entreeMaxQuantity").val();
-                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
+                drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
             });
 
             $(document).on('click', '.sideQuantityMinus', function(e){       
@@ -216,7 +218,8 @@
                 choiceSelection.showSelected();
 
                 entreeMaxQuantity = $("#entreeMaxQuantity").val();
-                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
+                drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
             });
             <!-- Side End -->
 
@@ -230,7 +233,7 @@
             });
             $(document).on('mouseout', '.choiceItemEntree', function(e){
                 e.preventDefault();
-                var entreeId = retrieveId("choiceItemEntree", this.id)
+                var entreeId = retrieveId("choiceItemEntree", this.id);
                 $("#choiceItemEntreeName" + entreeId).css("text-decoration","none");
             });
             $(document).on('click', '.choiceItemEntree', function(e){
@@ -246,7 +249,8 @@
                 choiceSelection.showSelected();
 
                 sideMaxQuantity = $("#sideMaxQuantity").val();
-                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
+                drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
             });
 
             $(document).on('click', '.entreeQuantityMinus', function(e){       
@@ -257,15 +261,68 @@
                 choiceSelection.showSelected();
 
                 sideMaxQuantity = $("#sideMaxQuantity").val();
-                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
+                drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
             });
             <!-- Entree End -->
 
+            <!-- Drink Start -->
+            $(document).on('mouseover', '.choiceItemDrink', function(e){
+                e.preventDefault();
+                var drinkId = retrieveId("choiceItemDrink", this.id);
+                if ($("#choiceItemDrink" + drinkId).prop("disabled") != true) {
+                    $("#choiceItemDrinkName" + drinkId).css("text-decoration","underline");
+                }
+            });
+            $(document).on('mouseout', '.choiceItemDrink', function(e){
+                e.preventDefault();
+                var drinkId = retrieveId("choiceItemDrink", this.id)
+                $("#choiceItemDrinkName" + drinkId).css("text-decoration","none");
+            });
+            $(document).on('click', '.choiceItemDrink', function(e){
+                e.preventDefault();
+                var drinkId = retrieveId("choiceItemDrink", this.id);
+                drinkMaxQuantity = $('#drinkMaxQuantity').val();
+                choiceSelection = new ChoiceSelection("drink", "drinkSelected", "choiceItemDrink", drinkId, 0, drinkMaxQuantity);
+                choiceSelection.showSelected();
+
+                sideMaxQuantity = $("#sideMaxQuantity").val();
+                entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            });
+            $(document).on('mouseover', '.choiceItemDrinkWithSelect', function(e){
+                e.preventDefault();
+                var drinkId = retrieveId("choiceItemDrinkWithSelect", this.id);
+                if ($("#choiceItemDrinkWithSelect" + drinkId).prop("disabled") != true) {
+                    $("#choiceItemDrinkName" + drinkId).css("text-decoration","underline");
+                }
+            });
+            $(document).on('mouseout', '.choiceItemDrinkWithSelect', function(e){
+                e.preventDefault();
+                var drinkId = retrieveId("choiceItemDrinkWithSelect", this.id);
+                $("#choiceItemDrinkName" + drinkId).css("text-decoration","none");
+            });
+            $(document).on('change', '.comboDrink', function(e){
+                e.preventDefault();
+                var drinkId = retrieveId("comboDrink", this.id);
+                drinkMaxQuantity = $('#drinkMaxQuantity').val();
+                choiceSelection = new ChoiceSelection("drink", "drinkSelected", "choiceItemDrinkWithSelect", drinkId, 0, drinkMaxQuantity);
+                choiceSelection.showSelected();
+
+                sideMaxQuantity = $("#sideMaxQuantity").val();
+                entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            });
+            <!-- Drink End -->
+
 
             //$("#eachMenu1").trigger('click');
-            //$("#eachMenu12p").trigger('click');
-            //$("#eachMenu15p").trigger('click');
-            //$("#eachMenu13p").trigger('click');
+            //$("#productItem12").trigger('click');
+            //$("#productItem15").trigger('click');
+            //$("#productItem13").trigger('click');
+            $("#productItem16").trigger('click');
         });
 
 
@@ -319,7 +376,8 @@
                 choiceSelection.showSelected();
             }
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
+            drinkMaxQuantity = $("#drinkMaxQuantity").val();
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
         }
         <!-- Side End -->
 
@@ -335,7 +393,8 @@
                 choiceSelection.showSelected();
             }
             sideMaxQuantity = $("#sideMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity);
+            drinkMaxQuantity = $("#drinkMaxQuantity").val();
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
         }
 
         /*function enableAllEntreeChoices() {
@@ -358,6 +417,9 @@
             });
         }*/
         <!-- Entree End -->
+
+        <!-- Drink Start -->
+        <!-- Drink End -->
 
         <!-- SubItem Start -->
         function retrieveSubItems() {
@@ -393,6 +455,28 @@
                     subItems.push(entreeArray);
                 }
             });
+
+            // For Drink
+            if ($("#drinkMaxQuantity").val() != undefined) {
+                var drinkElements = $(".choiceItemDrink").toArray()
+                drinkElements.forEach(function(drinkElement) {
+                    var drinkId = retrieveId("choiceItemDrink", drinkElement.id);
+                    if ($("#drinkSelected" + drinkId).text() == "One Selected") {
+                        drinkArray = {'category':'Drink', 'id':drinkId, 'quantity':1};
+                        subItems.push(drinkArray);
+                    }
+                });
+                var drinkWithSelectElements = $(".choiceItemDrinkWithSelect").toArray()
+                drinkWithSelectElements.forEach(function(drinkWithSelectElement) {
+                    var drinkId = retrieveId("choiceItemDrinkWithSelect", drinkWithSelectElement.id);
+                    if ($("#drinkSelected" + drinkId).text() == "One Selected") {
+                        selectId = $("#comboDrink" + drinkId).val();
+                        drinkArray = {'category':'Drink', 'id':drinkId, 'quantity':1, 'selectId':selectId};
+                        subItems.push(drinkArray);
+                    }
+                });
+            }
+
             return JSON.stringify(subItems);
         }    
         <!-- SubItem End -->

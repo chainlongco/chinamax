@@ -65,15 +65,25 @@ function loadOrderListElements(items)
         console.log(key, value);
         product = value['item'];
         quantity = value['quantity'];
-        subItem = value['subItem'];
+        subItems = value['subItems'];
+        totalPricePerItem = value['totalPricePerItem'];
         var html = '';
-        html = orderListElement(key, product, quantity, subItem);
+        html = orderListElement(key, product, quantity, subItems, totalPricePerItem);
         $('#orderlist').append(html);
     });
 }
 
-function orderListElement(key, product, quantity, subItem)
-{
+function orderListElement(key, product, quantity, subItems, totalPricePerItem)
+{   // $key is serialNumber, using serialNumber instead of productId is the example like User can order many Regular Platters with different Sides and Entrees. But they are the same productId.
+    var orderSummary = retrieveSummary(subItems);
+    var extraCharge = retrieveExtraCharge(subItems);
+    var totalPriceDisplay = "";
+    if (extraCharge > 0) {
+        totalPriceDisplay = "$" + product['price'] + " + $" + extraCharge + " = $" + totalPricePerItem;
+    } else {
+        totalPriceDisplay = "$" + product['price'];
+    }
+
     var html = '';
     html += '   <form action="/cart" method="get" class="cart-items">';
     html += '       <div class="border rounded">';
@@ -82,9 +92,9 @@ function orderListElement(key, product, quantity, subItem)
     html += '                   <img src="\images\\' + product['gallery'] + '" style="width: 100%">';
     html += '               </div>';
     html += '               <div class="col-md-6">';
-    html += '                   <h5 class="pt-2">' + product['name'] + '</h5>';
-    html += '                   <small class="text-secondary">' + product['description'] + '</small>';
-    html += '                   <h5 class="pt-1">$' + product['price'] + '</h5>';
+    html += '                   <h5 class="pt-2">' + product['name'] + ' <small> (' + product['description'] + ')</small> </h5>';
+    html += '                   <h5><small style="color:red">' + orderSummary + '</small> </h5>';
+    html += '                   <h5 class=\"pt-1\">' + totalPriceDisplay + '</h5>';
     html += '                   <div class="pb-1">';
     html += '                       <button type="submit" class="btn btn-warning">Edit</button>';
     html += '                       <button type="button" class="btn btn-danger mx-2 remove" id="remove' + key + "AND" + product['id'] + '">Remove</button>';
@@ -103,23 +113,102 @@ function orderListElement(key, product, quantity, subItem)
     return html;
 }
 
-function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity) {
+function retrieveSummary(subItems)
+{
+    var summary = "";
+    var side = "";
+    var entree = "";
+    var drink = "";
+
+    $.each(subItems, function(key, value) {
+        console.log(key, value);
+        category = value['category'];
+        quantity = value['quantity'];
+        item = value['item'];
+        
+        if (quantity == 0.5) {
+            quantity = "1/2";
+        }
+        if (category == "Side") {
+            side = side + item['name'] + "(" + quantity + ") ";
+        }
+        if (category == "Entree") {
+            entree = entree + item['name'] + "(" + quantity + ") ";
+        }
+        if (category == "Drink") {
+            var selectDrinkSummary = "";
+            if (value.hasOwnProperty('selectDrink')) {
+                var selectDrink = value['selectDrink'];
+                selectDrinkSummary = " - " + selectDrink['name'];
+            }
+            if (item['price'] > 0) {
+                drink = drink + item['name'] + " - extra charge: $" + item['price'] + " (" + quantity + ") ";
+            } else {
+                drink = drink + item['name'] + selectDrinkSummary + "(" + quantity + ") ";
+            }
+        }
+    });
+
+    if (side != "") {
+        summary += "Side: " + side;
+    }
+    if (entree != "") {
+        summary += "Entree: " + entree;
+    }
+    if (drink != "") {
+        summary += "Drink: " + drink;
+    }
+
+    return summary;
+}
+
+function retrieveExtraCharge(subItems)
+{
+    var extraCharge = 0;
+
+    $.each(subItems, function(key, value) {
+        console.log(key, value);
+        category = value['category'];
+        quantity = value['quantity'];
+        item = value['item'];
+        
+        if (category == "Drink") {
+            if (item['price'] > 0) {
+                extraCharge += item['price'];   // This item is from combodrinks table
+            }
+        }
+    });
+    return extraCharge;
+}
+
+function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity) {
     var orderQuantity = $(".quantity").val();
     if (orderQuantity == 0) {
         $(".addToCart").prop('disabled', false);
         return;
     }
-    
+
     // For side
     var totalSideQuantity = retrieveTotalSideQuantity();
 
     // For entree
     var totalEntreeQuantity = retrieveTotalEntreeQuantity();
 
-    if ((totalSideQuantity == sideMaxQuantity) && (totalEntreeQuantity == entreeMaxQuantity)) {
-        $(".addToCart").prop('disabled', false);
+    if (drinkMaxQuantity == undefined) {
+        if ((totalSideQuantity == sideMaxQuantity) && (totalEntreeQuantity == entreeMaxQuantity)) {
+            $(".addToCart").prop('disabled', false);
+        } else {
+            $(".addToCart").prop('disabled', true);
+        }
     } else {
-        $(".addToCart").prop('disabled', true);
+        // For Drink
+        var totalDrinkQuantity = retrieveTotalDrinkQuantity();
+
+        if ((totalSideQuantity == sideMaxQuantity) && (totalEntreeQuantity == entreeMaxQuantity) && (totalDrinkQuantity == drinkMaxQuantity)) {
+            $(".addToCart").prop('disabled', false);
+        } else {
+            $(".addToCart").prop('disabled', true);
+        }
     }
 }
 
@@ -153,6 +242,25 @@ function retrieveTotalEntreeQuantity() {
         }
     });
     return totalEntreeQuantity;
+}
+
+function retrieveTotalDrinkQuantity() {
+    var totalDrinkQuantity = 0;
+    var drinkElements = $(".choiceItemDrink").toArray()
+    drinkElements.forEach(function(drinkElement) {
+        var drinkId = retrieveId("choiceItemDrink", drinkElement.id);
+        if ($("#drinkSelected" + drinkId).text() == "One Selected") {
+            totalDrinkQuantity += 1;
+        }
+    });
+    var drinkWithSelectElements = $(".choiceItemDrinkWithSelect").toArray()
+    drinkWithSelectElements.forEach(function(drinkWithSelectElement) {
+        var drinkId = retrieveId("choiceItemDrinkWithSelect", drinkWithSelectElement.id);
+        if ($("#drinkSelected" + drinkId).text() == "One Selected") {
+            totalDrinkQuantity += 1;
+        }
+    });
+    return totalDrinkQuantity;
 }
 
 

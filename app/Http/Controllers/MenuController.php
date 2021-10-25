@@ -12,13 +12,16 @@ class MenuController extends Controller
         $level1s = DB::table('menus')->where('level', 1)->get();
         $level1Arrays = array();
         foreach ($level1s as $level) {
-            //array_push($ids, $level->id);
             $products = DB::table('products')->where('menu_id', $level->id)->get();
-            //array_push(level1Arrays, ['menu'=>$level, 'products'=>$products]);
             $level1Arrays[$level->id] = ['menu'=>$level, 'products'=>$products];
         }
-        //$products = DB::table('products')->whereIn('menu_id', $ids)->get();
-        return view('order', compact('menus', 'level1Arrays'));
+        //return view('order', compact('menus', 'level1Arrays'));
+
+        $product = DB::table('products')->where('id', 16)->first();
+        $productFountain = DB::table('products')->where('id', 29)->first();
+        $fountains = DB::table('fountains')->get();
+        return view('order', compact('menus', 'level1Arrays', 'product', 'productFountain', 'fountains'));
+
 
         // Old Menu
         /*$menus = DB::table('menus')->where('level', 0)->get();

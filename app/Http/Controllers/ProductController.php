@@ -39,7 +39,8 @@ class ProductController extends Controller
         } else if ($menuName === "Party Tray") {
             echo loadComboChoices($product);
         } else if ($menuName === "Kid's Meal") {
-            echo loadKidsMealChoices($menuName);
+            //echo loadKidsMealChoices($menuName);
+            echo loadComboChoices($product);
         }
     }
 
@@ -50,7 +51,7 @@ class ProductController extends Controller
         $subItems = json_decode($request->subItems, true);
 
         $combo = DB::table('combos')->where('product_id', $productId)->first();
-        $pass = $this->validateSideAndEntree($productId, $subItems);
+        $pass = $this->validateSideAndEntreeAndDrink($productId, $subItems);
         if(!$pass) {
             return response()->json(['status'=>0, 'message'=>"Please select side and entree before you add order to cart."]);
         }
@@ -68,15 +69,16 @@ class ProductController extends Controller
         echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
     }
 
-    protected function validateSideAndEntree($productId, $subItems)
+    protected function validateSideAndEntreeAndDrink($productId, $subItems)
     {
         $pass = true;
         $combo = DB::table('combos')->where('product_id', $productId)->first();
         if(!is_null($combo)) {
             $side = $combo->side;
             $entree = $combo->entree;
+            $drink = $combo->drink;
             $quantityOfSubItems = $this->retrieveQuantityOfSubItems($subItems);
-            if (($quantityOfSubItems['side'] == $side) && ($quantityOfSubItems['entree'] == $entree)) {
+            if (($quantityOfSubItems['side'] == $side) && ($quantityOfSubItems['entree'] == $entree) && ($quantityOfSubItems['drink'] == $drink)) {
                 $pass = true;
             } else {
                 $pass = false;
@@ -90,6 +92,7 @@ class ProductController extends Controller
         $quantityOfSubItems = [];
         $side = 0;
         $entree = 0;
+        $drink = 0;
 
         $keys = array_keys($subItems);
         foreach ($keys as $key) {         
@@ -102,9 +105,13 @@ class ProductController extends Controller
             if ($category == "Entree") {
                 $entree += $quantity;
             }
+            if ($category == "Drink") {
+                $drink += $quantity;
+            }
         }
         $quantityOfSubItems['side'] = $side;
         $quantityOfSubItems['entree'] = $entree;
+        $quantityOfSubItems['drink'] = $drink;
         return $quantityOfSubItems;
     }
     
