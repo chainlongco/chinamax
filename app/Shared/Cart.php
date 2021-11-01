@@ -77,33 +77,49 @@ Class Cart {
         $newSubItems = array();
         $item = null;
         $selectDrink = null;
+
+        if (($subItems == null) || count($subItems) == 0) {
+            return $newSubItems;
+        }
+
         $keys = Array_keys($subItems);
 
         foreach ($keys as $key) {
             $category = $subItems[$key]['category'];
             $quantity = $subItems[$key]['quantity'];
             $id = $subItems[$key]['id'];
+
+            // This is for Combo or Individual Side/Entree
             if ($category == 'Side') {
                 $item = DB::table('sides')->where('id', $id)->first();
             } else if ($category == "Entree") {
                 $item = DB::table('entrees')->where('id', $id)->first();
             } else if ($category == 'Drink') {
                 $item = DB::table('combodrinks')->where('id', $id)->first();
+            } else if ($category == 'DrinkOnly') {  // This is for Drink -- Water, Fresh Juice, Fountain, Canned, Bottle Water
+                $item = DB::table('drinks')->where('id', $id)->first();
             }
-            if (array_key_exists('selectId', $subItems[$key])) {
-                $selectId = $subItems[$key]['selectId'];
-                $selectDrink = DB::table($item->tablename)->where('id', $selectId)->first();
-                array_push($newSubItems, ['category'=>$category, 'item'=>$item, 'quantity'=>$quantity, 'selectDrink'=>$selectDrink]);
+            if (array_key_exists('selectBoxId', $subItems[$key])) {    // selectBoxId is set at Kid's meal drink -- retrieveSubItems -- for combo OR set at addToCartForDrinkOnly click event -- for DrinkOnly
+                $selectBoxId = $subItems[$key]['selectBoxId'];
+                if ($selectBoxId != null) {
+                    $selectDrink = DB::table($item->tablename)->where('id', $selectBoxId)->first();
+                    array_push($newSubItems, ['category'=>$category, 'item'=>$item, 'quantity'=>$quantity, 'selectDrink'=>$selectDrink]);
+                } else {
+                    array_push($newSubItems, ['category'=>$category, 'item'=>$item, 'quantity'=>$quantity]);    // This is for DrinkOnly -- retrieve image from $item for Water and Bottle Water
+                }
             } else {
                 array_push($newSubItems, ['category'=>$category, 'item'=>$item, 'quantity'=>$quantity]);
             }
-            
         }
         return $newSubItems;
     }
 
     protected function retrieveTotalPricePerItemWithExtraCharge($item, $subItems) {
         $totalPricePerItem = $item->price;  // This $item is from product table
+
+        if (($subItems == null) || count($subItems) == 0) {
+            return $totalPricePerItem;
+        }
 
         $keys = Array_keys($subItems);
         foreach ($keys as $key) {

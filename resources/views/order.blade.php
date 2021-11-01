@@ -11,27 +11,22 @@
             <div class="col-md-3 text-center">
                 <div id="orderMenu">
                     <h1>Menu</h1>
-                    <?php
-                        $keys = array_keys($level1Arrays);
-                    ?>
-                    @foreach($keys as $key)
-                        <div class="eachMenuWithProducts" id="eachMenuWithProducts{{ $level1Arrays[$key]['menu']->id }}">
-                            <div class="menuItem" id="menuItem{{ $level1Arrays[$key]['menu']->id }}">
-                                <span class="menuItemName{{ $level1Arrays[$key]['menu']->id }}">{{ $level1Arrays[$key]['menu']->name }}</span>
-                                <!--<br>-->
-                                <p class="menuItemDescription">{{ $level1Arrays[$key]['menu']->description }}</p>
-                                @foreach($level1Arrays[$key]['products'] as $product)
-                                    <div class="productItem" id="productItem{{ $product->id }}">
-                                        <span class="productItemName{{ $product->id }}">{{ $product->name }}</span>
-                                        <br>
-                                        <span class="productItemDescription">{{ $product->description }} -- </span> 
-                                        <span class="productItemPrice">${{ $product->price }}</span>           
-                                    </div>
-                                @endforeach         
-                            </div>      
-                        </div>
-                        <br>
-                    @endforeach
+                    <div class="eachMenuForCombo" id="eachMenuForCombo{{ $comboArray['menu']->id }}">
+                        <div class="menuItem" id="menuItem{{ $comboArray['menu']->id }}">
+                            <span class="menuItemName{{ $comboArray['menu']->id }}">{{ $comboArray['menu']->name }}</span>
+                            <p class="menuItemDescription">{{ $comboArray['menu']->description }}</p>
+                            @foreach($comboArray['products'] as $product)
+                                <div class="productItem" id="productItem{{ $product->id }}">
+                                    <span class="productItemName{{ $product->id }}">{{ $product->name }}</span>
+                                    <br>
+                                    <span class="productItemDescription">{{ $product->description }} -- </span> 
+                                    <span class="productItemPrice">${{ $product->price }}</span>           
+                                </div>
+                            @endforeach         
+                        </div>      
+                    </div>
+                    <br>
+
                     @foreach($menus as $menu)
                         <div class="eachMenu" id="eachMenu{{ $menu->id }}">
                             <div class="menuItem" id="menuItem{{ $menu->id }}">
@@ -42,28 +37,56 @@
                         </div>
                         <br>
                     @endforeach
+
+                    <div class="eachMenuForSingle" id="eachMenuForSingle{{ $singleArray['menu']->id }}">
+                        <div class="menuItem" id="menuItem{{ $singleArray['menu']->id }}">
+                            <span class="menuItemName{{ $singleArray['menu']->id }}">{{ $singleArray['menu']->name }}</span>
+                            <p class="menuItemDescription">{{ $singleArray['menu']->description }}</p>
+                            @foreach($singleArray['singles'] as $single)
+                                <div class="singleItem" id="singleItem{{ $single->id }}">
+                                    <span class="singleItemName{{ $single->id }}">{{ $single->name }}</span>
+                                    <br>
+                                    <span class="singleItemDescription">{{ $single->description }}</span>           
+                                </div>
+                            @endforeach
+                        </div>      
+                    </div>
+
                 </div>    
             </div>
             <div class="col-md-9 text-center ">
-                <div class="orderChoices">
-                         
+                <div class="orderChoices">    
+
                 </div>
             </div>
         </div>
     </div>
     <br>
 
+
+
     <script>
         $(document).ready(function(){
             <!-- Menu Start -->
-            $(document).on('mouseover', '.eachMenuWithProducts', function(e){
+            $(document).on('mouseover', '.eachMenuForCombo', function(e){
                 e.preventDefault();
-                var menuId = retrieveId("eachMenuWithProducts", this.id);
+                var menuId = retrieveId("eachMenuForCombo", this.id);
                 $(".menuItemName" + menuId).css("text-decoration","underline");
             });
-            $(document).on('mouseout', '.eachMenuWithProducts', function(e){
+            $(document).on('mouseout', '.eachMenuForCombo', function(e){
                 e.preventDefault();
-                var menuId = retrieveId("eachMenuWithProducts", this.id)
+                var menuId = retrieveId("eachMenuForCombo", this.id)
+                $(".menuItemName" + menuId).css("text-decoration","none");
+            });
+
+            $(document).on('mouseover', '.eachMenuForSingle', function(e){
+                e.preventDefault();
+                var menuId = retrieveId("eachMenuForSingle", this.id);
+                $(".menuItemName" + menuId).css("text-decoration","underline");
+            });
+            $(document).on('mouseout', '.eachMenuForSingle', function(e){
+                e.preventDefault();
+                var menuId = retrieveId("eachMenuForSingle", this.id)
                 $(".menuItemName" + menuId).css("text-decoration","none");
             });
 
@@ -85,6 +108,7 @@
                 $(".menuItem").css("border","3px solid lightgray");
                 $("#menuItem" + menuId).css("border","5px solid red");
                 $(".productItem").css("border","3px solid lightgray");
+                $(".singleItem").css("border","3px solid lightgray");
                 retrieveChoices(menuId);
             });
 
@@ -104,11 +128,37 @@
                 $(".productItem").css("border","3px solid lightgray");
                 $("#productItem" + productId).css("border","5px solid red");
                 $(".menuItem").css("border","3px solid lightgray");
+                $(".singleItem").css("border","3px solid lightgray");
                 retrieveChoices(productId + "p");
+            });
+
+            $(document).on('mouseover', '.singleItem', function(e){
+                e.preventDefault();
+                var singleId = retrieveId("singleItem", this.id);
+                $(".singleItemName" + singleId).css("text-decoration","underline");
+            });
+            $(document).on('mouseout', '.singleItem', function(e){
+                e.preventDefault();
+                var singleId = retrieveId("singleItem", this.id)
+                $(".singleItemName" + singleId).css("text-decoration","none");
+            });
+            $(document).on('click', '.singleItem', function(e){
+                e.preventDefault();
+                var singleId = retrieveId("singleItem", this.id)
+                $(".singleItem").css("border","3px solid lightgray");
+                $("#singleItem" + singleId).css("border","5px solid red");
+                $(".menuItem").css("border","3px solid lightgray");
+                $(".productItem").css("border","3px solid lightgray");
+
+                // retrieve menu id
+                var parentClassName = $(this).parent().attr('class');
+                var parentIdName = $(this).parent().attr('id');
+                var menuId = retrieveId(parentClassName, parentIdName);
+                retrieveChoices(singleId + "s", menuId);
             });
             <!-- Menu End-->
 
-            <!-- Appetizers Start -->    
+            <!-- Shared Start -->    
             $(document).on('click','.quantityPlus', function(e){
                 e.preventDefault();
                 var productId = retrieveId("quantityPlus", this.id);
@@ -122,13 +172,32 @@
                 $(addToCartElementId).prop("disabled", false);
                 $(addToCartElementId).css("color","red");
 
+                var addToCartForSideElementId = "#addToCartForSide" + productId;
+                $(addToCartForSideElementId).prop("disabled", false);
+                $(addToCartForSideElementId).css("color","red");
+
+                var addToCartForEntreeElementId = "#addToCartForEntree" + productId;
+                $(addToCartForEntreeElementId).prop("disabled", false);
+                $(addToCartForEntreeElementId).css("color","red");
+
+                var addToCartForDrinkOnlyElementId = "#addToCartForDrinkOnly" + productId;
+                $(addToCartForDrinkOnlyElementId).prop("disabled", false);
+                $(addToCartForDrinkOnlyElementId).css("color","red");
+
+
                 // ToDo *********
-                // this for Combos products -- ToDo: needs to modify for other products
+                // For Combos products -- ToDo: needs to modify for other products
                 if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
                     sideMaxQuantity = $("#sideMaxQuantity").val();
                     entreeMaxQuantity = $("#entreeMaxQuantity").val();
                     drinkMaxQuantity = $("#drinkMaxQuantity").val();
                     enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                }
+
+                // For Drink Only 
+                if ($(".addToCartForDrinkOnly").text() != "") {
+                    var drinkId = retrieveId("quantityPlus", this.id);
+                    enableAddToCartButtonForDrinkOnly(drinkId);
                 }
 
             });
@@ -139,16 +208,45 @@
                 var quantityElementId = "#quantity" + productId;
                 var quantity = $(quantityElementId).val();
                 var addToCartElementId = "#addToCart" + productId;
+                
+                var addToCartForSideElementId = "#addToCartForSide" + productId;
+                var addToCartForEntreeElementId = "#addToCartForEntree" + productId;
+                var addToCartForDrinkOnlyElementId = "#addToCartForDrinkOnly" + productId;
                 quantity = Number(quantity) - 1;
                 if (quantity == 0) {
-                    $(quantityElementId).val(quantity);
-                    $(addToCartElementId).prop('disabled', true);
+                    $(quantityElementId).val(quantity);   
                     $(addToCartElementId).css("color","gray");
+                    $(addToCartElementId).prop('disabled', true);
+
+                    $(addToCartForSideElementId).css("color","gray");
+                    $(addToCartForSideElementId).prop('disabled', true);
+                    $(addToCartForEntreeElementId).css("color","gray");
+                    $(addToCartForEntreeElementId).prop('disabled', true);
+                    $(addToCartForDrinkOnlyElementId).css("color","gray");
+                    $(addToCartForDrinkOnlyElementId).prop('disabled', true);
                 } else if (quantity < 0) {
                     $(quantityElementId).val(0);
                 } else {
                     $(quantityElementId).val(quantity);
                     $(addToCartElementId).prop('disabled', false);
+                    
+                    $(addToCartForSideElementId).prop('disabled', false);
+                    $(addToCartForEntreeElementId).prop('disabled', false);
+                    $(addToCartForDrinkOnlyElementId).prop('disabled', fasle);
+                }
+
+                // For Combos products -- ToDo: needs to modify for other products
+                if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                    sideMaxQuantity = $("#sideMaxQuantity").val();
+                    entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                    drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                    enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                }
+
+                // For Drink Only 
+                if ($(".addToCartForDrinkOnly").text() != "") {
+                    var drinkId = retrieveId("quantityMinus", this.id);
+                    enableAddToCartButtonForDrinkOnly(drinkId);
                 }
             });
 
@@ -156,19 +254,44 @@
             $(document).on('click', ".quantity", function(){
                 alert("go");
             });
+            <!-- Shared End -->
 
-            $(document).on('click', '.addToCart', function(e){
+
+            <!-- Appetizers Start -->
+            $(document).on('click', '.addToCart', function(e){  // For Appetizers, Combos
                 var productId = retrieveId("addToCart", this.id);
                 var quantityElementId = "#quantity" + productId;
                 var quantity = $(quantityElementId).val();
-                var addToCartElementId = "#addToCart" + productId;
-                $(addToCartElementId).prop('disabled', true);
-                $(addToCartElementId).css("color","orange");
-                //$(quantityElementId).val(0);
                 var subItems = retrieveSubItems();
                 addNewItemToCart(productId, quantity, subItems);
             });    
             <!-- Appetizers End -->
+
+            <!-- Single Start -->
+            $(document).on('click', '.addToCartForSide', function(e){
+                e.preventDefault();
+                var sideId = retrieveId("addToCartForSide", this.id);
+                var quantityElementId = "#quantity" + sideId;
+                var quantity = $(quantityElementId).val();
+                productId = $("#productSides" + sideId).val();
+                var subItems = [];
+                var sideArray = {'category':'Side', 'id':sideId, 'quantity':quantity};
+                subItems.push(sideArray);
+                addNewItemToCart(productId, quantity, JSON.stringify(subItems));
+            });
+
+            $(document).on('click', '.addToCartForEntree', function(e){
+                e.preventDefault();
+                var entreeId = retrieveId("addToCartForEntree", this.id);
+                var quantityElementId = "#quantity" + entreeId;
+                var quantity = $(quantityElementId).val();
+                productId = $("#productEntrees" + entreeId).val();
+                var subItems = [];
+                var entreeArray = {'category':'Entree', 'id':entreeId, 'quantity':quantity};
+                subItems.push(entreeArray);
+                addNewItemToCart(productId, quantity, JSON.stringify(subItems));
+            });
+            <!-- Single End -->
 
             <!-- Side Start -->
             $(document).on('mouseover', '.choiceItemSide', function(e){
@@ -200,26 +323,28 @@
             });
             $(document).on('click','.sideQuantityPlus', function(e){
                 e.preventDefault();
-                var sideId = retrieveId("sideQuantityPlus", this.id);
-                sideMaxQuantity = $("#sideMaxQuantity").val();
-                choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, +1, sideMaxQuantity);
-                choiceSelection.showSelected();
-
-                entreeMaxQuantity = $("#entreeMaxQuantity").val();
-                drinkMaxQuantity = $("#drinkMaxQuantity").val();
-                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                    var sideId = retrieveId("sideQuantityPlus", this.id);
+                    sideMaxQuantity = $("#sideMaxQuantity").val();
+                    choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, +1, sideMaxQuantity);
+                    choiceSelection.showSelected();
+                    entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                    drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                    enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                }
             });
 
             $(document).on('click', '.sideQuantityMinus', function(e){       
                 e.preventDefault();
-                var sideId = retrieveId("sideQuantityMinus", this.id);
-                sideMaxQuantity = $("#sideMaxQuantity").val();
-                choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, -1, sideMaxQuantity);
-                choiceSelection.showSelected();
-
-                entreeMaxQuantity = $("#entreeMaxQuantity").val();
-                drinkMaxQuantity = $("#drinkMaxQuantity").val();
-                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                    var sideId = retrieveId("sideQuantityMinus", this.id);
+                    sideMaxQuantity = $("#sideMaxQuantity").val();
+                    choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, -1, sideMaxQuantity);
+                    choiceSelection.showSelected();
+                    entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                    drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                    enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                }
             });
             <!-- Side End -->
 
@@ -243,26 +368,28 @@
             });
             $(document).on('click','.entreeQuantityPlus', function(e){
                 e.preventDefault();
-                var entreeId = retrieveId("entreeQuantityPlus", this.id);
-                entreeMaxQuantity = $("#entreeMaxQuantity").val();
-                choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, +1, entreeMaxQuantity);
-                choiceSelection.showSelected();
-
-                sideMaxQuantity = $("#sideMaxQuantity").val();
-                drinkMaxQuantity = $("#drinkMaxQuantity").val();
-                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                    var entreeId = retrieveId("entreeQuantityPlus", this.id);
+                    entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                    choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, +1, entreeMaxQuantity);
+                    choiceSelection.showSelected();
+                    sideMaxQuantity = $("#sideMaxQuantity").val();
+                    drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                    enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                }
             });
 
             $(document).on('click', '.entreeQuantityMinus', function(e){       
                 e.preventDefault();
-                var entreeId = retrieveId("entreeQuantityMinus", this.id);
-                entreeMaxQuantity = $("#entreeMaxQuantity").val();
-                choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, -1, entreeMaxQuantity);
-                choiceSelection.showSelected();
-
-                sideMaxQuantity = $("#sideMaxQuantity").val();
-                drinkMaxQuantity = $("#drinkMaxQuantity").val();
-                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                    var entreeId = retrieveId("entreeQuantityMinus", this.id);
+                    entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                    choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, -1, entreeMaxQuantity);
+                    choiceSelection.showSelected();
+                    sideMaxQuantity = $("#sideMaxQuantity").val();
+                    drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                    enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                }
             });
             <!-- Entree End -->
 
@@ -270,7 +397,7 @@
             $(document).on('mouseover', '.choiceItemDrink', function(e){
                 e.preventDefault();
                 var drinkId = retrieveId("choiceItemDrink", this.id);
-                if ($("#choiceItemDrink" + drinkId).prop("disabled") != true) {
+                if ($("#choiceItemDrink" + drinkId).prop("") != true) {
                     $("#choiceItemDrinkName" + drinkId).css("text-decoration","underline");
                 }
             });
@@ -281,15 +408,16 @@
             });
             $(document).on('click', '.choiceItemDrink', function(e){
                 e.preventDefault();
-                var drinkId = retrieveId("choiceItemDrink", this.id);
-                drinkMaxQuantity = $('#drinkMaxQuantity').val();
-                choiceSelection = new ChoiceSelection("drink", "drinkSelected", "choiceItemDrink", drinkId, 0, drinkMaxQuantity);
-                choiceSelection.showSelected();
-
-                sideMaxQuantity = $("#sideMaxQuantity").val();
-                entreeMaxQuantity = $("#entreeMaxQuantity").val();
-                drinkMaxQuantity = $("#drinkMaxQuantity").val();
-                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                    var drinkId = retrieveId("choiceItemDrink", this.id);
+                    drinkMaxQuantity = $('#drinkMaxQuantity').val();
+                    choiceSelection = new ChoiceSelection("drink", "drinkSelected", "choiceItemDrink", drinkId, 0, drinkMaxQuantity);
+                    choiceSelection.showSelected();
+                    sideMaxQuantity = $("#sideMaxQuantity").val();
+                    entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                    drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                    enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                }
             });
             $(document).on('mouseover', '.choiceItemDrinkWithSelect', function(e){
                 e.preventDefault();
@@ -305,33 +433,66 @@
             });
             $(document).on('change', '.comboDrink', function(e){
                 e.preventDefault();
-                var drinkId = retrieveId("comboDrink", this.id);
-                drinkMaxQuantity = $('#drinkMaxQuantity').val();
-                choiceSelection = new ChoiceSelection("drink", "drinkSelected", "choiceItemDrinkWithSelect", drinkId, 0, drinkMaxQuantity);
-                choiceSelection.showSelected();
-
-                sideMaxQuantity = $("#sideMaxQuantity").val();
-                entreeMaxQuantity = $("#entreeMaxQuantity").val();
-                drinkMaxQuantity = $("#drinkMaxQuantity").val();
-                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                    var drinkId = retrieveId("comboDrink", this.id);
+                    drinkMaxQuantity = $('#drinkMaxQuantity').val();
+                    choiceSelection = new ChoiceSelection("drink", "drinkSelected", "choiceItemDrinkWithSelect", drinkId, 0, drinkMaxQuantity);
+                    choiceSelection.showSelected();
+                    sideMaxQuantity = $("#sideMaxQuantity").val();
+                    entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                    drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                    enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+                }
             });
             <!-- Drink End -->
+
+
+            <!-- Drink Only Start -->
+            $(document).on('click', '.addToCartForDrinkOnly', function(e){
+                e.preventDefault();
+                var drinkId = retrieveId("addToCartForDrinkOnly", this.id);                
+                var quantityElementId = "#quantity" + drinkId;
+                var quantity = $(quantityElementId).val();
+                var productId = 0;
+                if ($("#productId" + drinkId).val() != undefined) {
+                    productId = $("#productId" + drinkId).val();  // From hidden input box
+                } else {
+                    productId = $("#productDrinks" + drinkId).val();    // From List box
+                }
+                
+                var subItems = [];
+                if ($("#selectDrink" + drinkId).val() != undefined) {
+                    var selectBoxId = $("#selectDrink" + drinkId).val();
+                    var drinkArray = {'category':'DrinkOnly', 'id':drinkId, 'quantity':quantity, 'selectBoxId':selectBoxId};
+                    subItems.push(drinkArray);
+                } else {
+                    var drinkArray = {'category':'DrinkOnly', 'id':drinkId, 'quantity':quantity, 'selectBoxId':null};
+                    subItems.push(drinkArray);
+                }
+                addNewItemToCart(productId, quantity, JSON.stringify(subItems));
+            });
+            $(document).on('change', '.selectDrink', function(e){
+                var drinkId = retrieveId("selectDrink", this.id);
+                enableAddToCartButtonForDrinkOnly(drinkId);
+            });
+            <!-- Drink Only End -->
 
 
             //$("#eachMenu1").trigger('click');
             //$("#productItem12").trigger('click');
             //$("#productItem15").trigger('click');
             //$("#productItem13").trigger('click');
-            $("#productItem16").trigger('click');
+            //$("#productItem16").trigger('click');
+            //$("#singleItem2").trigger('click');
         });
 
 
         <!-- Menu Start -->
-        function retrieveChoices(menuId) {
+        function retrieveChoices(menuId, mainMenuId) {
             $.ajax({
                 type:'GET',
                 url:'/order-choices',
-                data:{'menuId':menuId},
+                data:{'menuId':menuId, 'mainMenuId':mainMenuId},
                 success: function(response) {
                     $('.orderChoices').html(response);
                 }
@@ -350,15 +511,15 @@
                 success: function(response) {
                     if (response.status == 0){
                         alert(response.message);
-                        var addToCartElementId = "#addToCart" + productId;
-                        $(addToCartElementId).prop('disabled', false);
-                        $(addToCartElementId).css("color","black");
-                        var quantityElementId = "#quantity" + productId;
-                        $(quantityElementId).val(1);
+                        //var addToCartElementId = "#addToCart" + productId;
+                        //$(addToCartElementId).prop('disabled', false);
+                        //$(addToCartElementId).css("color","black");
+                        //var quantityElementId = "#quantity" + productId;
+                        //$(quantityElementId).val(1);
                     } else {
                         $('#cartCount').html(response);
-                        //const base_path = '{{ url('/') }}\/';
-                        //window.location.href = base_path + 'cart';
+                        const base_path = '{{ url('/') }}\/';
+                        window.location.href = base_path + 'cart';
                     }    
                 }
             });
@@ -367,34 +528,40 @@
 
         <!-- Side Start -->
         function checkSelectedSideItem(sideId) {
-            sideMaxQuantity = $("#sideMaxQuantity").val();
-            if (sideMaxQuantity == 1) { // Using sideSelected element to display Half/One Selected
-                choiceSelection = new ChoiceSelection("side", "sideSelected", "choiceItemSide", sideId, 0, sideMaxQuantity);
-                choiceSelection.showSelected();
-            } else {    // Using sideQuantity element to display the number of sides selected
-                choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, 0, sideMaxQuantity);
-                choiceSelection.showSelected();
-            }
-            entreeMaxQuantity = $("#entreeMaxQuantity").val();
-            drinkMaxQuantity = $("#drinkMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                sideMaxQuantity = $("#sideMaxQuantity").val();
+                if (sideMaxQuantity == 1) { // Using sideSelected element to display Half/One Selected
+                    choiceSelection = new ChoiceSelection("side", "sideSelected", "choiceItemSide", sideId, 0, sideMaxQuantity);
+                    choiceSelection.showSelected();
+                } else {    // Using sideQuantity element to display the number of sides selected
+                    choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, 0, sideMaxQuantity);
+                    choiceSelection.showSelected();
+                }
+                
+                entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            }    
         }
         <!-- Side End -->
 
 
         <!-- Entree Start -->
         function checkSelectedEntreeItem(entreeId) {
-            entreeMaxQuantity = $("#entreeMaxQuantity").val();
-            if (entreeMaxQuantity == 1) {   // Using entreeSelected to dispaly One Selected
-                choiceSelection = new ChoiceSelection("entree", "entreeSelected", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
-                choiceSelection.showSelected();
-            } else {    // Using entreeQuantity to display the number of entrees selected
-                choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
-                choiceSelection.showSelected();
+            if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                if (entreeMaxQuantity == 1) {   // Using entreeSelected to dispaly One Selected
+                    choiceSelection = new ChoiceSelection("entree", "entreeSelected", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
+                    choiceSelection.showSelected();
+                } else {    // Using entreeQuantity to display the number of entrees selected
+                    choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
+                    choiceSelection.showSelected();
+                }
+           
+                sideMaxQuantity = $("#sideMaxQuantity").val();
+                drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
             }
-            sideMaxQuantity = $("#sideMaxQuantity").val();
-            drinkMaxQuantity = $("#drinkMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
         }
 
         /*function enableAllEntreeChoices() {
@@ -422,7 +589,7 @@
         <!-- Drink End -->
 
         <!-- SubItem Start -->
-        function retrieveSubItems() {
+        function retrieveSubItems() {   // This is for Combo
             var subItems = [];
 
             // For side
@@ -470,8 +637,8 @@
                 drinkWithSelectElements.forEach(function(drinkWithSelectElement) {
                     var drinkId = retrieveId("choiceItemDrinkWithSelect", drinkWithSelectElement.id);
                     if ($("#drinkSelected" + drinkId).text() == "One Selected") {
-                        selectId = $("#comboDrink" + drinkId).val();
-                        drinkArray = {'category':'Drink', 'id':drinkId, 'quantity':1, 'selectId':selectId};
+                        selectBoxId = $("#comboDrink" + drinkId).val();
+                        drinkArray = {'category':'Drink', 'id':drinkId, 'quantity':1, 'selectBoxId':selectBoxId};
                         subItems.push(drinkArray);
                     }
                 });

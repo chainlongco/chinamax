@@ -79,9 +79,15 @@ function orderListElement(key, product, quantity, subItems, totalPricePerItem)
     var extraCharge = retrieveExtraCharge(subItems);
     var totalPriceDisplay = "";
     if (extraCharge > 0) {
-        totalPriceDisplay = "$" + product['price'] + " + $" + extraCharge + " = $" + totalPricePerItem;
+        totalPriceDisplay = "$" + product['price'].toFixed(2) + " + $" + extraCharge.toFixed(2) + " = $" + totalPricePerItem.toFixed(2);
     } else {
-        totalPriceDisplay = "$" + product['price'];
+        totalPriceDisplay = "$" + product['price'].toFixed(2);
+    }
+
+    // Handle image for Individaul Side/Entree and Drink
+    var image = product['gallery'];
+    if (image == "") {
+        image = retrieveImageFromSubItmes(subItems);
     }
 
     var html = '';
@@ -89,7 +95,7 @@ function orderListElement(key, product, quantity, subItems, totalPricePerItem)
     html += '       <div class="border rounded">';
     html += '           <div class="row bg-white">';
     html += '               <div class="col-md-3">';
-    html += '                   <img src="\images\\' + product['gallery'] + '" style="width: 100%">';
+    html += '                   <img src="\images\\' + image + '" style="width: 100%">';
     html += '               </div>';
     html += '               <div class="col-md-6">';
     html += '                   <h5 class="pt-2">' + product['name'] + ' <small> (' + product['description'] + ')</small> </h5>';
@@ -119,6 +125,7 @@ function retrieveSummary(subItems)
     var side = "";
     var entree = "";
     var drink = "";
+    var drinkOnly = "";
 
     $.each(subItems, function(key, value) {
         console.log(key, value);
@@ -130,10 +137,19 @@ function retrieveSummary(subItems)
             quantity = "1/2";
         }
         if (category == "Side") {
-            side = side + item['name'] + "(" + quantity + ") ";
+            if (subItems.keys().length > 1) {  // This means combo not Individual Side/Entree 
+                side = side + item['name'] + "(" + quantity + ") ";
+            } else {
+                side = side + item['name'] + " ";
+            }        
         }
         if (category == "Entree") {
-            entree = entree + item['name'] + "(" + quantity + ") ";
+            if (subItems.keys().length > 1) {  // This means combo not Individual Side/Entree 
+                entree = entree + item['name'] + "(" + quantity + ") ";
+            } else {
+                entree = entree + item['name'] + " ";
+            }
+            
         }
         if (category == "Drink") {
             var selectDrinkSummary = "";
@@ -142,9 +158,17 @@ function retrieveSummary(subItems)
                 selectDrinkSummary = " - " + selectDrink['name'];
             }
             if (item['price'] > 0) {
-                drink = drink + item['name'] + " - extra charge: $" + item['price'] + " (" + quantity + ") ";
+                drink = drink + item['name'] + " - extra charge: $" + item['price'].toFixed(2); //+ " (" + quantity + ") ";
             } else {
-                drink = drink + item['name'] + selectDrinkSummary + "(" + quantity + ") ";
+                drink = drink + item['name'] + selectDrinkSummary; //+ "(" + quantity + ") ";
+            }
+        }
+        if (category == "DrinkOnly") {
+            var selectDrinkSummary = "";
+            if (value.hasOwnProperty('selectDrink')) {
+                 var selectDrink = value['selectDrink'];
+                 var selectDrinkSummary = "Flavor: "  + selectDrink['name'];
+                 drinkOnly = drinkOnly + selectDrinkSummary;
             }
         }
     });
@@ -158,6 +182,9 @@ function retrieveSummary(subItems)
     if (drink != "") {
         summary += "Drink: " + drink;
     }
+    if (drinkOnly != "") {
+        summary += drinkOnly;
+    }
 
     return summary;
 }
@@ -167,7 +194,6 @@ function retrieveExtraCharge(subItems)
     var extraCharge = 0;
 
     $.each(subItems, function(key, value) {
-        console.log(key, value);
         category = value['category'];
         quantity = value['quantity'];
         item = value['item'];
@@ -181,10 +207,34 @@ function retrieveExtraCharge(subItems)
     return extraCharge;
 }
 
+function retrieveImageFromSubItmes(subItems) {
+    // This case for Individual Side/Entree, it should just have one subItem in $subItems
+        //category = value['category']; --> if this is Side
+        //quantity = value['quantity'];
+        //item = value['item'];         --> Then, this will be the record from sides table
+
+    var image = "";
+
+    if ((subItems == null) || (subItems.length == 0)) {
+        return image;
+    }
+
+    $.each(subItems, function(key, value) {
+        item = value['item'];
+        image = item['gallery'];
+    });
+    return image;
+}
+
 function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity) {
+    if (($("#sideMaxQuantity").val() == undefined) || ($("#entreeMaxQuantity").val() == undefined)) {
+        return;
+    }
+
     var orderQuantity = $(".quantity").val();
     if (orderQuantity == 0) {
-        $(".addToCart").prop('disabled', false);
+        $(".addToCart").prop('disabled', true);
+        $(".addToCart").css('color', 'gray');
         return;
     }
 
@@ -197,8 +247,10 @@ function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drin
     if (drinkMaxQuantity == undefined) {
         if ((totalSideQuantity == sideMaxQuantity) && (totalEntreeQuantity == entreeMaxQuantity)) {
             $(".addToCart").prop('disabled', false);
+            $(".addToCart").css('color', 'red');
         } else {
             $(".addToCart").prop('disabled', true);
+            $(".addToCart").css('color', 'gray');
         }
     } else {
         // For Drink
@@ -206,8 +258,10 @@ function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drin
 
         if ((totalSideQuantity == sideMaxQuantity) && (totalEntreeQuantity == entreeMaxQuantity) && (totalDrinkQuantity == drinkMaxQuantity)) {
             $(".addToCart").prop('disabled', false);
+            $(".addToCart").css('color', 'red');
         } else {
             $(".addToCart").prop('disabled', true);
+            $(".addToCart").css('color', 'gray');
         }
     }
 }
@@ -263,4 +317,22 @@ function retrieveTotalDrinkQuantity() {
     return totalDrinkQuantity;
 }
 
-
+function enableAddToCartButtonForDrinkOnly(drinkId) {
+    if ($("#selectDrink" + drinkId).val() == undefined) {
+        if ($("#quantity" + drinkId).val() > 0) {
+            $("#addToCartForDrinkOnly" + drinkId).prop('disabled', false);
+        } else {
+            $("#addToCartForDrinkOnly" + drinkId).prop('disabled', true);
+        }
+    } else {
+        if ($("#selectDrink" + drinkId).val() > 0) {
+            if ($("#quantity" + drinkId).val() > 0) {
+                $("#addToCartForDrinkOnly" + drinkId).prop('disabled', false);
+            } else {
+                $("#addToCartForDrinkOnly" + drinkId).prop('disabled', true);
+            }
+        } else {
+            $("#addToCartForDrinkOnly" + drinkId).prop('disabled', true);
+        }
+    }
+}

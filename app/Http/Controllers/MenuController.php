@@ -8,19 +8,51 @@ use Illuminate\Support\Facades\DB;
 class MenuController extends Controller
 {
     public function menu() {
+        /* Build the menu: 
+            1. Appetizers: No sub-menu, directly displays appetizers choices from products table. Then, choices load individual appetizer with 1. Quantity Increment/Decrement buttons 2. Add to Cart button
+            2. Drinks: Retrieving drinks from drinks table to load choices (water, fountain drink, canned drink and juice) - each drink has 1. select box for size and price which from products table, 2. choices select box (like sprit, coke...), 3. Quantity Increment/Decrement buttons, 4. Add to Cart button
+            3. Combo: Has sub-menu, sub-menus are from products table. Then, choices load 1. sides, 2. entrees 3. drinks 4. Quantity Increment/Decrement buttons 5. Add to Cart button
+            4. Individual Side/Entree: Has sub-menu, sub-menus are from singles table. Then choices load side/entree(chicken, beef, shrimp) choices with 1. Select size with price 1. Quantity Increment/Decrement buttons,   2. Add to Cart button 
+        */
         $menus = DB::table('menus')->where('level', 0)->get();
+        
+        // For Combo
+        $menuCombo = DB::table('menus')->where('name', 'Combo')->first();
+        $products = DB::table('products')->where('menu_id', $menuCombo->id)->get();
+        $comboArray = array('menu'=>$menuCombo, 'products'=>$products);
+
+        // For Individual Side/Entree
+        $menuIndividual = DB::table('menus')->where('name', 'Individual Side/Entree')->first();
+        $singles = DB::table('singles')->get();
+        $singleArray = array('menu'=>$menuIndividual, 'singles'=>$singles);
+
+        return view('order', compact('menus', 'comboArray', 'singleArray'));
+
+
+        // For Drinks
+        /*$drinks = DB::table('drinks')->get();
+        $cans = DB::table('cans')->get();
+        return view('order', compact('menus', 'comboArray', 'singleArray', 'drinks', 'cans'));*/
+
+        /*  For Individual Side/Entree
+        $sides = DB::table('sides')->get();
+        $productSides = DB::table('products')->where('menu_id', $menuIndividual->id)->where('category', 'Side')->get();
+        return view('order', compact('menus', 'comboArray', 'singleArray', 'sides', 'productSides'));*/
+
+        /* 
         $level1s = DB::table('menus')->where('level', 1)->get();
         $level1Arrays = array();
         foreach ($level1s as $level) {
             $products = DB::table('products')->where('menu_id', $level->id)->get();
             $level1Arrays[$level->id] = ['menu'=>$level, 'products'=>$products];
         }
-        //return view('order', compact('menus', 'level1Arrays'));
+        return view('order', compact('menus', 'level1Arrays'));*/
 
-        $product = DB::table('products')->where('id', 16)->first();
+        // Kid's Meal
+        /*$product = DB::table('products')->where('id', 16)->first();
         $productFountain = DB::table('products')->where('id', 29)->first();
         $fountains = DB::table('fountains')->get();
-        return view('order', compact('menus', 'level1Arrays', 'product', 'productFountain', 'fountains'));
+        return view('order', compact('menus', 'level1Arrays', 'product', 'productFountain', 'fountains'));*/
 
 
         // Old Menu

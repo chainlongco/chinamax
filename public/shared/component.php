@@ -4,12 +4,12 @@
     use Illuminate\Support\Facades\DB;
     use App\Shared\Cart;
 
-    function loadAppetizesChoices($menuName)
+    function loadAppetizesChoices($menu)
     {
         $quantity = 0;
         $html = "";
-        $products = DB::table('products')->where('menu_id', "1")->get();
-        $html .= "<h1>Choices for " .$menuName ."</h1>";
+        $products = DB::table('products')->where('menu_id', $menu->id)->get();
+        $html .= "<h1>Choices for " .$menu->name ."</h1>";
         $html .= "<div class=\"row\">";
         foreach ($products as $product) {
             $html .= "<div class=\"col-md-4 text-center\">";
@@ -54,19 +54,196 @@
     function loadDrinksChoices($menuName)
     {
         $html = "";
-        //$products = DB::table('products')->where('menu_id', "1")->get();
+
+        $drinks = DB::table('drinks')->get();
         $html .= "<h1>Choices for " .$menuName ."</h1>";
+        $html .= "<div class=\"row\">";
+                    foreach ($drinks as $drink) {
+                        $productDrinks = DB::table('products')->where('category', $drink->name)->get();
+                        if (count($productDrinks)==1) {
+                            $productDrink = $productDrinks[0];
+        $html .=            "<div class=\"col-md-4 text-center\">";
+        $html .=                "<div class=\"choiceItemDrink\" id=\"choiceItemDrink" .$drink->id ."\">";
+        $html .=                    "<input type=\"hidden\" id=\"productId" .$drink->id ."\" value=\"" .$productDrink->id ."\"/>";
+        $html .=                    "<img src=\"\\images\\" .$drink->gallery ."\" style=\"width:60%\">";
+        $html .=                    "<br>";
+                                    $tableName = $drink->tablename;
+                                    $price = number_format($productDrink->price, 2, '.', ',');
+                                    if ($tableName!="") {
+        $html .=                        "<span class=\"choiceItemDrinkName\" id=\"choiceItemDrinkName" .$drink->id ."\">" .$drink->name ." -- $" .$price ."</span>";
+        $html .=                        "<div style=\"padding-top:10px; font-size:20px;\">";
+        $html .=                            "<select name=\"selectDrink\" class=\"selectDrink\" id=\"selectDrink" .$drink->id ."\" style=\"height: 37px; padding: 0px 10px; \">";
+        $html .=                                "<option value=0 selected disable>Choose the flavor</option>";
+                                                $drinkLists = DB::table($tableName)->get(); // this is for cans table
+                                                foreach ($drinkLists as $drinkList) {
+        $html .=                                    "<option value=" .$drinkList->id .">" .$drinkList->name ."</option>";
+                                                }
+        $html .=                            "</select>";
+        $html .=                        "</div>";
+                                    } else {
+        $html .=                        "<span class=\"choiceItemDrinkName\" id=\"choiceItemDrinkName" .$drink->id ."\">" .$drink->name ."</span>";
+        $html .=                        "<br>";
+        $html .=                        "<span class=\"choiceItemPrice\">$" .$price ."</span>";
+        $html .=                        "<br>";
+                                    }
+        $html .=                    "<div class=\"quantityDiv mx-auto\">";
+        $html .=                        "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$drink->id ."\"><i class=\"fas fa-minus\"></i></button>";
+        $html .=                        "<input type=\"text\" class=\"form-control w-25 d-inline text-center quantity\" value=\"0\" id=\"quantity" .$drink->id ."\" disabled>";
+        $html .=                        "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$drink->id ."\"><i class=\"fas fa-plus\"></i></button>";
+        $html .=                    "</div>";
+        $html .=                    "<div>";
+        $html .=                        "<button type=\"button\" class=\"btn bg-light border addToCartForDrinkOnly\" id=\"addToCartForDrinkOnly" .$drink->id ."\" disabled>Add to Cart</button>";
+        $html .=                    "</div>";
+        $html .=                "</div>";
+        $html .=                "<br>";
+        $html .=            "</div>";
+                        } else {
+                            $tableName = $drink->tablename;           
+        $html .=            "<div class=\"col-md-4 text-center\">";
+        $html .=                "<div class=\"choiceItemDrink\" id=\"choiceItemDrink" .$drink->id ."\">";
+        $html .=                    "<img src=\"\\images\\" .$drink->gallery ."\" style=\"width:60%\">";
+        $html .=                    "<br>"; 
+        $html .=                    "<span class=\"choiceItemDrinkName\" id=\"choiceItemDrinkName" .$drink->id ."\">" .$drink->name ."</span>";
+        $html .=                    "<div style=\"padding-top:10px; font-size:20px;\">";
+        $html .=                        "<select name=\"selectDrink\" class=\"selectDrink\" id=\"selectDrink" .$drink->id ."\" style=\"height: 37px; padding: 0px 10px; \">";
+        $html .=                            "<option value=0 selected disable>Choose the flavor</option>";                                                
+                                            $drinkLists = DB::table($tableName)->get(); // this is for fountains and juices table
+                                            foreach ($drinkLists as $drinkList) {                                                     
+        $html .=                                "<option value=" .$drinkList->id .">" .$drinkList->name ."</option>";
+                                            }
+        $html .=                        "</select>";
+        $html .=                    "</div>";
+        $html .=                    "<div style=\"padding-top:10px; font-size:20px;\">";
+        $html .=                        "<select name=\"productDrinks\" id=\"productDrinks" .$drink->id ."\" style=\"height: 37px; padding: 0px 10px; \">";
+                                            foreach ($productDrinks as $productDrink) {
+        $html .=                                "<option value=" .$productDrink->id ."\">" .$productDrink->name ." - $" .$productDrink->price ."</option>";
+                                            }
+        $html .=                        "</select>";
+        $html .=                    "</div>";
+        $html .=                    "<div class=\"quantityDiv mx-auto\">";
+        $html .=                        "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$drink->id ."\"><i class=\"fas fa-minus\"></i></button>";
+        $html .=                        "<input type=\"text\" class=\"form-control w-25 d-inline text-center quantity\" value=\"0\" id=\"quantity" .$drink->id ."\" disabled>";
+        $html .=                        "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$drink->id ."\"><i class=\"fas fa-plus\"></i></button>";
+        $html .=                    "</div>";
+        $html .=                    "<div>";
+        $html .=                        "<button type=\"button\" class=\"btn bg-light border addToCartForDrinkOnly\" id=\"addToCartForDrinkOnly" .$drink->id ."\" disabled>Add to Cart</button>";
+        $html .=                    "</div>";
+        $html .=                "</div>";
+        $html .=                "<br>";
+        $html .=            "</div>";  
+                        }
+                    }
+        $html .= "</div>";
 
         return $html;
-    }
 
-    function loadIndividualSideEntreeChoices($menuName)
-    {
-        $html = "";
-        //$products = DB::table('products')->where('menu_id', "1")->get();
-        $html .= "<h1>Choices for " .$menuName ."</h1>";
 
-        return $html;
+                    /*<h1>Choices for Drink</h1>
+                    <div class="row">
+                        <?php
+                            foreach ($drinks as $drink) {
+                                $productDrinks = DB::table('products')->where('category', $drink->name)->get();
+                                if (count($productDrinks)==1) {
+                                    $productDrink = $productDrinks[0];
+                        ?>
+                                    <div class="col-md-4 text-center">
+                                        <div class="choiceItemDrink" id="choiceItemDrink{{ $drink->id }}">
+                                            <input type="hidden" id="productId{{ $drink->id }}" value="{{ $productDrink->id }}"/>
+                                            <img src="\images\{{ $drink->gallery }}" style="width:60%">
+                                            <br>
+                                            
+                                            <?php
+                                                $tableName = $drink->tablename;
+                                                $price = number_format($productDrink->price, 2, '.', ',');
+                                                if ($tableName!="") {
+                                            ?>
+
+                                                    <span class="choiceItemDrinkName" id="choiceItemDrinkName{{ $drink->id }}">{{ $drink->name }} -- ${{ $price }}</span>
+                                                    <div style="padding-top:10px; font-size:20px;">
+                                                        <select name="selectDrink" class="selectDrink" id="selectDrink{{ $drink->id }}" style="height: 37px; padding: 0px 10px; ">
+                                                            <option value=0 selected disable>Choose the flavor</option>
+                                                            <?php
+                                                                $drinkLists = DB::table($tableName)->get(); // this is for cans table
+                                                                foreach ($drinkLists as $drinkList) {
+                                                            ?>        
+                                                                    <option value={{ $drinkList->id }}>{{ $drinkList->name }}</option>
+                                                            <?php
+                                                                }
+                                                            ?>
+                                                        </select>
+                                                    </div>
+
+                                            <?php
+                                                } else {
+                                            ?>
+
+                                                <span class="choiceItemDrinkName" id="choiceItemDrinkName{{ $drink->id }}">{{ $drink->name }}</span>
+                                                <br>
+                                                <span class="choiceItemPrice">${{ $price }}</span>
+                                                <br>
+
+                                            <?php
+                                                }
+                                            ?>
+
+                                            <div class="quantityDiv mx-auto">
+                                                <button type="button" class="btn bg-light border rounded-circle quantityMinus" id="quantityMinus{{ $drink->id }}"><i class="fas fa-minus"></i></button>
+                                                <input type="text" class="form-control w-25 d-inline text-center quantity" value="0" id="quantity{{ $drink->id }}" disabled>
+                                                <button type="button" class="btn bg-light border rounded-circle quantityPlus" id="quantityPlus{{ $drink->id }}"><i class="fas fa-plus"></i></button>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn bg-light border addToCartForDrinkOnly" id="addToCartForDrinkOnly{{ $drink->id }}" disabled>Add to Cart</button>
+                                            </div>
+                                        </div>
+                                        <br>
+                                    </div>
+                        <?php
+                                } else {
+                                    $tableName = $drink->tablename;
+                        ?>            
+                                    <div class="col-md-4 text-center">
+                                        <div class="choiceItemDrink" id="choiceItemDrink{{ $drink->id }}">
+                                            <img src="\images\{{ $drink->gallery }}" style="width:60%">
+                                            <br> 
+
+                                            <span class="choiceItemDrinkName" id="choiceItemDrinkName{{ $drink->id }}">{{ $drink->name }}</span>
+                                            <div style="padding-top:10px; font-size:20px;">
+                                                <select name="selectDrink" class="selectDrink" id="selectDrink{{ $drink->id }}" style="height: 37px; padding: 0px 10px; ">
+                                                    <option value=0 selected disable>Choose the flavor</option>
+                                                    <?php
+                                                        $drinkLists = DB::table($tableName)->get(); // this is for fountains and juices table
+                                                        foreach ($drinkLists as $drinkList) {
+                                                    ?>        
+                                                            <option value={{ $drinkList->id }}>{{ $drinkList->name }}</option>
+                                                    <?php
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <div style="padding-top:10px; font-size:20px;">
+                                                <select name="productDrinks" id="productDrinks{{ $drink->id }}" style="height: 37px; padding: 0px 10px; ">
+                                                    @foreach ($productDrinks as $productDrink)
+                                                        <option value={{ $productDrink->id }}>{{ $productDrink->name }} - ${{ $productDrink->price }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
+                                            <div class="quantityDiv mx-auto">
+                                                <button type="button" class="btn bg-light border rounded-circle quantityMinus" id="quantityMinus{{ $drink->id }}"><i class="fas fa-minus"></i></button>
+                                                <input type="text" class="form-control w-25 d-inline text-center quantity" value="0" id="quantity{{ $drink->id }}" disabled>
+                                                <button type="button" class="btn bg-light border rounded-circle quantityPlus" id="quantityPlus{{ $drink->id }}"><i class="fas fa-plus"></i></button>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn bg-light border addToCartForDrinkOnly" id="addToCartForDrinkOnly{{ $drink->id }}" disabled>Add to Cart</button>
+                                            </div>
+                                        </div>
+                                        <br>
+                                    </div>
+                        <?php  
+                                }
+                            }    
+                        ?>
+                    </div>*/
     }
 
     function loadComboChoices($product)
@@ -79,7 +256,7 @@
         $sideQuantitySummary = "Choose " .$combo->side ." Side";
         $entreeQuantitySummary = "Choose " .$combo->entree ." Entree";
         if ($combo->side == 1) {
-            $sideQuantitySummary .= " (or Half and Half)";
+            $sideQuantitySummary .= " (or Half/Half)";
         } else {
             $sideQuantitySummary .= "s";
         }
@@ -252,7 +429,7 @@
                     /*<div class="row">
                         <div class="text-start">
                             <br>
-                            <h3>Choose One Side (or Half and Half)</h3>
+                            <h3>Choose One Side (or Half/Half)</h3>
                             <br>
                         </div>
                         @foreach($sides as $side)
@@ -270,6 +447,7 @@
                                         <button type="button" class="btn bg-light border rounded-circle sideQuantityPlus" id="sideQuantityPlus{{ $side->id }}"><i class="fas fa-plus"></i></button>
                                     </div>
                                 </div>
+                                <br>
                             </div>
                         @endforeach
 
@@ -372,7 +550,7 @@
                                     @foreach ($fountains as $fountain)
                                         <option value={{ $fountain->id }}>{{ $fountain->name }}</option>
                                     @endforeach
-                            </select>
+                                </select>
                             </div>
                         </div>
                     </div>*/
@@ -402,15 +580,6 @@
                     @endforeach*/	
     }
 
-    function loadKidsMealChoices($menuName)
-    {
-        $html = "";
-        //$products = DB::table('products')->where('menu_id', "1")->get();
-        $html .= "<h1>Choices for " .$menuName ."</h1>";
-
-        return $html;
-    }
-
     function loadSideChoices($sides)
     {
         $html = "";
@@ -423,11 +592,120 @@
             $html .=            "</div>";
             $html .=            "<div class=\"selectedDiv\">";
             $html .=                "<h3 class=\"sideSelected\" id=\"sideSelected" .$side->id ."\"></h3>";
+            $html .=                "<div class=\"sideQuantityIncrementDiv mx-auto\" id=\"sideQuantityIncrementDiv" .$side->id ."\" style=\"display: none;\">";
+            $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle sideQuantityMinus\" id=\"sideQuantityMinus" .$side->id ."\"><i class=\"fas fa-minus\"></i></button>";
+            $html .=                    "<input type=\"text\" class=\"form-control w-25 d-inline text-center sideQuantity\" value=\"0\" id=\"sideQuantity" .$side->id ."\" disabled>";
+            $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle sideQuantityPlus\" id=\"sideQuantityPlus" .$side->id ."\"><i class=\"fas fa-plus\"></i></button>";
+            $html .=                "</div>";
             $html .=            "</div>";
             $html .=        "</div>";
         }
         return $html;
     }
+
+    function loadIndividualSideChoices($single, $mainMenuId)
+    {
+        $sides = DB::table('sides')->get();
+        $productSides = DB::table('products')->where('menu_id', $mainMenuId)->where('category', 'Side')->get();
+
+        $html = "";
+        $html .= "<h1>Choices for " .$single->name ."</h1>";
+        $html .= "<div class=\"row\">";    
+                    foreach($sides as $side) {
+        $html .=        "<div class=\"col-md-4 text-center\">";
+        $html .=            "<div class=\"choiceItemSide\" id=\"choiceItemSide" .$side->id ."\">";
+        $html .=                "<img src=\"\\images\\" .$side->gallery ."\" style=\"width:60%\">";
+        $html .=                "<br>";
+        $html .=                "<span class=\"choiceItemSideName\" id=\"choiceItemSideName" .$side->id ."\">" .$side->name ."</span>";
+        $html .=                "<div>";
+        $html .=                    "<select name=\"productSides\" id=\"productSides" .$side->id ."\" style=\"padding:5px 10px; font-size:18px;\">";
+                                        foreach ($productSides as $productSide) {
+        $html .=                            "<option value=" .$productSide->id .">" .$productSide->name ." - $" .$productSide->price ."</option>";
+                                        }    
+        $html .=                    "</select>";
+        $html .=                "</div>";
+        $html .=                "<div class=\"quantityDiv mx-auto\">";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$side->id ."\"><i class=\"fas fa-minus\"></i></button>";
+        $html .=                    "<input type=\"text\" class=\"form-control w-25 d-inline text-center quantity\" value=\"0\" id=\"quantity" .$side->id ."\" disabled>";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$side->id ."\"><i class=\"fas fa-plus\"></i></button>";
+        $html .=                "</div>";
+        $html .=                "<div>";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border addToCartForSide\" id=\"addToCartForSide" .$side->id ."\" disabled>Add to Cart</button>";
+        $html .=                "</div>";
+        $html .=            "</div>";
+        $html .=            "<br>";
+        $html .=        "</div>";
+                    }
+        $html .= "</div>";
+
+        return $html;
+
+                    /*<div class="row">    
+                        @foreach($sides as $side)
+                            <div class="col-md-4 text-center">
+                                <div class="choiceItemSide" id="choiceItemSide{{ $side->id }}">
+                                    <img src="\images\{{ $side->gallery }}" style="width:60%">
+                                    <br>
+                                    <span class="choiceItemSideName" id="choiceItemSideName{{ $side->id }}">{{ $side->name }}</span>
+                                    <div>
+                                        <select name="productSides" id="productSides{{ $side->id }}" style="padding:5px 10px; font-size:18px;">
+                                            @foreach ($productSides as $productSide)
+                                                <option value={{ $productSide->id }}>{{ $productSide->name }} - ${{ $productSide->price }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="quantityDiv mx-auto">
+                                        <button type="button" class="btn bg-light border rounded-circle quantityMinus" id="quantityMinus{{ $side->id }}"><i class="fas fa-minus"></i></button>
+                                        <input type="text" class="form-control w-25 d-inline text-center quantity" value="0" id="quantity{{ $side->id }}" disabled>
+                                        <button type="button" class="btn bg-light border rounded-circle quantityPlus" id="quantityPlus{{ $side->id }}"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn bg-light border addToCartForSingle" id="addToCartForSingle{{ $side->id }}" disabled>Add to Cart</button>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                        @endforeach
+                    </div>*/
+    }
+
+    function loadIndividualEntreeChoices($single, $mainMenuId, $category)
+    {
+        $entrees = DB::table('entrees')->where('category', $category)->get();
+        $productEntrees = DB::table('products')->where('menu_id', $mainMenuId)->where('category', $category)->get();
+
+        $html = "";
+        $html .= "<h1>Choices for " .$single->name ."</h1>";
+        $html .= "<div class=\"row\">";    
+                    foreach($entrees as $entree) {
+        $html .=        "<div class=\"col-md-4 text-center\">";
+        $html .=            "<div class=\"choiceItemEntree\" id=\"choiceItemEntree" .$entree->id ."\">";
+        $html .=                "<img src=\"\\images\\" .$entree->gallery ."\" style=\"width:60%\">";
+        $html .=                "<br>";
+        $html .=                "<span class=\"choiceItemEntreeName\" id=\"choiceItemEntreeName" .$entree->id ."\">" .$entree->name ."</span>";
+        $html .=                "<div>";
+        $html .=                    "<select name=\"productEntrees\" id=\"productEntrees" .$entree->id ."\" style=\"padding:5px 10px; font-size:18px;\">";
+                                        foreach ($productEntrees as $productEntree) {
+        $html .=                            "<option value=" .$productEntree->id .">" .$productEntree->name ." - $" .$productEntree->price ."</option>";
+                                        }    
+        $html .=                    "</select>";
+        $html .=                "</div>";
+        $html .=                "<div class=\"quantityDiv mx-auto\">";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$entree->id ."\"><i class=\"fas fa-minus\"></i></button>";
+        $html .=                    "<input type=\"text\" class=\"form-control w-25 d-inline text-center quantity\" value=\"0\" id=\"quantity" .$entree->id ."\" disabled>";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$entree->id ."\"><i class=\"fas fa-plus\"></i></button>";
+        $html .=                "</div>";
+        $html .=                "<div>";
+        $html .=                    "<button type=\"button\" class=\"btn bg-light border addToCartForEntree\" id=\"addToCartForEntree" .$entree->id ."\" disabled>Add to Cart</button>";
+        $html .=                "</div>";
+        $html .=            "</div>";
+        $html .=            "<br>";
+        $html .=        "</div>";
+                    }
+        $html .= "</div>";
+
+        return $html;
+                }
 
     function cartCountSpanElement()
     {
@@ -480,16 +758,23 @@
         //$totalPrice = $product->price + (double)($extraCharge);
         $totalPriceDisplay = "";
         if ($extraCharge > 0) {
-            $totalPriceDisplay = "$" .$product->price ." + $" .$extraCharge ." = $" .$totalPricePerItem;
+            $totalPriceDisplay = "$" .number_format($product->price, 2, '.', ',') ." + $" .number_format($extraCharge, 2, '.', ',') ." = $" .number_format($totalPricePerItem, 2, '.', ',');
         } else {
-            $totalPriceDisplay = "$" .$product->price;
+            $totalPriceDisplay = "$" .number_format($product->price, 2, '.', ',');
         }
+        
+        // Handle image for Individaul Side/Entree and Drink
+        $image = $product->gallery;
+        if ($image == "") {
+            $image = retrieveImageFromSubItmes($subItems);
+        }
+
         $element = "
             <form action=\"/cart\" method=\"get\" class=\"cart-items\">
                 <div class=\"border rounded\">
                     <div class=\"row bg-white\">
                         <div class=\"col-md-3\">
-                            <img src=\"\images\\" .$product->gallery . "\" style=\"width: 100%\">
+                            <img src=\"\images\\" .$image . "\" style=\"width: 100%\">
                                       
                         </div>
                         <div class=\"col-md-6\">
@@ -521,6 +806,11 @@
         $side = "";
         $entree = "";
         $drink = "";
+        $drinkOnly = "";
+
+        if (($subItems == null) || count($subItems) == 0) {
+            return $summary;
+        }
 
         $keys = array_keys($subItems);
         foreach ($keys as $key) {         
@@ -532,10 +822,18 @@
                 $quantity = "1/2";
             }
             if ($category == "Side") {
-                $side = $side .$item->name ."(" .$quantity .") ";
+                if (count($keys) > 1) { // This means combo not Individual Side/Entree 
+                    $side = $side .$item->name ."(" .$quantity .") ";
+                } else {
+                    $side = $side .$item->name ." ";
+                } 
             }
             if ($category == "Entree") {
-                $entree = $entree .$item->name ."(" .$quantity .") ";
+                if (count($keys) > 1) { // This means combo not Individual Side/Entree 
+                    $entree = $entree .$item->name ."(" .$quantity .") ";
+                } else {
+                    $entree = $entree .$item->name ." ";
+                }
             }
             if ($category == "Drink") {
                 $selectDrinkSummary = "";
@@ -544,9 +842,17 @@
                      $selectDrinkSummary = " - " .$selectDrink->name;
                 }
                 if ($item->price > 0) {
-                    $drink = $drink .$item->name ." - extra charge: $" .$item->price ."(" .$quantity .") ";
+                    $drink = $drink .$item->name ." - extra charge: $" .number_format($item->price, 2, '.', ',');
                 } else {
-                    $drink = $drink .$item->name .$selectDrinkSummary ."(" .$quantity .") ";
+                    $drink = $drink .$item->name .$selectDrinkSummary;
+                }     
+            }
+            if ($category == "DrinkOnly") {
+                $selectDrinkSummary = "";
+                if (array_key_exists('selectDrink', $subItems[$key])) {
+                     $selectDrink = $subItems[$key]['selectDrink'];
+                     $selectDrinkSummary = "Flavor: " .$selectDrink->name;
+                     $drinkOnly = $drinkOnly .$selectDrinkSummary;
                 }
             }
         }
@@ -560,12 +866,19 @@
         if ($drink != "") {
             $summary .= "Drink: " .$drink;
         }
+        if ($drinkOnly != "") {
+            $summary .= $drinkOnly;
+        }
 
         return $summary;
     }
 
     function retrieveExtraCharge($subItems) {
         $extraCharge = 0;
+
+        if (($subItems == null) || count($subItems) == 0) {
+            return $extraCharge;
+        }
 
         $keys = array_keys($subItems);
         foreach ($keys as $key) {         
@@ -581,6 +894,27 @@
         }
 
         return $extraCharge;
+    }
+
+    function retrieveImageFromSubItmes($subItems) {
+        // This case for Individual Side/Entree, it should just have one subItem in $subItems
+            //$category = $subItems[$key]['category'];  --> if this is Side
+            //$quantity = $subItems[$key]['quantity'];
+            //$item = $subItems[$key]['item'];          --> Then, this will be the record from sides table
+
+        $image = "";
+
+        if (($subItems == null) || count($subItems) == 0) {
+            return $image;
+        }
+
+        $keys = array_keys($subItems);
+        foreach ($keys as $key) {
+            $item = $subItems[$key]['item'];
+            $image = $item->gallery;
+        }
+
+        return $image;
     }
 
     function priceDetailDivElement()

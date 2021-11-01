@@ -19,7 +19,7 @@
     font-size: 15px;
 }
 
-.productItem {
+.productItem, .singleItem {
     margin: auto;
     width: 100%;
     border: 3px solid lightgray;
@@ -28,7 +28,7 @@
     font-size: 20px;
 }
 
-.productItemName {
+.productItemName, .singleItemName {
     font-size: 20px;
 }
 
@@ -36,7 +36,7 @@
     font-size: 15px;
 }
 
-.productItemDescription {
+.productItemDescription, .singleItemDescription {
     font-size: 15px;
 }
 
