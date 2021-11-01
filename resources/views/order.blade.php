@@ -172,6 +172,10 @@
                 $(addToCartElementId).prop("disabled", false);
                 $(addToCartElementId).css("color","red");
 
+                var addToCartForComboElementId = "#addToCartForCombo" + productId;
+                $(addToCartForComboElementId).prop("disabled", false);
+                $(addToCartForComboElementId).css("color","red");
+
                 var addToCartForSideElementId = "#addToCartForSide" + productId;
                 $(addToCartForSideElementId).prop("disabled", false);
                 $(addToCartForSideElementId).css("color","red");

@@ -233,8 +233,8 @@ function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drin
 
     var orderQuantity = $(".quantity").val();
     if (orderQuantity == 0) {
-        $(".addToCart").prop('disabled', true);
-        $(".addToCart").css('color', 'gray');
+        $(".addToCartForCombo").prop('disabled', true);
+        $(".addToCartForCombo").css('color', 'gray');
         return;
     }
 
@@ -246,22 +246,22 @@ function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drin
 
     if (drinkMaxQuantity == undefined) {
         if ((totalSideQuantity == sideMaxQuantity) && (totalEntreeQuantity == entreeMaxQuantity)) {
-            $(".addToCart").prop('disabled', false);
-            $(".addToCart").css('color', 'red');
+            $(".addToCartForCombo").prop('disabled', false);
+            $(".addToCartForCombo").css('color', 'red');
         } else {
-            $(".addToCart").prop('disabled', true);
-            $(".addToCart").css('color', 'gray');
+            $(".addToCartForCombo").prop('disabled', true);
+            $(".addToCartForCombo").css('color', 'gray');
         }
     } else {
         // For Drink
         var totalDrinkQuantity = retrieveTotalDrinkQuantity();
 
         if ((totalSideQuantity == sideMaxQuantity) && (totalEntreeQuantity == entreeMaxQuantity) && (totalDrinkQuantity == drinkMaxQuantity)) {
-            $(".addToCart").prop('disabled', false);
-            $(".addToCart").css('color', 'red');
+            $(".addToCartForCombo").prop('disabled', false);
+            $(".addToCartForCombo").css('color', 'red');
         } else {
-            $(".addToCart").prop('disabled', true);
-            $(".addToCart").css('color', 'gray');
+            $(".addToCartForCombo").prop('disabled', true);
+            $(".addToCartForCombo").css('color', 'gray');
         }
     }
 }

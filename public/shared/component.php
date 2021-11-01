@@ -419,7 +419,7 @@
         $html .=        "</div>";
         $html .=        "<div>";
         $html .=            "<br>";
-        $html .=            "<button type=\"button\" class=\"btn bg-light border addToCart\" disabled id=\"addToCart" .$product->id ."\">Add to Cart</button>";
+        $html .=            "<button type=\"button\" class=\"btn bg-light border addToCartForCombo\" disabled id=\"addToCartForCombo" .$product->id ."\">Add to Cart</button>";
         $html .=        "</div>";
         $html .=    "</div>";
         $html .= "</div>";
@@ -530,7 +530,7 @@
                             </div>
                             <div>
                                 <br>
-                                <button type="button" class="btn bg-light border addToCart" id="addToCart{{ $product1->id }}">Add to Cart</button>
+                                <button type="button" class="btn bg-light border addToCartForCombo" id="addToCartForCombo{{ $product1->id }}">Add to Cart</button>
                             </div>
                         </div>
                     </div>*/
