@@ -782,15 +782,15 @@
                             <h5><small style=\"color:red\">" .$orderSummary ."</small> </h5>
                             <h5 class=\"pt-1\">" .$totalPriceDisplay ."</h5>
                             <div class=\"pb-1\">
-                                <button type=\"submit\" class=\"btn btn-warning\">Edit</button>
+                                <button type=\"submit\" class=\"btn btn-warning edit\" id=\"edit" .$key ."AND" .$product->id ."\" data-bs-toggle=\"modal\" data-bs-target=\"#editModal\">Edit</button>
                                 <button type=\"button\" class=\"btn btn-danger mx-2 remove\" id=\"remove" .$key ."AND" .$product->id ."\">Remove</button>
                             </div>
                         </div>
                         <div class=\"col-md-3\">
                             <div class=\"py-5\">
-                                <button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinus\" id=\"quantityMinus" .$key ."AND" .$product->id ."\"><i class=\"fas fa-minus\"></i></button>
-                                <input type=\"text\" class=\"form-control w-25 d-inline text-center\" value=\"" .$quantity ."\" id=\"quantity" .$key ."AND" .$product->id ."\" disabled>
-                                <button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlus\" id=\"quantityPlus" .$key ."AND" .$product->id ."\"><i class=\"fas fa-plus\"></i></button>
+                                <button type=\"button\" class=\"btn bg-light border rounded-circle quantityMinusForCart\" id=\"quantityMinusForCart" .$key ."AND" .$product->id ."\"><i class=\"fas fa-minus\"></i></button>
+                                <input type=\"text\" class=\"form-control w-25 d-inline text-center\" value=\"" .$quantity ."\" id=\"quantityForCart" .$key ."AND" .$product->id ."\" disabled>
+                                <button type=\"button\" class=\"btn bg-light border rounded-circle quantityPlusForCart\" id=\"quantityPlusForCart" .$key ."AND" .$product->id ."\"><i class=\"fas fa-plus\"></i></button>
                             </div>
                         </div>
                     </div>

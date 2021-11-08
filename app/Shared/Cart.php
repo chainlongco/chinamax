@@ -51,6 +51,27 @@ Class Cart {
         }
     }
 
+    public function updateItem($serialNumber, $productId, $quantity, $subItems) {
+        $originalProductId = $this->items[$serialNumber]['item']->id;
+        if ($originalProductId != $productId) { // Check if productId changed for Drinks: Fountain and Juice (size changed) and Individual Side/Entrees (size changed)
+            $this->updateItemQuantity($serialNumber, 0);    
+            $newProduct = DB::table('products')->where('id', $productId)->first();
+            $this->addNewItem($newProduct, $quantity, $subItems);
+        } else {
+            $this->updateItemQuantity($serialNumber, $quantity);
+            if ($quantity != 0) {
+                $subItems = $this->processSubItems($subItems);
+                $originalStoredItem = $this->items[$serialNumber];
+                $originalItem = $originalStoredItem['item'];
+                $originalSubItems = $originalStoredItem['subItems'];
+                $originalQuantity = $originalStoredItem['quantity'];
+                $originalTotalPricePerItem = $originalStoredItem['totalPricePerItem'];
+                $newStoredItem = ['item'=>$originalItem, 'subItems'=>$subItems, 'quantity'=>$originalQuantity, 'totalPricePerItem'=>$originalTotalPricePerItem];
+                $this->items[$serialNumber] = $newStoredItem;
+            }
+        }
+    }
+
     protected function canNewItemBeMerged($item, $quantity, $subItems) {
         $keys = Array_keys($this->items);
         foreach ($keys as $key) {

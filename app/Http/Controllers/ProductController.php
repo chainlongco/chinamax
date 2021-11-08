@@ -143,7 +143,153 @@ class ProductController extends Controller
         return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
     }
 
+    /*public function editWithSerialNumber(Request $request) {
+        $menus = DB::table('menus')->where('level', 0)->get();
+        
+        // For Combo
+        $menuCombo = DB::table('menus')->where('name', 'Combo')->first();
+        $products = DB::table('products')->where('menu_id', $menuCombo->id)->get();
+        $comboArray = array('menu'=>$menuCombo, 'products'=>$products);
 
+        // For Individual Side/Entree
+        $menuIndividual = DB::table('menus')->where('name', 'Individual Side/Entree')->first();
+        $singles = DB::table('singles')->get();
+        $singleArray = array('menu'=>$menuIndividual, 'singles'=>$singles);
+
+        //return view('order', compact('menus', 'comboArray', 'singleArray'));
+
+        $serialNumber = $request->serialNumber;
+        return view('order', compact('menus', 'comboArray', 'singleArray', 'serialNumber'));
+    }*/
+
+    public function editWithSerialNumber($serialNumber) {
+        $menus = DB::table('menus')->where('level', 0)->get();
+        
+        // For Combo
+        $menuCombo = DB::table('menus')->where('name', 'Combo')->first();
+        $products = DB::table('products')->where('menu_id', $menuCombo->id)->get();
+        $comboArray = array('menu'=>$menuCombo, 'products'=>$products);
+
+        // For Individual Side/Entree
+        $menuIndividual = DB::table('menus')->where('name', 'Individual Side/Entree')->first();
+        $singles = DB::table('singles')->get();
+        $singleArray = array('menu'=>$menuIndividual, 'singles'=>$singles);
+
+        //return view('order', compact('menus', 'comboArray', 'singleArray'));
+
+        return view('order', compact('menus', 'comboArray', 'singleArray', 'serialNumber'));
+    }
+
+    public function orderEdit(Request $request) {
+        $serialNumber = $request->serialNumber;
+        $cart = new Cart(Session::get('cart'));
+        $items = $cart->items;
+        $item = $items[$serialNumber];
+        $product = $item['item'];
+        $quantity = $item['quantity'];
+        $subItems = $item['subItems'];
+        $totalPricePerItem = $item['totalPricePerItem'];
+        if ($product->menu_id == 1) {   // Appetizers
+            return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity]);
+        } else if ($product->menu_id == 2) {    // Drinks
+            $drink = DB::table('drinks')->where('name', $product->category)->first();
+            if ($drink->tablename == "") {  // Water and Bottle Water
+                return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'drink'=>$drink]);
+            } else {
+                $sizeProducts = DB::table('products')->where('category', $product->category)->get();
+                $keys = array_keys($subItems);
+                foreach ($keys as $key) {
+                    $category = $subItems[$key]['category'];
+                    if ($category == "DrinkOnly") {
+                        if (array_key_exists('selectDrink', $subItems[$key])) {
+                             $selectDrink = $subItems[$key]['selectDrink'];
+                        }
+                    }
+                }
+                $selectDrinks = DB::table($drink->tablename)->get();
+                if ($sizeProducts->count() == 1) {   
+                    return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'drink'=>$drink, 'selectDrinks'=>$selectDrinks, 'selectDrink'=>$selectDrink, 'sizeProducts'=>$sizeProducts]);
+                } else {    // Greater than 1 -- need Select Box for Fountain Drink and Fresh Juice -- size
+                    return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'drink'=>$drink, 'selectDrinks'=>$selectDrinks, 'selectDrink'=>$selectDrink, 'sizeProducts'=>$sizeProducts]);
+                }             
+            }
+        } else if ($product->menu_id == 4) {
+            if ($product->category == "Side") {
+                $productSides = DB::table('products')->where('category', "Side")->get();
+                $keys = array_keys($subItems);
+                foreach ($keys as $key) {
+                    $category = $subItems[$key]['category'];
+                    if ($category == "Side") {
+                        $side = $subItems[$key]['item'];
+                    }
+                }
+                return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'productSidesOrEntrees'=>$productSides, 'sideOrEntree'=>$side]);
+            } else if ($product->category == "Chicken" || $product->category == "Beef" || $product->category == "Shrimp") {
+                if ($product->category == "Chicken") {
+                    $productEntrees = DB::table('products')->where('category', "Chicken")->get();
+                } else if ($product->category == "Beef") {
+                    $productEntrees = DB::table('products')->where('category', "Beef")->get();
+                } else if ($product->category == "Shrimp") {
+                    $productEntrees = DB::table('products')->where('category', "Shrimp")->get();
+                }
+                
+                $keys = array_keys($subItems);
+                foreach ($keys as $key) {
+                    $category = $subItems[$key]['category'];
+                    if ($category == "Entree") {
+                        $entree = $subItems[$key]['item'];
+                    }
+                }
+                return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'productSidesOrEntrees'=>$productEntrees, 'sideOrEntree'=>$entree]);
+            } else if ($product->category == "Beef") {
+
+            } else if ($product->category == "Shrimp") {
+
+            }
+        } else {
+            return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'subItems'=>$subItems, 'totalPricePerItem'=>$totalPricePerItem]);
+        }
+    }
+
+    public function orderUpdated(Request $request)
+    {
+        $serialNumber = $request->serialNumber;
+        $quantity = $request->quantity;
+        $productId = $request->productId;
+        //$subItems = json_decode($request->subItems, true);
+        $subItems = $request->subItems;
+        $oldCart = Session::get('cart');
+        $newCart = new Cart($oldCart);
+        $newCart->updateItem($serialNumber, $productId, $quantity, $subItems);
+        //$newCart->updateItemQuantity($serialNumber, $quantity);
+        Session::put('cart', $newCart);
+        //$priceDetail = retrievePriceDetail();
+        //$items = $newCart->items;   //$storedItem = ['item'=>$item, 'subItem'=>$subItem, 'quantity'=>$quantity];
+        //return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
+
+
+        /*$productId = $request->productId;
+        $quantity = $request->quantity;
+        $subItems = json_decode($request->subItems, true);
+
+        $combo = DB::table('combos')->where('product_id', $productId)->first();
+        $pass = $this->validateSideAndEntreeAndDrink($productId, $subItems);
+        if(!$pass) {
+            return response()->json(['status'=>0, 'message'=>"Please select side and entree before you add order to cart."]);
+        }
+        
+        $product = DB::table('products')->where('id', $productId)->first();
+        $oldCart = null;
+        $count = 0;
+        if (Session::has('cart')) {
+            $oldCart = Session::get('cart');      
+        }
+        $newCart = new Cart($oldCart);
+        $newCart->updateItemQuantity($product, $quantity);
+        Session::put('cart', $newCart);
+        $count = $newCart->totalQuantity;
+        echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";*/
+    }
 
 
 

@@ -102,15 +102,15 @@ function orderListElement(key, product, quantity, subItems, totalPricePerItem)
     html += '                   <h5><small style="color:red">' + orderSummary + '</small> </h5>';
     html += '                   <h5 class=\"pt-1\">' + totalPriceDisplay + '</h5>';
     html += '                   <div class="pb-1">';
-    html += '                       <button type="submit" class="btn btn-warning">Edit</button>';
+    html += '                       <button type="submit" class="btn btn-warning edit" id="edit' + key + "AND" + product['id'] + '" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>';
     html += '                       <button type="button" class="btn btn-danger mx-2 remove" id="remove' + key + "AND" + product['id'] + '">Remove</button>';
     html += '                   </div>';
     html += '               </div>'
     html += '               <div class="col-md-3">';
     html += '                   <div class="py-5">';
-    html += '                       <button type="button" class="btn bg-light border rounded-circle quantityMinus" id="quantityMinus' + key + "AND" + product['id'] + '"><i class="fas fa-minus"></i></button>';
-    html += '                       <input type="text" class="form-control w-25 d-inline text-center" value="' + quantity + '" id="quantity' + key + "AND" + product['id'] + '" disabled>';
-    html += '                       <button type="button" class="btn bg-light border rounded-circle quantityPlus" id="quantityPlus' + key + "AND" + product['id'] + '"><i class="fas fa-plus"></i></button>';
+    html += '                       <button type="button" class="btn bg-light border rounded-circle quantityMinusForCart" id="quantityMinusForCart' + key + "AND" + product['id'] + '"><i class="fas fa-minus"></i></button>';
+    html += '                       <input type="text" class="form-control w-25 d-inline text-center" value="' + quantity + '" id="quantityForCart' + key + "AND" + product['id'] + '" disabled>';
+    html += '                       <button type="button" class="btn bg-light border rounded-circle quantityPlusForCart" id="quantityPlusForCart' + key + "AND" + product['id'] + '"><i class="fas fa-plus"></i></button>';
     html += '                   </div>';
     html += '               </div>';
     html += '           </div>';
@@ -335,4 +335,171 @@ function enableAddToCartButtonForDrinkOnly(drinkId) {
             $("#addToCartForDrinkOnly" + drinkId).prop('disabled', true);
         }
     }
+}
+           
+function loadEditModalForAppetizers(serialNumber, product, quantity) {
+    var html = "";
+    html += '<div class="modal-body">';
+    html += '   <div class="col-md-12 text-center">';
+    html += '       <div class="choiceItem">';
+    html += '           <img src="\\images\\' + product['gallery'] + '" style="width:60%">';
+    html += '           <br>';
+    html += '           <span class="choiceItemName">' + product['name'] + '</span>';
+    html += '           <br>';
+    html += '           <span class="choiceItemPrice">$' + product['price'].toFixed(2) + '</span>';
+    html +=             '<br>';
+    html += '           <div class="quantityDiv mx-auto">';
+    html += '               <button type="button" class="btn bg-light border rounded-circle quantityMinusForUpdate" id="quantityMinusForUpdate' + product['id'] + '"><i class="fas fa-minus"></i></button>';
+    html += '               <input type="text" class="form-control w-25 d-inline text-center quantityForUpdate" value="' + quantity + '" id="quantityForUpdate' + product['id'] + '" disabled>';
+    html += '               <button type="button" class="btn bg-light border rounded-circle quantityPlusForUpdate" id="quantityPlusForUpdate' + product['id'] + '"><i class="fas fa-plus"></i></button>';
+    html += '           </div>';          
+    html += '       </div>';
+    html += '   </div>';
+    html += '</div>';
+    html += '<div class="modal-footer">';
+    html += '   <button type="button" class="btn btn-primary updateCart" id="updateCart' + serialNumber + 'AND' + product['id'] + '">Update</button>';
+    html += '   <button type="button" class="btn btn-danger cancelModal" data-bs-dismiss="modal">Cancel</button>';
+    html += '</div>';
+    return html;
+}
+
+function loadEditModalForDrinksWithoutSelectBox(serialNumber, product, quantity, drink) {
+    var html = "";
+    html += '<div class="modal-body">';
+    html += '   <div class="col-md-12 text-center">';
+    html += '       <div class="choiceItem">';
+    html += '           <input type="hidden" id="drinkId" value=' + drink['id'] + '>';
+    html += '           <img src="\\images\\' + drink['gallery'] + '" style="width:60%">';
+    html += '           <br>';
+    html += '           <span class="choiceItemName">' + product['name'] + '</span>';
+    html += '           <br>';
+    html += '           <span class="choiceItemPrice">$' + product['price'].toFixed(2) + '</span>';
+    html +=             '<br>';
+    html += '           <div class="quantityDiv mx-auto">';
+    html += '               <button type="button" class="btn bg-light border rounded-circle quantityMinusForUpdate" id="quantityMinusForUpdate' + product['id'] + '"><i class="fas fa-minus"></i></button>';
+    html += '               <input type="text" class="form-control w-25 d-inline text-center quantityForUpdate" value="' + quantity + '" id="quantityForUpdate' + product['id'] + '" disabled>';
+    html += '               <button type="button" class="btn bg-light border rounded-circle quantityPlusForUpdate" id="quantityPlusForUpdate' + product['id'] + '"><i class="fas fa-plus"></i></button>';
+    html += '           </div>';          
+    html += '       </div>';
+    html += '   </div>';
+    html += '</div>';
+    html += '<div class="modal-footer">';
+    html += '   <button type="button" class="btn btn-primary updateCart" id="updateCart' + serialNumber + 'AND' + product['id'] + '">Update</button>';
+    html += '   <button type="button" class="btn btn-danger cancelModal" data-bs-dismiss="modal">Cancel</button>';
+    html += '</div>';
+    return html;
+}
+
+function loadEditModalForDrinksWithSelectDrinksOrSelectSizes(serialNumber, product, quantity, drink, selectDrinks, selectDrink, sizeProducts) {
+    var size = 0;
+    sizeProducts.forEach(function(sizeProduct) {
+        size++;
+    });
+
+    var html = "";
+    html += '<div class="modal-body">';
+    html += '   <div class="col-md-12 text-center">';
+    html += '       <div class="choiceItem">';
+    html += '           <input type="hidden" id="drinkId" value=' + drink['id'] + '>';
+    html += '           <img src="\\images\\' + drink['gallery'] + '" style="width:60%">';
+    html += '           <br>';
+
+                        if (size == 1) {
+    html += '               <span class="choiceItemDrinkName" id="choiceItemDrinkName' + drink['id'] + '">' + drink['name'] + ' - $' + product['price'].toFixed(2) + '</span>';
+                        } else {
+    html += '               <span class="choiceItemDrinkName" id="choiceItemDrinkName' + drink['id'] + '">' + drink['name'] + '</span>';
+                        }
+    
+    html += '           <div style="padding-top:10px; font-size:20px;">';
+    html += '               <select name="selectDrink" class="selectDrink" id="selectDrink' + drink['id'] + '" style="height: 37px; padding: 0px 10px; ">';
+    //html += '                   <option value =' + '0' + ' disable>Choose the flavor</option>';
+                                    selectDrinks.forEach(function(subDrink) {
+    html += '                       <option value=' + subDrink['id'] + ' ' + (subDrink['id'] == selectDrink['id'] ? "selected" : "") + '>' + subDrink['name'] + '</option>';
+                                });
+    html += '               </select>';
+    html += '           </div>';
+
+                        if (size > 1) {        
+    html += '               <div style="padding-top:10px; font-size:20px;">';
+    html += '                   <select name="productDrinks" id="productDrinks' + drink['id'] + '" style="height: 37px; padding: 0px 10px; ">';
+                                    sizeProducts.forEach(function(sizeProduct) {
+    html += '                           <option value=' + sizeProduct['id'] + ' ' + (sizeProduct['id'] == product['id'] ? "selected" : "") + '>' + sizeProduct['name'] + ' - $' + sizeProduct['price'].toFixed(2) + '</option>';
+                                    });
+    html += '                   </select>';
+    html += '               </div>';
+                        }        
+    
+    html += '           <div class="quantityDiv mx-auto">';
+    html += '               <button type="button" class="btn bg-light border rounded-circle quantityMinusForUpdate" id="quantityMinusForUpdate' + product['id'] + '"><i class="fas fa-minus"></i></button>';
+    html += '               <input type="text" class="form-control w-25 d-inline text-center quantityForUpdate" value="' + quantity + '" id="quantityForUpdate' + product['id'] + '" disabled>';
+    html += '               <button type="button" class="btn bg-light border rounded-circle quantityPlusForUpdate" id="quantityPlusForUpdate' + product['id'] + '"><i class="fas fa-plus"></i></button>';
+    html += '           </div>';          
+    html += '       </div>';
+    html += '   </div>';
+    html += '</div>';
+    html += '<div class="modal-footer">';
+    html += '   <button type="button" class="btn btn-primary updateCart" id="updateCart' + serialNumber + 'AND' + product['id'] + '">Update</button>';
+    html += '   <button type="button" class="btn btn-danger cancelModal" data-bs-dismiss="modal">Cancel</button>';
+    html += '</div>';
+    return html;
+}
+
+function loadEditModalForSingleSideEntree(serialNumber, product, quantity, productSidesOrEntrees, sideOrEntree) {
+    html = "";
+    html += '<div class="modal-body">';
+    html += '   <div class="col-md-12 text-center">';
+    html += '       <div class="choiceItem">';
+                        if (product['category']=="Side") {
+    html += '               <input type="hidden" id="sideId" value=' + sideOrEntree['id'] + '>';
+                        } else {
+    html += '               <input type="hidden" id="entreeId" value=' + sideOrEntree['id'] + '>';                        
+                        }
+    html += '           <img src="\\images\\' + sideOrEntree['gallery'] + '" style="width:60%">';
+    html += '           <br>';
+    html += '           <span class="choiceItemSideOrEntreeName" id="choiceItemSideOrEntreeName' + sideOrEntree['id'] + '">' + sideOrEntree['name'] + '</span>';
+    html += '       <div>';
+    html += '       <select name="productSidesOrEntrees" id="productSidesOrEntrees' + sideOrEntree['id'] + '" style="padding:5px 10px; font-size:18px;">';
+                        productSidesOrEntrees.forEach(function(productSideOrEntree){
+    html += '               <option value=' + productSideOrEntree['id'] + ' ' + (productSideOrEntree['id'] == product['id'] ? "selected" : "") + '>' + productSideOrEntree['name'] + ' - $' + productSideOrEntree['price'] + '</option>';
+                        });    
+    html += '       </select>';
+    html += '   </div>';
+    html += '   <div class="quantityDiv mx-auto">';
+    html += '       <button type="button" class="btn bg-light border rounded-circle quantityMinusForUpdate" id="quantityMinusForUpdate' + product['id'] + '"><i class="fas fa-minus"></i></button>';
+    html += '       <input type="text" class="form-control w-25 d-inline text-center quantityForUpdate" value="' + quantity + '" id="quantityForUpdate' + product['id'] + '" disabled>';
+    html += '       <button type="button" class="btn bg-light border rounded-circle quantityPlusForUpdate" id="quantityPlusForUpdate' + product['id'] + '"><i class="fas fa-plus"></i></button>';
+    html += '   </div>';
+    html += '</div>';
+    html += '<div class="modal-footer">';
+    html += '   <button type="button" class="btn btn-primary updateCart" id="updateCart' + serialNumber + 'AND' + product['id'] + '">Update</button>';
+    html += '   <button type="button" class="btn btn-danger cancelModal" data-bs-dismiss="modal">Cancel</button>';
+    html += '</div>';
+
+    return html;
+}
+
+function loadEditModal(serialNumber, product, quantity, subItems, totalPricePerItem) {
+    var html = "";
+    html += '<div class="modal-body">';
+    html += '   <div class="col-md-12 text-center">';
+    html += '       <div class="choiceItem">';
+    html += '           <img src="\\images\\' + product['gallery'] + '" style="width:60%">';
+    html += '           <br>';
+    html += '           <span class="choiceItemName">' + product['name'] + '</span>';
+    html += '           <br>';
+    html += '           <span class="choiceItemPrice">$' + product['price'].toFixed(2) + '</span>';
+    html +=             '<br>';
+    html += '           <div class="quantityDiv mx-auto">';
+    html += '               <button type="button" class="btn bg-light border rounded-circle quantityMinusForUpdate" id="quantityMinusForUpdate' + product['id'] + '"><i class="fas fa-minus"></i></button>';
+    html += '               <input type="text" class="form-control w-25 d-inline text-center quantityForUpdate" value="' + quantity + '" id="quantityForUpdate' + product['id'] + '" disabled>';
+    html += '               <button type="button" class="btn bg-light border rounded-circle quantityPlusForUpdate" id="quantityPlusForUpdate' + product['id'] + '"><i class="fas fa-plus"></i></button>';
+    html += '           </div>';          
+    html += '       </div>';
+    html += '   </div>';
+    html += '</div>';
+    html += '<div class="modal-footer">';
+    html += '   <button type="button" class="btn btn-primary updateCart" id="updateCart' + serialNumber + 'AND' + product['id'] + '">Update</button>';
+    html += '   <button type="button" class="btn btn-danger cancelModal" data-bs-dismiss="modal">Cancel</button>';
+    html += '</div>';
+    return html;
 }

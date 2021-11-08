@@ -46,3 +46,6 @@ Route::get('/cart-count', [ProductController::class, 'cartCount']);
 Route::get('/order', [MenuController::class, 'menu']);
 Route::get('/order-choices', [ProductController::class, 'orderChoices']);
 Route::get('/order-added', [ProductController::class, 'orderAdded']);
+Route::get('/order/{serialNumber}', [ProductController::class, 'editWithSerialNumber']);
+Route::get('/order-edit', [ProductController::class, 'orderEdit']);
+Route::get('/order-updated', [ProductController::class, 'orderUpdated']);

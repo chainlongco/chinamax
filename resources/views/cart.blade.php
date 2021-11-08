@@ -40,6 +40,30 @@
     </div>
 </div>
 
+<div class="modal" id="editModal">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div id="editBodyFooter">
+
+                <!-- Here will load modal-body and modal-footer -->
+
+            </div>    
+            <!-- <div class="modal-body" id="editBody">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary updateCart" disabled id="updateCart">Update</button>
+                <button type="button" class="btn btn-danger cancelModal" data-bs-dismiss="modal">Cancel</button>
+            </div> -->
+        </div>
+    </div>
+</div>
+
+
 <script>
     $(document).ready(function(){
         $(document).on('click', '.addMoreItems', function(e){ 
@@ -49,11 +73,11 @@
         }); 
 
         //$('.quantityPlus').on('click', function(e){  This will not work after ajax call, so use this line below
-        $(document).on('click','.quantityPlus', function(e){
+        $(document).on('click','.quantityPlusForCart', function(e){
             e.preventDefault();
-            var serialNumber = retrieveSerialNumberForCartButtons("quantityPlus", this.id);
-            var productId = retrieveProductIdForCartButtons("quantityPlus", this.id);
-            var quantityElementId = "#quantity" + serialNumber + "AND" + productId;
+            var serialNumber = retrieveSerialNumberForCartButtons("quantityPlusForCart", this.id);
+            var productId = retrieveProductIdForCartButtons("quantityPlusForCart", this.id);
+            var quantityElementId = "#quantityForCart" + serialNumber + "AND" + productId;
             var quantity = $(quantityElementId).val();
             quantity = Number(quantity) + 1;
             $(quantityElementId).val(quantity);
@@ -64,11 +88,11 @@
         });
 
         //$('.quantityMinus').on('click', function(e){  This will not work after ajax call, so use this line below
-        $(document).on('click', '.quantityMinus', function(e){           
+        $(document).on('click', '.quantityMinusForCart', function(e){           
             e.preventDefault();
-            var serialNumber = retrieveSerialNumberForCartButtons("quantityMinus", this.id);
-            var productId = retrieveProductIdForCartButtons("quantityMinus", this.id);
-            var quantityElementId = "#quantity" + serialNumber + "AND" + productId;
+            var serialNumber = retrieveSerialNumberForCartButtons("quantityMinusForCart", this.id);
+            var productId = retrieveProductIdForCartButtons("quantityMinusForCart", this.id);
+            var quantityElementId = "#quantityForCart" + serialNumber + "AND" + productId;
             var quantity = $(quantityElementId).val();
             quantity = Number(quantity) - 1;
             if (quantity == 0) {
@@ -98,7 +122,6 @@
             e.preventDefault();
             if (confirm('Are you sure to remove this item?')) {
                 var serialNumber = retrieveSerialNumberForCartButtons("remove", this.id);
-
                 // reload cart, price detail and list
                 //fetchOrderListForRemove(productId);
                 //fetchPriceDetail(productId, 0);
@@ -106,6 +129,144 @@
                 fetchAllThree(serialNumber, 0);
             }
         });
+
+        $(document).on('click', '.edit', function(e){
+            e.preventDefault();
+            /* To Edit the existing order:
+                1. Create an AJAX call here.
+                2. Create a Route in web.php: Route::get('/order-edit', [ProductController::class, 'orderEdit']);
+                3. Create the function for the Route in ProductController.php: public function orderEdit(Request $request) {
+                4. Create a function to handle the response data to build Modal popup: like loadEditModalForAppetizers in common.js
+                5. The Modal popup is in cart.blade.php: id="editBodyFooter"
+                ------------------------------------------------------------
+                After Modal popup:
+                1. Create action handler in cart.blade.php:  $(document).on('click', '.updateCart', function(e){
+                2. This action handler will call a function which will have an AJAX call: function updateCart(serialNumber, productId, quantity, subItems) {
+                3. Create a Route in web.php: Route::get('/order-updated', [ProductController::class, 'orderUpdated']);
+                4. Create the function for the Route in ProductController.php: public function orderUpdated(Request $request)
+            */         
+            var serialNumber = retrieveSerialNumberForCartButtons('edit', this.id);
+            /*const base_path = '{{ url('/') }}\/';
+            window.location.href = base_path + 'order/' + serialNumber;*/
+            $.ajax({
+                type: 'GET',
+                url: '/order-edit',
+                data: {'serialNumber':serialNumber},
+                success: function(response) {
+                    var html = "";
+                    if (response.product['menu_id'] == 1) {
+                        html = loadEditModalForAppetizers(response.serialNumber, response.product, response.quantity);
+                    } else if (response.product['menu_id'] == 2) {
+                        if (response.drink['tablename'] == "") {    // For Water and Bottle Water
+                            html = loadEditModalForDrinksWithoutSelectBox(response.serialNumber, response.product, response.quantity, response.drink, response.selectDrinks);
+                        } else {
+                            html = loadEditModalForDrinksWithSelectDrinksOrSelectSizes(response.serialNumber, response.product, response.quantity, response.drink, response.selectDrinks, response.selectDrink, response.sizeProducts);        
+                        }
+                    } else if (response.product['menu_id'] == 4) {
+                        html = loadEditModalForSingleSideEntree(response.serialNumber, response.product, response.quantity, response.productSidesOrEntrees, response.sideOrEntree); 
+                    } else {
+                        html = loadEditModal(response.serialNumber, response.product, response.quantity, response.subitems, response.totalPricePerItem);
+                    }
+                    $("#editBodyFooter").html(html);
+                    $("#editModal").show();
+                }
+            });
+        });
+
+        $(document).on('click', '.btn-close', function(e){
+            $("#editBodyFooter").html("");
+            $('#editModal').hide();
+        });
+
+        $(document).on('click', '.cancelModal', function(e){
+            $("#editBodyFooter").html("");
+            $('#editModal').hide();
+        });
+
+        $(document).on('click','.quantityPlusForUpdate', function(e){
+            e.preventDefault();
+            var productId = retrieveId("quantityPlusForUpdate", this.id);
+            var quantityElementId = "#quantityForUpdate" + productId;
+            var quantity = $(quantityElementId).val();
+            quantity = Number(quantity) + 1;
+            $(quantityElementId).val(quantity);
+        });
+
+        $(document).on('click', '.quantityMinusForUpdate', function(e){
+            e.preventDefault();
+            var productId = retrieveId("quantityMinusForUpdate", this.id);
+            var quantityElementId = "#quantityForUpdate" + productId;
+            var quantity = $(quantityElementId).val();
+
+            quantity = Number(quantity) - 1;
+            if (quantity < 0) {
+                $(quantityElementId).val(0);
+            } else {
+                $(quantityElementId).val(quantity);
+            }
+        });
+
+        $(document).on('click', '.updateCart', function(e){
+            e.preventDefault();
+            // Base is for Appetizers -- Only display image, product name and price.
+            var serialNumber = retrieveSerialNumberForCartButtons("updateCart", this.id);
+            var productId = retrieveProductIdForCartButtons("updateCart", this.id);
+            var quantity = $("#quantityForUpdate" + productId).val();
+            if ($("#drinkId").val() != undefined) { // This is for DrinkOnly
+                var drinkId = $("#drinkId").val();
+                var subItems = [];
+                if ($("#selectDrink" + drinkId).val() != undefined) {
+                    var selectBoxId = $("#selectDrink" + drinkId).val();
+                    var drinkArray = {'category':'DrinkOnly', 'id':drinkId, 'quantity':quantity, 'selectBoxId':selectBoxId};
+                    subItems.push(drinkArray);
+                } else {
+                    var drinkArray = {'category':'DrinkOnly', 'id':drinkId, 'quantity':quantity, 'selectBoxId':null};
+                    subItems.push(drinkArray);
+                }
+                if ($("#productDrinks" + drinkId).val() != undefined) {
+                    productId = $("#productDrinks" + drinkId).val();
+                }
+            }
+            if ($("#sideId").val() != undefined) { // This is for Individual Side
+                var sideId = $("#sideId").val();
+                productId = $("#productSidesOrEntrees" + sideId).val();
+                var subItems = [];
+                var sideOrEntreeArray = {'category':'Side', 'id':sideId, 'quantity':quantity};
+                subItems.push(sideOrEntreeArray);
+            }
+            if ($("#entreeId").val() != undefined) { // This is for Individual Entree
+                var entreeId = $("#entreeId").val();
+                productId = $("#productSidesOrEntrees" + entreeId).val();
+                var subItems = [];
+                var sideOrEntreeArray = {'category':'Entree', 'id':entreeId, 'quantity':quantity};
+                subItems.push(sideOrEntreeArray);
+            }
+            updateCart(serialNumber, productId, quantity, subItems);
+        });
+
+        function updateCart(serialNumber, productId, quantity, subItems) {
+            $.ajax({
+                type:'GET',
+                url:'/order-updated',
+                data:{'serialNumber':serialNumber, 'productId':productId, 'quantity':quantity, 'subItems':subItems},
+                success: function(response) {
+                    if (response.status == 0){
+                        alert(response.message);
+                        //var addToCartElementId = "#addToCart" + productId;
+                        //$(addToCartElementId).prop('disabled', false);
+                        //$(addToCartElementId).css("color","black");
+                        //var quantityElementId = "#quantity" + productId;
+                        //$(quantityElementId).val(1);
+                    } else {
+                        $('#cartCount').html(response);
+                        //const base_path = '{{ url('/') }}\/';
+                        //window.location.href = base_path + 'cart';
+                        // After move all js code from order.blade.php to ChoiceItem.js, the base_path becomes NaN
+                        window.location.href = 'cart';
+                    }    
+                }
+            });
+        }
 
         function fetchCartAndPriceDetail(serialNumber, quantity)
         {
@@ -137,6 +298,7 @@
                 }
             });
         }
+
 
         
 
