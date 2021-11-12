@@ -194,14 +194,24 @@ $(document).ready(function(){
 
 
     /* Appetizers Start */
-    $(document).on('click', '.addToCart', function(e){  // For Appetizers, Combos
+    $(document).on('click', '.addToCart', function(e){  // For Appetizers
         var productId = retrieveId("addToCart", this.id);
+        var quantityElementId = "#quantity" + productId;
+        var quantity = $(quantityElementId).val();
+        var subItems = [];
+        addNewItemToCart(productId, quantity, subItems);
+    });    
+    /* Appetizers End */
+
+    /* Combo Start */
+    $(document).on('click', '.addToCartForCombo', function(e){  // For Combos
+        var productId = retrieveId("addToCartForCombo", this.id);
         var quantityElementId = "#quantity" + productId;
         var quantity = $(quantityElementId).val();
         var subItems = retrieveSubItems();
         addNewItemToCart(productId, quantity, subItems);
     });    
-    /* Appetizers End */
+    /* Combo End */
 
     /* Single Start */
     $(document).on('click', '.addToCartForSide', function(e){

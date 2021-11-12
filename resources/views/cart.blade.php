@@ -155,20 +155,51 @@
                 success: function(response) {
                     var html = "";
                     if (response.product['menu_id'] == 1) {
+                        $(".modal-dialog").css("max-width", "25vw");
                         html = loadEditModalForAppetizers(response.serialNumber, response.product, response.quantity);
                     } else if (response.product['menu_id'] == 2) {
+                        $(".modal-dialog").css("max-width", "25vw");
                         if (response.drink['tablename'] == "") {    // For Water and Bottle Water
                             html = loadEditModalForDrinksWithoutSelectBox(response.serialNumber, response.product, response.quantity, response.drink, response.selectDrinks);
                         } else {
                             html = loadEditModalForDrinksWithSelectDrinksOrSelectSizes(response.serialNumber, response.product, response.quantity, response.drink, response.selectDrinks, response.selectDrink, response.sizeProducts);        
                         }
                     } else if (response.product['menu_id'] == 4) {
-                        html = loadEditModalForSingleSideEntree(response.serialNumber, response.product, response.quantity, response.productSidesOrEntrees, response.sideOrEntree); 
+                        $(".modal-dialog").css("max-width", "25vw");
+                        html = loadEditModalForSingleSideEntree(response.serialNumber, response.product, response.quantity, response.productSidesOrEntrees, response.sideOrEntree);
+                    } else if (response.product['menu_id'] == 3) {
+                            $(".modal-dialog").css("max-width", "75vw");
+                            // scrollable is set at chinamax.css -- .modal-body
+                            html = loadEditModalForCombo(response.serialNumber, response.product, response.quantity, response.sides, response.chickenEntrees, response.beefEntrees, response.shrimpEntrees, response.combo, response.comboDrinks, response.fountains);
                     } else {
                         html = loadEditModal(response.serialNumber, response.product, response.quantity, response.subitems, response.totalPricePerItem);
                     }
                     $("#editBodyFooter").html(html);
                     $("#editModal").show();
+
+                    if (response.product['menu_id'] == 3) {
+                        $.each(response.subItems, function(key, value) {
+                            category = value['category'];
+                            quantity = value['quantity'];
+                            item = value['item'];
+                            
+                            if (category == "Side") { 
+                                $("#choiceItemSide" + item['id']).trigger('click');  
+                            }
+                            if (category == "Entree") {
+                                $("#choiceItemEntree" + item['id']).trigger('click');
+                            }
+                            if (category == "Drink") {
+                                if (value.hasOwnProperty('selectDrink')) {
+                                    var selectDrink = value['selectDrink'];
+                                    $("#comboDrink" + item['id']).val(selectDrink['id']);
+                                    $("#comboDrink" + item['id']).trigger('change');
+                                } else {
+                                    $("#choiceItemDrink" + item['id']).trigger('click');
+                                }
+                            }
+                        });
+                    }
                 }
             });
         });
@@ -224,22 +255,25 @@
                     subItems.push(drinkArray);
                 }
                 if ($("#productDrinks" + drinkId).val() != undefined) {
-                    productId = $("#productDrinks" + drinkId).val();
+                    productId = $("#productDrinks" + drinkId).val();    // productId can be changed selecting different size
                 }
             }
             if ($("#sideId").val() != undefined) { // This is for Individual Side
                 var sideId = $("#sideId").val();
-                productId = $("#productSidesOrEntrees" + sideId).val();
+                productId = $("#productSidesOrEntrees" + sideId).val(); // productId can be changed selecting different size
                 var subItems = [];
                 var sideOrEntreeArray = {'category':'Side', 'id':sideId, 'quantity':quantity};
                 subItems.push(sideOrEntreeArray);
             }
             if ($("#entreeId").val() != undefined) { // This is for Individual Entree
                 var entreeId = $("#entreeId").val();
-                productId = $("#productSidesOrEntrees" + entreeId).val();
+                productId = $("#productSidesOrEntrees" + entreeId).val();   // productId can be changed selecting different size
                 var subItems = [];
                 var sideOrEntreeArray = {'category':'Entree', 'id':entreeId, 'quantity':quantity};
                 subItems.push(sideOrEntreeArray);
+            }
+            if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {    // This if for Combo
+                var subItems = retrieveSubItems();  // This method is under choiceitem.js
             }
             updateCart(serialNumber, productId, quantity, subItems);
         });
@@ -249,6 +283,8 @@
                 type:'GET',
                 url:'/order-updated',
                 data:{'serialNumber':serialNumber, 'productId':productId, 'quantity':quantity, 'subItems':subItems},
+                datatype: 'JSON',
+                contentType: "application/json; charset=utf-8",
                 success: function(response) {
                     if (response.status == 0){
                         alert(response.message);

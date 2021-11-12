@@ -89,3 +89,12 @@
     content: "*";
     color: red;
 }
+
+/*.modal-dialog {
+    max-width: 75vw;
+}*/
+
+.modal-body {
+    max-height: 70vh;  
+    overflow-y: scroll;
+}

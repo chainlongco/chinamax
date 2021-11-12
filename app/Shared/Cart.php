@@ -57,6 +57,10 @@ Class Cart {
             $this->updateItemQuantity($serialNumber, 0);    
             $newProduct = DB::table('products')->where('id', $productId)->first();
             $this->addNewItem($newProduct, $quantity, $subItems);
+        } else if ($this->checkIfExtraChargeChanged($this->items[$serialNumber]['subItems'], $subItems) == true) { // Combo with drink which selected with different extra charge
+            $this->updateItemQuantity($serialNumber, 0);
+            $product = DB::table('products')->where('id', $productId)->first();
+            $this->addNewItem($product, $quantity, $subItems);
         } else {
             $this->updateItemQuantity($serialNumber, $quantity);
             if ($quantity != 0) {
@@ -153,5 +157,36 @@ Class Cart {
         }
 
         return $totalPricePerItem;
+    }
+
+    protected function checkIfExtraChargeChanged($originalSubItems, $newSubItems) { // This check if Combo is with extra charge changed -- select different drink which affect extra charge
+        if (($originalSubItems == null) || count($originalSubItems) == 0) { // Update Item for combo with drink -- which always has subItems
+            return false;
+        }
+        $originalExtraCharge = 0;
+        $newExtraCharge = 0;
+
+        $keys = Array_keys($originalSubItems);
+        foreach ($keys as $key) {
+            $category = $originalSubItems[$key]['category'];
+            $quantity = $originalSubItems[$key]['quantity'];
+            $item = $originalSubItems[$key]['item'];  // After run processSubItems, we need to use item insead of id in subItems, this is from combodrinks table
+            if ($category == 'Drink') {
+                $originalExtraCharge = (double)$item->price; // The price is from combodrinks table
+            }
+        }
+
+        $keys = Array_keys($newSubItems);
+        foreach ($keys as $key) {
+            $category = $newSubItems[$key]['category'];
+            $quantity = $newSubItems[$key]['quantity'];
+            $id = $newSubItems[$key]['id'];  // New subItem is before run processSubItems, so it just has id not item yet. Need to get from combodrinks table
+            if ($category == 'Drink') {
+                $item = DB::table('combodrinks')->where('id', $id)->first();
+                $newExtraCharge = (double)$item->price; // The price is from combodrinks table
+            }
+        }
+
+        return ($originalExtraCharge != $newExtraCharge)? true: false;
     }
 }

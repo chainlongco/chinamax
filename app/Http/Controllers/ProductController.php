@@ -213,7 +213,7 @@ class ProductController extends Controller
                     return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'drink'=>$drink, 'selectDrinks'=>$selectDrinks, 'selectDrink'=>$selectDrink, 'sizeProducts'=>$sizeProducts]);
                 }             
             }
-        } else if ($product->menu_id == 4) {
+        } else if ($product->menu_id == 4) {    // Individual Side/Entree
             if ($product->category == "Side") {
                 $productSides = DB::table('products')->where('category', "Side")->get();
                 $keys = array_keys($subItems);
@@ -232,7 +232,6 @@ class ProductController extends Controller
                 } else if ($product->category == "Shrimp") {
                     $productEntrees = DB::table('products')->where('category', "Shrimp")->get();
                 }
-                
                 $keys = array_keys($subItems);
                 foreach ($keys as $key) {
                     $category = $subItems[$key]['category'];
@@ -241,11 +240,16 @@ class ProductController extends Controller
                     }
                 }
                 return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'productSidesOrEntrees'=>$productEntrees, 'sideOrEntree'=>$entree]);
-            } else if ($product->category == "Beef") {
-
-            } else if ($product->category == "Shrimp") {
-
             }
+        } else if ($product->menu_id == 3) {    // Combo
+            $sides = DB::table('sides')->get();
+            $chickenEntrees = DB::table('entrees')->where('category', 'Chicken')->get();
+            $beefEntrees = DB::table('entrees')->where('category', 'Beef')->get();
+            $shrimpEntrees = DB::table('entrees')->where('category', 'Shrimp')->get();
+            $combo = DB::table('combos')->where('product_id', $product->id)->first();
+            $comboDrinks = DB::table('combodrinks')->get();
+            $fountains = DB::table('fountains')->get();
+            return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'sides'=>$sides, 'chickenEntrees'=>$chickenEntrees, 'beefEntrees'=>$beefEntrees, 'shrimpEntrees'=>$shrimpEntrees, 'combo'=>$combo, 'comboDrinks'=>$comboDrinks, 'fountains'=>$fountains, 'subItems'=>$subItems]);
         } else {
             return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'subItems'=>$subItems, 'totalPricePerItem'=>$totalPricePerItem]);
         }
@@ -256,39 +260,11 @@ class ProductController extends Controller
         $serialNumber = $request->serialNumber;
         $quantity = $request->quantity;
         $productId = $request->productId;
-        //$subItems = json_decode($request->subItems, true);
-        $subItems = $request->subItems;
+        $subItems = json_decode($request->subItems, true);
         $oldCart = Session::get('cart');
         $newCart = new Cart($oldCart);
         $newCart->updateItem($serialNumber, $productId, $quantity, $subItems);
-        //$newCart->updateItemQuantity($serialNumber, $quantity);
         Session::put('cart', $newCart);
-        //$priceDetail = retrievePriceDetail();
-        //$items = $newCart->items;   //$storedItem = ['item'=>$item, 'subItem'=>$subItem, 'quantity'=>$quantity];
-        //return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
-
-
-        /*$productId = $request->productId;
-        $quantity = $request->quantity;
-        $subItems = json_decode($request->subItems, true);
-
-        $combo = DB::table('combos')->where('product_id', $productId)->first();
-        $pass = $this->validateSideAndEntreeAndDrink($productId, $subItems);
-        if(!$pass) {
-            return response()->json(['status'=>0, 'message'=>"Please select side and entree before you add order to cart."]);
-        }
-        
-        $product = DB::table('products')->where('id', $productId)->first();
-        $oldCart = null;
-        $count = 0;
-        if (Session::has('cart')) {
-            $oldCart = Session::get('cart');      
-        }
-        $newCart = new Cart($oldCart);
-        $newCart->updateItemQuantity($product, $quantity);
-        Session::put('cart', $newCart);
-        $count = $newCart->totalQuantity;
-        echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";*/
     }
 
 

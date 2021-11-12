@@ -235,6 +235,8 @@ function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drin
     if (orderQuantity == 0) {
         $(".addToCartForCombo").prop('disabled', true);
         $(".addToCartForCombo").css('color', 'gray');
+        $(".updateCart").prop('disabled', true);
+        //$(".updateCart").css('color', 'gray');
         return;
     }
 
@@ -248,9 +250,13 @@ function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drin
         if ((totalSideQuantity == sideMaxQuantity) && (totalEntreeQuantity == entreeMaxQuantity)) {
             $(".addToCartForCombo").prop('disabled', false);
             $(".addToCartForCombo").css('color', 'red');
+            $(".updateCart").prop('disabled', false);
+            //$(".updateCart").css('color', 'red');
         } else {
             $(".addToCartForCombo").prop('disabled', true);
             $(".addToCartForCombo").css('color', 'gray');
+            $(".updateCart").prop('disabled', true);
+            //$(".updateCart").css('color', 'gray');
         }
     } else {
         // For Drink
@@ -259,9 +265,13 @@ function enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drin
         if ((totalSideQuantity == sideMaxQuantity) && (totalEntreeQuantity == entreeMaxQuantity) && (totalDrinkQuantity == drinkMaxQuantity)) {
             $(".addToCartForCombo").prop('disabled', false);
             $(".addToCartForCombo").css('color', 'red');
+            $(".updateCart").prop('disabled', false);
+            //$(".updateCart").css('color', 'red');
         } else {
             $(".addToCartForCombo").prop('disabled', true);
             $(".addToCartForCombo").css('color', 'gray');
+            $(".updateCart").prop('disabled', true);
+            //$(".updateCart").css('color', 'gray');
         }
     }
 }
@@ -478,28 +488,179 @@ function loadEditModalForSingleSideEntree(serialNumber, product, quantity, produ
     return html;
 }
 
-function loadEditModal(serialNumber, product, quantity, subItems, totalPricePerItem) {
-    var html = "";
+function loadEditModalForCombo(serialNumber, product, quantity, sides, chickenEntrees, beefEntrees, shrimpEntrees, combo, comboDrinks, fountains) {
+    sideQuantitySummary = "Choose " + combo['side'] + " Side";
+    entreeQuantitySummary = "Choose " + combo['entree'] + " Entree";
+    if (combo['side'] == 1) {
+        sideQuantitySummary += " (or Half/Half)";
+    } else {
+        sideQuantitySummary += "s";
+    }
+    if (combo['entree'] > 1) {
+        entreeQuantitySummary += "s";
+    }
+
+    html = "";
     html += '<div class="modal-body">';
-    html += '   <div class="col-md-12 text-center">';
-    html += '       <div class="choiceItem">';
-    html += '           <img src="\\images\\' + product['gallery'] + '" style="width:60%">';
+    //html += '   <h1>Choices for ' + product['name'] + '</h1>';
+    html += '   <div class="row">';
+    html += '       <div class="text-start">';
+    //html += '           <br>';
+    html += '           <h3>' + sideQuantitySummary + '</h3>';
+    html += '           <input type="hidden" id="sideMaxQuantity" value="' + combo['side'] + '"/>';
     html += '           <br>';
-    html += '           <span class="choiceItemName">' + product['name'] + '</span>';
+    html += '       </div>';
+                    sides.forEach(function(side) {
+    html += '           <div class="col-md-4 text-center">';
+    html += '               <div class="choiceItemSide" id="choiceItemSide' + side['id'] + '">';
+    html += '                   <img src="\\images\\' + side['gallery'] + '" style="width:60%">';
+    html += '                   <br>';
+    html += '                   <span class="choiceItemSideName" id="choiceItemSideName' + side['id'] + '">' + side['name'] + '</span>';
+    html += '               </div>';
+    html += '               <div class="selectedDiv">';
+    html += '                   <h3 class="sideSelected" id="sideSelected' + side['id'] + '"></h3>';
+    html += '                   <div class="sideQuantityIncrementDiv mx-auto" id="sideQuantityIncrementDiv' + side['id'] + '" style="display: none;">';
+    html += '                       <button type="button" class="btn bg-light border rounded-circle sideQuantityMinus" id="sideQuantityMinus' + side['id'] + '"><i class="fas fa-minus"></i></button>';
+    html += '                       <input type="text" class="form-control w-25 d-inline text-center sideQuantity" value="0" id="sideQuantity' + side['id'] + '" disabled>';
+    html += '                       <button type="button" class="btn bg-light border rounded-circle sideQuantityPlus" id="sideQuantityPlus' + side['id'] + '"><i class="fas fa-plus"></i></button>';
+    html += '                   </div>';
+    html += '               </div>';
+    html += '           </div>';
+                    });
+
+    html += '       <div class="text-start">';
     html += '           <br>';
-    html += '           <span class="choiceItemPrice">$' + product['price'].toFixed(2) + '</span>';
-    html +=             '<br>';
+    html += '           <br>';
+    html += '           <h3>' + entreeQuantitySummary + '</h3>';
+    html += '           <input type="hidden" id="entreeMaxQuantity" value="' + combo['entree'] + '"/>';
+    html += '           <h5>Chicken</h5>';
+    html += '       </div>';
+                    chickenEntrees.forEach(function(chickenEntree) {
+    html += '           <div class="col-md-4 text-center">';
+    html += '               <div class="choiceItemEntree" id="choiceItemEntree' + chickenEntree['id'] + '">';
+    html += '                   <img src="\\images\\' + chickenEntree['gallery'] + '" style="width:60%">';
+    html += '                   <br>';
+    html += '                   <span class="choiceItemEntreeName" id="choiceItemEntreeName' + chickenEntree['id'] + '">' + chickenEntree['name'] + '</span>';  
+    html += '               </div>';
+    html += '               <div class="selectedDiv">';
+    html += '                   <h3 class="entreeSelected" id="entreeSelected' + chickenEntree['id'] + '"></h3>';
+    html += '                   <div class="entreeQuantityIncrementDiv mx-auto" id="entreeQuantityIncrementDiv' + chickenEntree['id'] + '" style="display: none;">';
+    html += '                       <button type="button" class="btn bg-light border rounded-circle entreeQuantityMinus" id="entreeQuantityMinus' + chickenEntree['id'] + '"><i class="fas fa-minus"></i></button>';
+    html += '                       <input type="text" class="form-control w-25 d-inline text-center entreeQuantity" value="0" id="entreeQuantity' + chickenEntree['id'] + '" disabled>';
+    html += '                       <button type="button" class="btn bg-light border rounded-circle entreeQuantityPlus" id="entreeQuantityPlus' + chickenEntree['id'] + '"><i class="fas fa-plus"></i></button>';
+    html += '                   </div>';
+    html += '               </div>';
+    html += '               <br>';
+    html += '           </div>';
+                    });
+
+    html += '       <div class="text-start">';
+    html += '           <br>';
+    html += '           <h5>Beef</h5>';
+    html += '       </div>';
+                    beefEntrees.forEach(function(beefEntree) {
+    html += '           <div class="col-md-4 text-center">';
+    html += '               <div class="choiceItemEntree" id="choiceItemEntree' + beefEntree['id'] + '">';
+    html += '                   <img src="\\images\\' + beefEntree['gallery'] + '" style="width:60%">';
+    html += '                   <br>';
+    html += '                   <span class="choiceItemEntreeName" id="choiceItemEntreeName' + beefEntree['id'] + '">' + beefEntree['name'] + '</span>';  
+    html += '               </div>';
+    html += '               <div class="selectedDi\">';
+    html += '                   <h3 class="entreeSelected" id="entreeSelected' + beefEntree['id'] + '"></h3>';
+    html += '                   <div class="entreeQuantityIncrementDiv mx-auto" id="entreeQuantityIncrementDiv' + beefEntree['id'] + '" style="display: none;">';
+    html += '                       <button type="button" class="btn bg-light border rounded-circle entreeQuantityMinus" id="entreeQuantityMinus' + beefEntree['id'] + '"><i class="fas fa-minus"></i></button>';
+    html += '                       <input type="text" class="form-control w-25 d-inline text-center entreeQuantity" value="0" id="entreeQuantity' + beefEntree['id'] + '" disabled>';
+    html += '                       <button type="button" class="btn bg-light border rounded-circle entreeQuantityPlus" id="entreeQuantityPlus' + beefEntree['id'] + '"><i class="fas fa-plus"></i></button>';
+    html += '                   </div>';
+    html += '               </div>';
+    html += '               <br>';
+    html += '           </div>';
+                    });
+
+    html += '       <div class="text-start">';
+    html += '       <br>';
+    html += '       <h5>Shrimp</h5>';
+    html += '       </div>';
+                    shrimpEntrees.forEach(function(shrimpEntree) {
+    html += '           <div class="col-md-4 text-center">';
+    html += '               <div class="choiceItemEntree" id="choiceItemEntree' + shrimpEntree['id'] + '">';
+    html += '                   <img src="\\images\\' + shrimpEntree['gallery'] + '" style="width:60%">';
+    html += '                   <br>';
+    html += '                   <span class="choiceItemEntreeName" id="choiceItemEntreeName' + shrimpEntree['id'] + '">' + shrimpEntree['name'] + '</span>';  
+    html += '               </div>';
+    html += '               <div class="selectedDiv">';
+    html += '                   <h3 class="entreeSelected" id="entreeSelected' + shrimpEntree['id'] + '"></h3>';
+    html += '                   <div class="entreeQuantityIncrementDiv mx-auto" id="entreeQuantityIncrementDiv' + shrimpEntree['id'] + '" style="display: none;">';
+    html += '                       <button type="button" class="btn bg-light border rounded-circle entreeQuantityMinus" id="entreeQuantityMinus' + shrimpEntree['id'] + '"><i class="fas fa-minus"></i></button>';
+    html += '                       <input type="text" class="form-control w-25 d-inline text-center entreeQuantity" value="0" id="entreeQuantity' + shrimpEntree['id'] + '" disabled>';
+    html += '                       <button type="button" class="btn bg-light border rounded-circle entreeQuantityPlus" id="entreeQuantityPlus' + shrimpEntree['id'] + '"><i class="fas fa-plus"></i></button>';
+    html += '                   </div>';
+    html += '               </div>';
+    html += '               <br>';
+    html += '           </div>';
+                    }); 
+
+                if (combo['drink'] > 0) {
+                    drinkQuantitySummary = "Choose " + combo['drink'] + ' Drink (Default: Small Fountain Drink)';
+    html += '       <div class="text-start">';
+    html += '           <br>';
+    html += '           <h3>' + drinkQuantitySummary + '</h3>';
+    html += '           <input type="hidden" id="drinkMaxQuantity" value="' + combo['drink'] + '"/>';
+    html += '           <br>';
+    html += '       </div>';
+                    comboDrinks.forEach(function(comboDrink) {
+                        if (comboDrink['tablename'] != "") {
+    html += '               <div class="col-md-4 text-center">';
+    html += '                   <div class="choiceItemDrinkWithSelect" id="choiceItemDrinkWithSelect' + comboDrink['id'] + '">';
+    html += '                       <img src="\\images\\' + comboDrink['gallery'] + '" style="width:60%">';                          
+    html += '                       <div style="padding-top:10px; font-size:20px;">';
+    html += '                           <span class="choiceItemDrinkName" id="choiceItemDrinkName' + comboDrink['id'] + '">' + comboDrink['name'] +'</span>';
+    html += '                           <select name="comboDrink" class="comboDrink" id="comboDrink' + comboDrink['id'] + '" style="height: 37px; padding: 4px 10px; margin: 0px 10px">';
+    html += '                               <option value = "0" selected disable>Choose the flavor</option>';
+                                            tableNameForSelect = comboDrink['tablename'];
+                                            if (tableNameForSelect == "fountains") {
+                                                listItems = fountains; 
+                                            }
+                                            listItems.forEach(function(listItem) {
+    html += '                                   <option value=' + listItem['id'] + '>' + listItem['name'] + '</option>';
+                                            });
+    html += '                           </select>';
+    html += '                       </div>'; 
+    html += '                   </div>';
+    html += '                   <div class="selectedDiv">';
+    html += '                       <h3 class="drinkSelected" id="drinkSelected' + comboDrink['id'] + '"></h3>';
+    html += '                   </div>';
+    html += '               </div>';
+                        } else {
+    html += '               <div class="col-md-4 text-center">';
+    html += '                   <div class="choiceItemDrink" id="choiceItemDrink' + comboDrink['id'] + '">';
+    html += '                       <img src="\\images\\' + comboDrink['gallery'] + '" style="width:60%">';
+    html += '                       <br>';
+                                    displayExtraCharge = (comboDrink['price'] > 0) ? (" - Extra Charge: $" + comboDrink['price']) : "";                                        
+    html += '                       <span class="choiceItemDrinkName" id="choiceItemDrinkName' + comboDrink['id'] + '">' + comboDrink['name'] + displayExtraCharge + '</span>';
+    html += '                   </div>';
+    html += '                   <div class="selectedDiv">';
+    html += '                       <h3 class="drinkSelected" id="drinkSelected' + comboDrink['id'] + '"></h3>';
+    html += '                   </div>';
+    html += '               </div>';
+                        }
+                    });
+                }
+
+    html += '       <div class="col-md-4 my-auto">';
     html += '           <div class="quantityDiv mx-auto">';
     html += '               <button type="button" class="btn bg-light border rounded-circle quantityMinusForUpdate" id="quantityMinusForUpdate' + product['id'] + '"><i class="fas fa-minus"></i></button>';
-    html += '               <input type="text" class="form-control w-25 d-inline text-center quantityForUpdate" value="' + quantity + '" id="quantityForUpdate' + product['id'] + '" disabled>';
+    html += '               <input type="text" class="form-control w-25 d-inline text-center quantityForUpdate" value="' + quantity + '" id="quantityForUpdate' + product['id'] + '" disabled style="margin: 0px 10px">';
     html += '               <button type="button" class="btn bg-light border rounded-circle quantityPlusForUpdate" id="quantityPlusForUpdate' + product['id'] + '"><i class="fas fa-plus"></i></button>';
-    html += '           </div>';          
+    html += '           </div>';
     html += '       </div>';
+
     html += '   </div>';
     html += '</div>';
+    html += '<br>';
     html += '<div class="modal-footer">';
     html += '   <button type="button" class="btn btn-primary updateCart" id="updateCart' + serialNumber + 'AND' + product['id'] + '">Update</button>';
     html += '   <button type="button" class="btn btn-danger cancelModal" data-bs-dismiss="modal">Cancel</button>';
     html += '</div>';
-    return html;
+    return html;                
 }
