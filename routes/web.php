@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,3 +50,12 @@ Route::get('/order-added', [ProductController::class, 'orderAdded']);
 Route::get('/order/{serialNumber}', [ProductController::class, 'editWithSerialNumber']);
 Route::get('/order-edit', [ProductController::class, 'orderEdit']);
 Route::get('/order-updated', [ProductController::class, 'orderUpdated']);
+
+Route::get('/customer/add', [CustomerController::class, 'customerAdd']);
+Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
+Route::get('/customer/list', function(){
+    return view('mycustomers');
+});
+Route::get('/customers-list', [CustomerController::class, 'listCustomers']);
+Route::get('/customer/delete/{id}', [CustomerController::class, 'customerDelete']);
+Route::get('/customer/edit/{id}', [CustomerController::class, 'customerEdit']);

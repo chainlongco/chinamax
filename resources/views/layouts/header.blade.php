@@ -17,6 +17,17 @@
                 </li>
             </ul>
             <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Customer
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/customer/list">My Customers</a></li>
+                        <li><a class="dropdown-item" href="/customer/add">Add Customer</a></li>
+                    </ul>
+                  </li>
+            </ul>
+            <ul class="navbar-nav mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/checkout">Checkout</a>
                 </li>

@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'ECommerce')
+@section('title', 'Register')
 @section('content')
 <br>
 
