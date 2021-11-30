@@ -721,6 +721,13 @@
         }
     }
 
+    function checkoutElement()
+    {
+        $cart = new Cart(Session::get('cart'));
+        $totalQuantity = $cart->totalQuantity;
+        echo "<a class=\"nav-link " .(($totalQuantity>0)?"active":"") ."\" aria-current=\"page\" href=" .(($totalQuantity>0)?"/checkout":"javascript:void(0);") .">Checkout</a>";
+    }
+
     function orderListDivElement()
     {
         if (Session::has('cart')){
@@ -754,14 +761,7 @@
     function cartElement($key, $product, $quantity, $subItems, $totalPricePerItem)
     {   // $key is serialNumber, using serialNumber instead of productId is the example like User can order many Regular Platters with different Sides and Entrees. But they are the same productId.
         $orderSummary = retrieveSummary($subItems);
-        $extraCharge = retrieveExtraCharge($subItems);
-        //$totalPrice = $product->price + (double)($extraCharge);
-        $totalPriceDisplay = "";
-        if ($extraCharge > 0) {
-            $totalPriceDisplay = "$" .number_format($product->price, 2, '.', ',') ." + $" .number_format($extraCharge, 2, '.', ',') ." = $" .number_format($totalPricePerItem, 2, '.', ',');
-        } else {
-            $totalPriceDisplay = "$" .number_format($product->price, 2, '.', ',');
-        }
+        $totalPriceDisplay = retrieveTotalPriceDisplay($product, $subItems, $totalPricePerItem);
         
         // Handle image for Individaul Side/Entree and Drink
         $image = $product->gallery;
@@ -774,11 +774,10 @@
                 <div class=\"border rounded\">
                     <div class=\"row bg-white\">
                         <div class=\"col-md-3\">
-                            <img src=\"\images\\" .$image . "\" style=\"width: 100%\">
-                                      
+                            <img src=\"\images\\" .$image . "\" style=\"width: 100%\">     
                         </div>
                         <div class=\"col-md-6\">
-                            <h5 class=\"pt-2\">" .$product->name ." <small> (" .$product->description .")</small> </h5>
+                            <h5 class=\"pt-2\">" .$product->name ." <small>: " .$product->description ."</small> </h5>
                             <h5><small style=\"color:red\">" .$orderSummary ."</small> </h5>
                             <h5 class=\"pt-1\">" .$totalPriceDisplay ."</h5>
                             <div class=\"pb-1\">
@@ -796,6 +795,66 @@
                     </div>
                 </div>
             </form>
+        ";
+        
+        echo $element;
+    }
+
+    function orderListDivElementForCheckout()
+    {
+        if (Session::has('cart')){
+            $elements = "";
+            $items = array();
+            $totalQuantity = 0;
+            $totalPrice = 0;
+            $subItems = array();
+            foreach (Session::get('cart') as $key=>$value) {
+               if ($key == 'totalQuantity') {
+                   $totalQuantity = $value;
+               }
+               if ($key == 'totalPrice') {
+                   $totalPrice = $value;
+               }
+               if ($key == 'items') {
+                   $items = $value;
+               }
+            }
+            $keys = array_keys($items);
+            foreach ($keys as $key) {   // $key is serialNumber
+                $product = $items[$key]['item'];
+                $quantity = $items[$key]['quantity'];
+                $subItems = $items[$key]['subItems'];
+                $totalPricePerItem = $items[$key]['totalPricePerItem'];
+                $elements = $elements .cartElementForCheckout($key, $product, $quantity, $subItems, $totalPricePerItem);
+            }
+        } 
+    }
+
+    function cartElementForCheckout($key, $product, $quantity, $subItems, $totalPricePerItem)
+    {   // $key is serialNumber, using serialNumber instead of productId is the example like User can order many Regular Platters with different Sides and Entrees. But they are the same productId.
+        $orderSummary = retrieveSummary($subItems);
+        $totalPriceDisplay = retrieveTotalPriceDisplay($product, $subItems, $totalPricePerItem);
+        
+        // Handle image for Individaul Side/Entree and Drink
+        $image = $product->gallery;
+        if ($image == "") {
+            $image = retrieveImageFromSubItmes($subItems);
+        }
+
+        $element = " 
+            <div class=\"border rounded\">
+                <div class=\"row bg-white\">
+                    <div class=\"col-md-3\">
+                        <img src=\"\images\\" .$image . "\" style=\"width: 100%\">                  
+                    </div>
+                    <div class=\"col-md-9\">
+                        <h5 class=\"pt-2\">" .$product->name ." <small>: " .$product->description ."</small> </h5>
+                        <h5><small>" .$orderSummary ."</small> </h5>
+                        <h5 class=\"pt-1\">" .$totalPriceDisplay ." -- " .$quantity .(($quantity>1)?" items":" item") ."</h5>
+                    </div>
+                </div>
+            </div>
+            <br>
         ";
         
         echo $element;
@@ -873,6 +932,19 @@
         return $summary;
     }
 
+    function retrieveTotalPriceDisplay($product, $subItems, $totalPricePerItem) {
+        $totalPriceDisplay = "";
+
+        $extraCharge = retrieveExtraCharge($subItems);
+        if ($extraCharge > 0) {
+            $totalPriceDisplay .= "$" .number_format($product->price, 2, '.', ',') ." + $" .number_format($extraCharge, 2, '.', ',') ." = $" .number_format($totalPricePerItem, 2, '.', ',');
+        } else {
+            $totalPriceDisplay .= "$" .number_format($product->price, 2, '.', ',');
+        }
+
+        return $totalPriceDisplay;
+    }
+
     function retrieveExtraCharge($subItems) {
         $extraCharge = 0;
 
@@ -920,6 +992,7 @@
     function priceDetailDivElement()
     {
         $priceDetail = retrievePriceDetail();
+        $disabledOrNot = ($priceDetail['totalQuantity']>0)?"":"disabled";
         $element = "
             <div class=\"py-1\">
                 <h5>Price Detail</h5>
@@ -938,6 +1011,10 @@
                     <hr>
                     <h4>$" .$priceDetail['total'] ."</h4>
                 </div>
+            </div>
+            <br>
+            <div class=\"text-center\">
+                <button style=\"width: 30%\" type=\"button\" class=\"btn btn-primary\" id=\"checkout\" " .$disabledOrNot .">Checkout</button>
             </div>
         ";
         echo $element;
@@ -967,6 +1044,28 @@
         $total = $totalPrice + $tax;
         $priceDetail = array('totalQuantity'=>$totalQuantity, 'totalPrice'=>number_format($totalPrice, 2, '.', ','), 'tax'=>number_format($tax, 2, '.', ','), 'total'=>number_format($total, 2, '.', ','));
         return $priceDetail;
+    }
+
+    function priceDetailDivElementForCheckout()
+    {
+        $priceDetail = retrievePriceDetail();
+        $element = "
+            <div class=\"row px-5\">
+                <div class=\"col-md-6 text-start\">
+                    <h5>Subtotal (" .$priceDetail['totalQuantity'] ." items)</h5>
+                    <h5>Tax</h5>
+                    <hr>
+                    <h4>Order Total</h4>
+                </div>
+                <div class=\"col-md-6 text-end\">
+                    <h5>$" .$priceDetail['totalPrice'] ."</h5>
+                    <h5>$" .$priceDetail['tax'] ."</h5>
+                    <hr>
+                    <h4>$" .$priceDetail['total'] ."</h4>
+                </div>
+            </div>
+        ";
+        echo $element;
     }
 
     function loadQuantityIncrementDivElelemt()

@@ -39,6 +39,7 @@
         </div>
     </div>
 </div>
+<br>
 
 <div class="modal" id="editModal">
     <div class="modal-dialog modal-dialog-scrollable">
@@ -331,9 +332,23 @@
                     loadPriceDetailElements(response.priceDetail);
                     loadCartCountElements(response.priceDetail['totalQuantity']);
                     loadOrderListElements(response.items);
+                    loadCheckoutMenuElement(response.priceDetail['totalQuantity']);
                 }
             });
         }
+
+        $(document).on('click', '#checkout', function(e){
+            /*$.ajax({
+                type: 'GET',
+                url: '/checkout',
+                data: {},
+                success: function(response) {
+                    
+                }
+            });*/
+            const base_path = '{{ url('/') }}\/';
+            window.location.href = base_path + 'checkout';
+        }); 
 
 
         

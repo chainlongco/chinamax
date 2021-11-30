@@ -8,10 +8,10 @@
         <div class="col-md-6 offset-md-3">
             <div class="card">
                 <div class="card-header text-center">
-                    <h3>User Log in</h3>
+                    <h3>Customer Log in</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login-submit') }}" id="login_form">
+                    <form method="POST" action="{{ route('customer-login-submit') }}" id="customer-login_form">
                         @csrf
                         <div class="mb-3">
                             <label for="email" class="form-label">Email address</label>
@@ -27,7 +27,7 @@
                         <!--<div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="exampleCheck1">
                             <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                        </div>-->                  
+                        </div>-->            
                         <button type="submit" class="btn btn-primary" id="submitLogin">Submit</button>
                     </form>
                 </div>
@@ -41,7 +41,7 @@
 <script>
     $(document).ready(function(){
         //$('#submitLogin').on('click', function(){   // Also works
-        $('#login_form').on('submit', function(e){
+        $('#customer-login_form').on('submit', function(e){
             e.preventDefault();
             $.ajax({
                 url:$(this).attr('action'),
@@ -63,7 +63,7 @@
                         //$('span.match_error').text(data.msg);
                     } else {
                         //alert(data.status);
-                        $('#login_form')[0].reset();
+                        $('#customer-login_form')[0].reset();
                         const base_path = '{{ url('/') }}\/';
                         //alert(base_path);
                         //window.location.href = base_path + 'products';

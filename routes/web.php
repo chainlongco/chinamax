@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,14 +25,13 @@ Route::get('/', function () {
 Route::get('/login', function(){
     return view('login');
 });
-
+Route::post('/login', [UserController::class, 'login'])->name('login-submit');
 Route::get('/logout', [UserController::class, 'logout']);
 Route::get('/register', function(){
     return view('register');
 });
 Route::post('/register', [UserController::class, 'register'])->name('register-submit');
 
-Route::post('/login', [UserController::class, 'login'])->name('login-submit');
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/detail/{id}', [ProductController::class, 'detail']);
 Route::get('/search', [ProductController::class, 'search']);
@@ -59,3 +59,20 @@ Route::get('/customer/list', function(){
 Route::get('/customers-list', [CustomerController::class, 'listCustomers']);
 Route::get('/customer/delete/{id}', [CustomerController::class, 'customerDelete']);
 Route::get('/customer/edit/{id}', [CustomerController::class, 'customerEdit']);
+
+Route::get('/checkout', function(){
+    return view('checkout');
+});
+Route::post('/checkout', [OrderController::class, 'checkout']);
+
+Route::get('/customerSignup', function(){
+    return view('customersignup');
+});
+Route::post('/customerSignup', [CustomerController::class, 'customerSignup'])->name('customer-signup-submit');
+Route::get('/customerLogin', function(){
+    return view('customerlogin');
+});
+Route::post('/customerLogin', [CustomerController::class, 'customerLogin'])->name('customer-login-submit');
+Route::get('/customerLogout', [CustomerController::class, 'customerLogout']);
+
+Route::get('/customerLoginFromCheckout', [CustomerController::class, 'customerLoginFromCheckout']);

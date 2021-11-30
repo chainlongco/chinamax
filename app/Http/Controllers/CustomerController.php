@@ -6,9 +6,66 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Models\Customer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class CustomerController extends Controller
 {
+
+    public function customerLogin(Request $request)
+    {
+        // Not using Ajax call -- not working 
+
+        // Using Ajax Call
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+        if ($validator->passes()) {
+            $customer = DB::table('customers')->where('email', $request->email)->first();
+            if ($customer && Hash::check($request->password, $customer->password)) {
+                Session::put('customer', $customer);
+                return response()->json(['status'=>2]);
+            } else {
+                return response()->json(['status'=>1, 'msg'=>'Email and Password not matched!']);
+            }
+        } else {
+            return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
+        }
+    }
+
+    public function customerSignup(Request $request)
+    {
+        // Using Ajax call
+        $validator = Validator::make($request->all(), [
+            'firstname' => 'required|max:254',
+            'lastname' => 'required|max:254',
+            'phone' => 'required|unique:customers',
+            'email' => 'required|unique:customers|email',
+            'password' => 'required'
+        ]);
+
+        if ($validator->passes()) {
+            $customer = new Customer();
+            $customer->first_name = $request->firstname;
+            $customer->last_name = $request->lastname;
+            $customer->phone = str_replace("-", "", $request->phone);
+            $customer->email = $request->email;
+            $customer->password = Hash::make($request->password);
+            if ($customer->save()){
+                return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully signed up']);
+            }
+        } else {
+            return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
+        }  
+    }
+
+    public function customerLogout()
+    {
+        Session::forget('customer');
+        return redirect('/customerLogin');
+    }
+
     public function customerAdd()
     {
         $customer = null;
@@ -26,6 +83,10 @@ class CustomerController extends Controller
             ]);
 
             if ($validator->passes()) {
+                $expired = str_replace("/", "", $request->expired);
+                if ($expired == "") {
+                    $expired = null;
+                }
                 $result = DB::table('customers')->where('id',$request->id)
                     ->update([
                         'first_name'=>$request->firstname,
@@ -38,7 +99,7 @@ class CustomerController extends Controller
                         'state'=>$request->state,
                         'zip'=>$request->zip,
                         'card_number'=>str_replace("-", "", $request->card),
-                        'expired'=>str_replace("/", "", $request->expired),
+                        'expired'=>$expired,
                         'cvv'=>$request->cvv,
                     ]);
                 if ($result) {
@@ -69,7 +130,11 @@ class CustomerController extends Controller
                 $customer->state = $request->state;
                 $customer->zip = $request->zip;
                 $customer->card_number = str_replace("-", "", $request->card);
-                $customer->expired = str_replace("/", "", $request->expired);
+                $expired = str_replace("/", "", $request->expired);
+                if ($expired == "") {
+                    $expired = null;
+                }
+                $customer->expired = $expired;
                 $customer->cvv = $request->cvv;
                 if ($customer->save()){
                     return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully created.']);

@@ -8,7 +8,7 @@
         <div class="col-md-6 offset-md-3">
             <div class="card">
                 <div class="card-header text-center">
-                    <h3>Register</h3>
+                    <h3>User Register</h3>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('register-submit') }}" id="register_form">

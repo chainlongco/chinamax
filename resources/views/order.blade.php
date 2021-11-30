@@ -67,6 +67,8 @@
 
 
     <script>
-
+        $(document).ready(function(){
+            $("#productItem13").trigger('click');
+        });
     </script>
 @endsection

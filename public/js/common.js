@@ -32,6 +32,7 @@ function retrieveSerialNumberForCartButtons(elementClass, elementClassId)
 function loadPriceDetailElements(priceDetail)
 {   
     $('#pricedetail').html("");
+    var disabledOrNot = (priceDetail['totalQuantity']>0)?"":"disabled";
     var html = '<h5>Price Detail</h5>';
     html += '<hr>';
     html += '<div class="row px-5">';
@@ -48,6 +49,10 @@ function loadPriceDetailElements(priceDetail)
     html += '       <h4>$' + priceDetail['total'] + '</h4>';
     html += '   </div>';
     html += '</div>';
+    html += '<br>';
+    html += '<div class="text-center">';
+    html += '   <button style="width: 30%" type="button" class="btn btn-primary" id="checkout" ' + disabledOrNot + '>Checkout</button>';
+    html += '</div>';
     $('#pricedetail').append(html);
 }
 
@@ -56,6 +61,13 @@ function loadCartCountElements(quantity)
     $('#cartCount').html("");
     var html = '<span id="cart_count" class="text-warning bg-light">' + quantity + '</span>';
     $('#cartCount').append(html);
+}
+
+function loadCheckoutMenuElement(quantity)
+{
+    $('#checkoutMenu').html("");
+    var html = '<a class="nav-link ' + ((quantity>0)?"active":"") + '" aria-current="page" href=' + ((quantity>0)?"/checkout":"javascript:void(0);") + '>Checkout</a>';
+    $('#checkoutMenu').append(html);
 }
 
 function loadOrderListElements(items)
