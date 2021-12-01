@@ -63,7 +63,7 @@ Route::get('/customer/edit/{id}', [CustomerController::class, 'customerEdit']);
 Route::get('/checkout', function(){
     return view('checkout');
 });
-Route::post('/checkout', [OrderController::class, 'checkout']);
+Route::post('/checkout', [OrderController::class, 'checkout'])->name('place-order-submit');
 
 Route::get('/customerSignup', function(){
     return view('customersignup');

@@ -6,15 +6,36 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
+use Validator;
 
 require_once(public_path() ."/shared/component.php");
 
 class OrderController extends Controller
 {
-    public function checkout() {
+    public function checkout(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'firstname' => 'required|max:254',
+            'lastname' => 'required|max:254',
+            'phone' => 'required',
+            'email' => 'required|email',
+            //'zip'=> 'required',
+            //'card'=> 'required',
+            //'expired'=> 'required',
+            //'cvv'=> 'required'
+        ]);
+        if (!$validator->passes()) {
+            return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
+        }
+
         // Check Customer information in Section
+        $customerId = $this->retrieveCustomerId($request);
+        return response()->json(['status'=>1, 'msg'=>$customerId]);
+        if ($customerId == null) {
+            return response()->json(['status'=>2, 'msg'=>'Customer information incorrect.']);
+        }
         $customerId = 1;
         $note = "test to save";
+        $exctption = null;
         // Save to orders table
         // Save to order_products table (Retrive summary field)
         // Save to order_sub_sides table
@@ -24,7 +45,7 @@ class OrderController extends Controller
         // Save to order_sides table
         // Save to order_entrees table
 
-        $exception = DB::transaction(function() use ($customerId, $note) {
+        /*$exception = DB::transaction(function() use ($customerId, $note) {
             try {
                 if (Session::has('cart')){
                     $elements = "";
@@ -66,7 +87,28 @@ class OrderController extends Controller
                 return $e;
             }
         });
-        return is_null($exception) ? true : false;
+        return is_null($exception) ? true : false;*/
+        if (is_null($exception)) {
+            return response()->json(['status'=>1, 'msg'=>'Your order has been submitted succussfully.']);
+        }
+    }
+
+    protected function retrieveCustomerId(Request $request) {
+        if (Session::has('customer')) {
+            $customer = Session::get('customer');
+            return $customer->id;
+        } else {
+            $customer = DB::table('customers')->where('email', $request->email)->get();
+            if (count($customer) > 0) {
+                return $customer[0]->id;
+            } else {
+                $customerId = null;
+                $customerId = DB::table('customers')->insertGetId([
+                    'first_name'=>$request->firstname, 'last_name'=>$request->lastname, 'phone'=>$request->phone, 'email'=>$request->email
+                ]);
+                return customoerId;
+            }
+        }
     }
 
     protected function saveOrderTable($customerId, $quantity, $total, $note) {

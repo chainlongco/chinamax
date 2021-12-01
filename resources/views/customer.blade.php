@@ -180,12 +180,12 @@
     })
 
     function createMaskForPhone(string) {
-        console.log(string)
+        //console.log(string)
         return string.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
     }
 
     function destroyMaskForPhone(string) {
-        console.log(string)
+        //console.log(string)
         return string.replace(/\D/g, '').substring(0, 10);
     }
     // ***** Phone End *****
@@ -197,12 +197,12 @@
     })
 
     function createMaskForCard(string) {
-        console.log(string)
+        //console.log(string)
         return string.replace(/(\d{4})(\d{4})(\d{4})(\d{4})/, "$1-$2-$3-$4");
     }
 
     function destroyMaskForCard(string) {
-        console.log(string)
+        //console.log(string)
         return string.replace(/\D/g, '').substring(0, 17);
     }
     // ***** Credit Card Number End *****
@@ -214,13 +214,13 @@
     })
 
     function createMaskForExpiration(string) {
-        console.log(string)
+        //console.log(string)
         return string.replace(/(\d{2})(\d{2})/, "$1/$2");
     }
 
     function destroyMaskForExpiration(string) {
-        console.log(string)
-        return string.replace(/\D/g, '').substring(0, 5);
+        //console.log(string)
+        return string.replace(/\D/g, '').substring(0, 4);
     }
     // ***** Expiration Date End *****
 </script>
