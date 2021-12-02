@@ -18,24 +18,18 @@ class OrderController extends Controller
             'lastname' => 'required|max:254',
             'phone' => 'required',
             'email' => 'required|email',
-            //'zip'=> 'required',
-            //'card'=> 'required',
-            //'expired'=> 'required',
-            //'cvv'=> 'required'
+            'zip'=> 'required',
+            'card'=> 'required',
+            'expired'=> 'required',
+            'cvv'=> 'required'
         ]);
         if (!$validator->passes()) {
             return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
         }
 
-        // Check Customer information in Section
-        $customerId = $this->retrieveCustomerId($request);
-        return response()->json(['status'=>1, 'msg'=>$customerId]);
-        if ($customerId == null) {
-            return response()->json(['status'=>2, 'msg'=>'Customer information incorrect.']);
-        }
-        $customerId = 1;
         $note = "test to save";
-        $exctption = null;
+        $exception = null;
+        // Save customer information
         // Save to orders table
         // Save to order_products table (Retrive summary field)
         // Save to order_sub_sides table
@@ -45,8 +39,9 @@ class OrderController extends Controller
         // Save to order_sides table
         // Save to order_entrees table
 
-        /*$exception = DB::transaction(function() use ($customerId, $note) {
+        $exception = DB::transaction(function() use ($request, $note) {
             try {
+                $customerId = $this->retrieveCustomerId($request);
                 if (Session::has('cart')){
                     $elements = "";
                     $items = array();
@@ -82,32 +77,58 @@ class OrderController extends Controller
                         // Save to subItems tables
                         $this->saveSubItems($orderProductId, $subItems);
                     }
+
+                    // ToDo -- Submit Credit Card Charge
                 }
             } catch (Exception $e) {
                 return $e;
             }
         });
-        return is_null($exception) ? true : false;*/
         if (is_null($exception)) {
+            // ToDo -- Send email to customer
+            Session::forget('cart');
             return response()->json(['status'=>1, 'msg'=>'Your order has been submitted succussfully.']);
+        } else {
+            return response()->json(['status'=>3, 'msg'=>$exception]);
         }
     }
 
     protected function retrieveCustomerId(Request $request) {
         if (Session::has('customer')) {
             $customer = Session::get('customer');
+            $this->updateCardInformation($customer, $request);
             return $customer->id;
         } else {
-            $customer = DB::table('customers')->where('email', $request->email)->get();
-            if (count($customer) > 0) {
-                return $customer[0]->id;
+            $customer = DB::table('customers')->where('email', $request->email)->first();
+            if ($customer) {
+                $this->updateCardInformation($customer, $request);
+                return $customer->id;
             } else {
                 $customerId = null;
                 $customerId = DB::table('customers')->insertGetId([
-                    'first_name'=>$request->firstname, 'last_name'=>$request->lastname, 'phone'=>$request->phone, 'email'=>$request->email
+                    'first_name'=>$request->firstname, 
+                    'last_name'=>$request->lastname, 
+                    'phone'=>$request->phone, 
+                    'email'=>$request->email,
+                    'zip'=>$request->zip,
+                    'card_number'=>str_replace("-", "", $request->card),
+                    'expired'=>str_replace("/", "", $request->expired),
+                    'cvv'=>$request->cvv,
                 ]);
-                return customoerId;
+                return $customerId;
             }
+        }
+    }
+
+    protected function updateCardInformation($customer, $request) {
+        if ($customer->card_number == null) {
+            DB::table('customers')->where('id', $customer->id)
+                ->update([
+                    'zip'=>$request->zip,
+                    'card_number'=>str_replace("-", "", $request->card),
+                    'expired'=>str_replace("/", "", $request->expired),
+                    'cvv'=>$request->cvv
+                ]);
         }
     }
 

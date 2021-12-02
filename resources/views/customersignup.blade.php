@@ -61,12 +61,12 @@
         })
 
         function createMaskForPhone(string) {
-            console.log(string)
+            //console.log(string)
             return string.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
         }
 
         function destroyMaskForPhone(string) {
-            console.log(string)
+            //console.log(string)
             return string.replace(/\D/g, '').substring(0, 10);
         }
         // ***** Phone End *****
@@ -88,11 +88,14 @@
                         $.each(data.error, function(prefix, val){
                             $('span.'+prefix+'_error').text(val[0]);
                         });
+                    } else if (data.status == 2) {
+                        //$('#customer_signup_form')[0].reset();
+                        alert(data.msg);
                     } else {
                         $('#customer_signup_form')[0].reset();
                         //alert(data.msg);
                         const base_path = '{{ url('/') }}\/';
-                        window.location.href = base_path + 'order';
+                        window.location.href = base_path + 'login';
                     }
                 }
             });

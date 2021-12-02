@@ -27,7 +27,7 @@ class CustomerController extends Controller
                 Session::put('customer', $customer);
                 return response()->json(['status'=>2]);
             } else {
-                return response()->json(['status'=>1, 'msg'=>'Email and Password not matched!']);
+                return response()->json(['status'=>1, 'msg'=>'Email and Password not matched or you have not sign up yet!']);
             }
         } else {
             return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
@@ -40,20 +40,43 @@ class CustomerController extends Controller
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|max:254',
             'lastname' => 'required|max:254',
-            'phone' => 'required|unique:customers',
-            'email' => 'required|unique:customers|email',
+            'phone' => 'required',
+            'email' => 'required|email',
             'password' => 'required'
         ]);
 
         if ($validator->passes()) {
-            $customer = new Customer();
-            $customer->first_name = $request->firstname;
-            $customer->last_name = $request->lastname;
-            $customer->phone = str_replace("-", "", $request->phone);
-            $customer->email = $request->email;
-            $customer->password = Hash::make($request->password);
-            if ($customer->save()){
-                return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully signed up']);
+            $customerByEmail = DB::table('customers')->where('email', $request->email)->first();
+            if ($customerByEmail) {
+                //echo 'update';
+                if ($customerByEmail->password == null) {
+                    //echo "password is null";
+                    $result = DB::table('customers')->where('email', $request->email)
+                        ->update([
+                            'first_name'=>$request->firstname,
+                            'last_name'=>$request->lastname,
+                            'phone'=>str_replace("-", "", $request->phone),
+                            'email'=>$request->email,
+                            'password'=>Hash::make($request->password)
+                        ]);
+                    if ($result){
+                        return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully signed up']);
+                    }
+                } else {
+                    //echo "password is NOT null";
+                    return response()->json(['status'=>2, 'msg'=>'Customer already signed up']);
+                }
+            } else {
+                //echo "add";
+                $customer = new Customer();
+                $customer->first_name = $request->firstname;
+                $customer->last_name = $request->lastname;
+                $customer->phone = str_replace("-", "", $request->phone);
+                $customer->email = $request->email;
+                $customer->password = Hash::make($request->password);
+                if ($customer->save()){
+                    return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully signed up']);
+                }
             }
         } else {
             return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
