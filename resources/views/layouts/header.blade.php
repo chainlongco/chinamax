@@ -7,7 +7,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/order">Order</a>
+                    <a class="nav-link active" aria-current="page" href="/menu">Menu</a>
                 </li>
             </ul>
             <ul class="navbar-nav mb-2 mb-lg-0">
@@ -35,6 +35,12 @@
                         <li><a class="dropdown-item" href="/customer/add">Add Customer</a></li>
                     </ul>
                   </li>
+            </ul>
+
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/order">Order</a>
+                </li>
             </ul>
             
             <div class="nav navbar-nav ms-auto">

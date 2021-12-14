@@ -40,7 +40,7 @@ function loadPriceDetailElements(priceDetail)
     html += '       <h5>Price (' + priceDetail['totalQuantity'] + ' items)</h5>';
     html += '       <h5>Tax</h5>';
     html += '       <hr>';
-    html += '       <h3>Order Total</h3>';
+    html += '       <h4>Order Total</h4>';
     html += '   </div>';
     html += '   <div class="col-md-6 text-end">';
     html += '       <h5>$' + priceDetail['totalPrice'] + '</h5>';
@@ -52,6 +52,7 @@ function loadPriceDetailElements(priceDetail)
     html += '<br>';
     html += '<div class="text-center">';
     html += '   <button style="width: 30%" type="button" class="btn btn-primary" id="checkout" ' + disabledOrNot + '>Checkout</button>';
+    html += '   <button style="width: 30%" type="button" class="btn btn-danger" id="emptycart">Empty Cart</button>';
     html += '</div>';
     $('#pricedetail').append(html);
 }
@@ -74,7 +75,7 @@ function loadOrderListElements(items)
 {
     $('#orderlist').html("");
     $.each(items, function(key, value) {
-        console.log(key, value);
+        //console.log(key, value);
         product = value['item'];
         quantity = value['quantity'];
         subItems = value['subItems'];
@@ -107,7 +108,7 @@ function orderListElement(key, product, quantity, subItems, totalPricePerItem)
     html += '       <div class="border rounded">';
     html += '           <div class="row bg-white">';
     html += '               <div class="col-md-3">';
-    html += '                   <img src="\images\\' + image + '" style="width: 100%">';
+    html += '                   <img src="\\images\\' + image + '" style="width: 100%">';
     html += '               </div>';
     html += '               <div class="col-md-6">';
     html += '                   <h5 class="pt-2">' + product['name'] + ' <small> (' + product['description'] + ')</small> </h5>';
@@ -138,9 +139,8 @@ function retrieveSummary(subItems)
     var entree = "";
     var drink = "";
     var drinkOnly = "";
-
     $.each(subItems, function(key, value) {
-        console.log(key, value);
+        //console.log(key, value);
         category = value['category'];
         quantity = value['quantity'];
         item = value['item'];
@@ -149,14 +149,14 @@ function retrieveSummary(subItems)
             quantity = "1/2";
         }
         if (category == "Side") {
-            if (subItems.keys().length > 1) {  // This means combo not Individual Side/Entree 
+            if (subItems.length > 1) {  // This means combo not Individual Side/Entree 
                 side = side + item['name'] + "(" + quantity + ") ";
             } else {
                 side = side + item['name'] + " ";
             }        
         }
         if (category == "Entree") {
-            if (subItems.keys().length > 1) {  // This means combo not Individual Side/Entree 
+            if (subItems.length > 1) {  // This means combo not Individual Side/Entree 
                 entree = entree + item['name'] + "(" + quantity + ") ";
             } else {
                 entree = entree + item['name'] + " ";

@@ -994,7 +994,7 @@
         $priceDetail = retrievePriceDetail();
         $disabledOrNot = ($priceDetail['totalQuantity']>0)?"":"disabled";
         $element = "
-            <div class=\"py-1\">
+            <div>
                 <h5>Price Detail</h5>
             </div>
             <hr>
@@ -1003,7 +1003,7 @@
                     <h5>Price (" .$priceDetail['totalQuantity'] ." items)</h5>
                     <h5>Tax</h5>
                     <hr>
-                    <h3>Order Total</h3>
+                    <h4>Order Total</h4>
                 </div>
                 <div class=\"col-md-6 text-end\">
                     <h5>$" .$priceDetail['totalPrice'] ."</h5>
@@ -1015,6 +1015,7 @@
             <br>
             <div class=\"text-center\">
                 <button style=\"width: 30%\" type=\"button\" class=\"btn btn-primary\" id=\"checkout\" " .$disabledOrNot .">Checkout</button>
+                <button style=\"width: 30%\" type=\"button\" class=\"btn btn-danger\" id=\"emptycart\">Empty Cart</button>
             </div>
         ";
         echo $element;
@@ -1078,5 +1079,25 @@
         $html .=    "</div>";
 
         return $html;
+    }
+
+    function orderNoteDivElementForCheckout() 
+    {
+        $note = "";
+        if (Session::has('cart')){
+            $cart = new Cart(Session::get('cart'));
+            $note = $cart->note;
+        }
+
+        $element = "
+            <div class=\"row px-5\">
+                <div class=\"col-md-12 text-start\">
+                    <p style=\"font-size: 20px\">Special Reqests: " .$note ."</p>
+                </div>
+            </div>
+            <hr>
+            <br>
+        ";
+        echo $element;
     }
 ?>

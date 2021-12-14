@@ -265,6 +265,27 @@ class ProductController extends Controller
         $newCart = new Cart($oldCart);
         $newCart->updateItem($serialNumber, $productId, $quantity, $subItems);
         Session::put('cart', $newCart);
+        $priceDetail = retrievePriceDetail();
+        $items = $newCart->items;   //$storedItem = ['item'=>$item, 'subItem'=>$subItem, 'quantity'=>$quantity];
+        return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
+    }
+
+    public function cartNote(Request $request) {
+        $oldCart = null;
+        if (Session::has('cart')) {
+            $oldCart = Session::get('cart');
+        }
+        $newCart = new Cart($oldCart);
+        $newCart->addNote($request->note);
+        Session::put('cart', $newCart);
+        return response()->json(['note'=>$newCart->note]);
+    }
+
+    public function emptyCart() {
+        Session::forget('cart');
+        $priceDetail = retrievePriceDetail();
+        $items = [];
+        return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
     }
 
 

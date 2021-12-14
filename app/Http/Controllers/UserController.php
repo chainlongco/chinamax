@@ -14,12 +14,18 @@ class UserController extends Controller
     public function login(Request $request)
     {
         // Not using Ajax call -- not working 
-
         // Using Ajax Call
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+        $validator = Validator::make($request->all(), 
+        //$request->validate(
+            [
+                'email' => 'required|email',
+                'password' => 'required'    
+            ],
+            [
+                'email.required' => 'This field is required',
+                'password.required' => 'This field is required',
+            ]
+        );
         if ($validator->passes()) {
             $user = DB::table('users')->where('email', $request->email)->first();
             if ($user && Hash::check($request->password, $user->password)) {

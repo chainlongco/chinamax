@@ -3,6 +3,7 @@
 @section('content')
 
 <?php
+    use App\Shared\Cart;
     require_once(public_path() ."/shared/component.php");
 ?>
 
@@ -12,11 +13,20 @@
             <div class="col-md-7">
                 <div class="shopping-cart py-4">
                     <div class="row">
-                        <div class="col-md-2">
-                            <h5>My Cart</h5>
+                        <div class="col-md-5">
+                            <?php
+                                $title = "My Cart";
+                                if (Session::has('cart')) {
+                                    $orderId = Session::get('cart')->orderId;
+                                    if ($orderId != null) {
+                                        $title = "My Cart (From Order History)";
+                                    }
+                                }
+                            ?>
+                            <h4>{{ $title }}</h4>
                         </div>
-                        <div class="col-md-10 text-center">
-                            <button style="width: 30%" type="button" class="btn btn-primary addMoreItems">Add More Items</button>
+                        <div class="col-md-7 text-center">
+                            <button style="width: 45%" type="button" class="btn btn-primary addMoreItems">Add More Items</button>
                         </div>
                     </div>
                     <hr>
@@ -28,7 +38,30 @@
                 </div>
             </div>
             <div class="col-md-5">
-                <div class="price-detail py-4">
+                <div class="py-4">
+                    <div class="py-1">
+                        <h5>Special Requests</h5>
+                    </div>
+                    <hr>
+                    <div class="row" style="position: relative">
+                        <div class="col-md-9">
+                            <?php
+                                $note = "";
+                                if (Session::has('cart')){
+                                    $cart = new Cart(Session::get('cart'));
+                                    $note = $cart->note;
+                                }
+                            ?>
+                            <textarea id="ordernote" rows="3" placeholder="Add Note..." style="width:100%;">{{ $note }}</textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center" style="position: absolute; bottom: 8px;">
+                            <button type="button" class="btn btn-primary" id="updateNote">Update Note</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="py-3">
                     <div id="pricedetail">
                         <?php 
                             priceDetailDivElement();
@@ -67,11 +100,51 @@
 
 <script>
     $(document).ready(function(){
+        function saveNoteToSession(){
+            var note = $('#ordernote').val();
+            //alert(note);
+            $.ajax({
+                type: 'GET',
+                url: '/cart-note',
+                data: {'note':note},
+                success: function(response) {
+                    //console.log(response.note);
+                }
+            });
+            
+        }
+
         $(document).on('click', '.addMoreItems', function(e){ 
             e.preventDefault();
+
             const base_path = '{{ url('/') }}\/';
-            window.location.href = base_path + 'order';
-        }); 
+            window.location.href = base_path + 'menu';
+        });
+
+        $(document).on('click', '#updateNote', function(e){
+            saveNoteToSession();
+        });
+
+        //$('#ordernote').focusout(function() {
+        //    saveNoteToSession();
+        //})
+
+        $(document).on('click', '#emptycart', function(e){
+            if (confirm('Are you sure to empty your cart?')) { 
+                $.ajax({
+                    type: 'GET',
+                    url: '/empty-cart',
+                    data: {},
+                    success: function(response) {
+                        $('#ordernote').val("");
+                        loadPriceDetailElements(response.priceDetail);
+                        loadCartCountElements(response.priceDetail['totalQuantity']);
+                        loadOrderListElements(response.items);
+                        loadCheckoutMenuElement(response.priceDetail['totalQuantity']);
+                    }
+                });
+            }
+        });
 
         //$('.quantityPlus').on('click', function(e){  This will not work after ajax call, so use this line below
         $(document).on('click','.quantityPlusForCart', function(e){
@@ -295,11 +368,16 @@
                         //var quantityElementId = "#quantity" + productId;
                         //$(quantityElementId).val(1);
                     } else {
-                        $('#cartCount').html(response);
+                        //$('#cartCount').html(response);
                         //const base_path = '{{ url('/') }}\/';
                         //window.location.href = base_path + 'cart';
                         // After move all js code from order.blade.php to ChoiceItem.js, the base_path becomes NaN
-                        window.location.href = 'cart';
+                        //window.location.href = 'cart';
+                        loadPriceDetailElements(response.priceDetail);
+                        loadCartCountElements(response.priceDetail['totalQuantity']);
+                        loadOrderListElements(response.items);
+                        loadCheckoutMenuElement(response.priceDetail['totalQuantity']);
+                        $(".btn-close").trigger('click');
                     }    
                 }
             });
@@ -346,6 +424,7 @@
                     
                 }
             });*/
+
             const base_path = '{{ url('/') }}\/';
             window.location.href = base_path + 'checkout';
         }); 
@@ -368,7 +447,7 @@
                 url: '/cart-price',
                 data: {'id': productId, 'quantity': quantity},
                 success: function(response) {
-                    console.log(response);
+                    //console.log(response);
                     $('#pricedetail').html(response);
                 }
             });
@@ -381,7 +460,7 @@
                 url: '/cart-order',
                 data: {'id': productId},
                 success: function(response) {
-                    console.log(response);
+                    //console.log(response);
                     $('#orderlist').html(response);
                 }
             });
@@ -394,7 +473,7 @@
                 url: '/cart-count',
                 data: {'id': productId, 'quantity': quantity},
                 success: function(response) {
-                    console.log(response);      
+                    //console.log(response);      
                     $('#cartCount').html(response);
                 }
             });

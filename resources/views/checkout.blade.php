@@ -15,8 +15,17 @@
                 <div class="col-md-6">
                     <div class="py-4">
                         <div class="row">
-                            <div class="col-md-2">
-                                <h2>Checkout</h2>
+                            <div class="col-md-6">
+                                <?php
+                                    $title = "Checkout";
+                                    if (Session::has('cart')) {
+                                        $orderId = Session::get('cart')->orderId;
+                                        if ($orderId != null) {
+                                            $title = "Checkout (From Order History)";
+                                        }
+                                    }
+                                ?>
+                                <h4>{{ $title }}</h4>
                             </div>
                             <?php
                                 $customer = null;
@@ -45,9 +54,9 @@
                                     }
                                 }
                             ?>
-                            <div class="col-md-10 text-center">
-                                <button style="width: 30%" type="button" class="btn btn-primary" id="customerlogin" {{ $customer?"disabled":"" }}>Login</button>
-                                <button style="width: 30%" type="button" class="btn btn-primary" id="customersignup" {{ $customer?"disabled":"" }}>Signup</button>
+                            <div class="col-md-6 text-center">
+                                <button style="width: 40%" type="button" class="btn btn-primary" id="customerlogin" {{ $customer?"disabled":"" }}>Login</button>
+                                <button style="width: 40%" type="button" class="btn btn-primary" id="customersignup" {{ $customer?"disabled":"" }}>Signup</button>
                             </div>
                         </div>
 
@@ -131,6 +140,11 @@
                                     orderListDivElementForCheckout();             
                                 ?>
                             </div>
+                            <div id="ordernote">
+                                <?php
+                                    orderNoteDivElementForCheckout();
+                                ?>
+                            </div>
                             <div id="pricedetail">
                                 <?php 
                                     priceDetailDivElementForCheckout();
@@ -138,7 +152,7 @@
                             </div>
                             <br>
                             <div class="text-center">
-                                <button style="width: 60%" type="submit" class="btn btn-primary" id="placeorder">Place Order</button>
+                                <button style="width: 60%" type="submit" class="btn btn-primary" id="placeorder" {{ (Session::has('cart'))?"":"disabled" }}>Place Order</button>
                             </div>
                         </div>
                     </div>
@@ -172,7 +186,11 @@
                         $('#place_order_form')[0].reset();
                         alert(data.msg);
                         const base_path = '{{ url('/') }}\/';
-                        window.location.href = base_path + 'checkout';
+                        if (data.editOrder) {
+                            window.location.href = base_path + 'order';
+                        } else {
+                            window.location.href = base_path + 'checkout';
+                        }       
                     }
                 }
             });

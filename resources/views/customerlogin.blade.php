@@ -67,7 +67,7 @@
                         const base_path = '{{ url('/') }}\/';
                         //alert(base_path);
                         //window.location.href = base_path + 'products';
-                        window.location.href = base_path + 'order';
+                        window.location.href = base_path + 'menu';
                     }
                 }
             });

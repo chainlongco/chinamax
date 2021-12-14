@@ -43,8 +43,10 @@ Route::get('/cart-quantity', [ProductController::class, 'cartQuantityUpdated']);
 Route::get('/cart-price', [ProductController::class, 'cartPriceDetail']);
 Route::get('/cart-order', [ProductController::class, 'cartRemoveFromOrderList']);
 Route::get('/cart-count', [ProductController::class, 'cartCount']);
+Route::get('/cart-note', [ProductController::class, 'cartNote']);
+Route::get('/empty-cart', [ProductController::class, 'emptyCart']);
 
-Route::get('/order', [MenuController::class, 'menu']);
+Route::get('/menu', [MenuController::class, 'menu']);
 Route::get('/order-choices', [ProductController::class, 'orderChoices']);
 Route::get('/order-added', [ProductController::class, 'orderAdded']);
 Route::get('/order/{serialNumber}', [ProductController::class, 'editWithSerialNumber']);
@@ -76,3 +78,10 @@ Route::post('/customerLogin', [CustomerController::class, 'customerLogin'])->nam
 Route::get('/customerLogout', [CustomerController::class, 'customerLogout']);
 
 Route::get('/customerLoginFromCheckout', [CustomerController::class, 'customerLoginFromCheckout']);
+
+Route::get('/order', function(){
+    return view('myorders');
+});
+Route::get('orders-list', [OrderController::class, 'listOrders']);
+Route::get('/order/delete/{id}', [OrderController::class, 'orderDelete']);
+Route::get('/order/edit/{id}', [OrderController::class, 'orderEdit']);

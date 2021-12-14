@@ -10,6 +10,9 @@ Class Cart {
     public $items = array();
     public $totalQuantity = 0;
     public $totalPrice = 0;
+    public $note = "";
+    public $created = null;
+    public $orderId = null;
 
     function __construct($oldCart) {
         if ($oldCart) {
@@ -17,7 +20,19 @@ Class Cart {
             $this->items = $oldCart->items;
             $this->totalQuantity = $oldCart->totalQuantity;
             $this->totalPrice = $oldCart->totalPrice;
+            $this->note = $oldCart->note;
+            $this->created = $oldCart->created;
+            $this->orderId = $oldCart->orderId;
         }
+    }
+
+    public function addNote($note) {
+        $this->note = $note;
+    }
+
+    public function addOrderIdAndCreatedDateTime($orderId, $createdDateTime) {
+        $this->orderId = $orderId;
+        $this->created = $createdDateTime;
     }
 
     public function addNewItem($item, $quantity, $subItems) {

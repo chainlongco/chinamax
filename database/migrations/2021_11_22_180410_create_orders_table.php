@@ -20,8 +20,8 @@ class CreateOrdersTable extends Migration
             $table->integer('quantity');
             $table->float('total', 8, 2);
             $table->string('note');
-            $table->dateTime('order_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamps();
+            $table->dateTime('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->dateTime('updated_at')->nullable()->default(null);
         });
     }
 

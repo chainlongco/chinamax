@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
+use App\Shared\Cart;
 use Validator;
 
 require_once(public_path() ."/shared/component.php");
@@ -27,8 +28,9 @@ class OrderController extends Controller
             return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
         }
 
-        $note = "test to save";
         $exception = null;
+        $cart = Session::get('cart');
+        $orderId = $cart->orderId;
         // Save customer information
         // Save to orders table
         // Save to order_products table (Retrive summary field)
@@ -38,8 +40,7 @@ class OrderController extends Controller
         // Save to order_drinks table
         // Save to order_sides table
         // Save to order_entrees table
-
-        $exception = DB::transaction(function() use ($request, $note) {
+        $exception = DB::transaction(function() use ($request, $cart) {
             try {
                 $customerId = $this->retrieveCustomerId($request);
                 if (Session::has('cart')){
@@ -48,7 +49,10 @@ class OrderController extends Controller
                     $totalQuantity = 0;
                     $totalPrice = 0;
                     $subItems = array();
-                    foreach (Session::get('cart') as $key=>$value) {
+                    $note = "";
+                    $created = null;
+                    $orderId = null;
+                    foreach ($cart as $key=>$value) {
                         if ($key == 'totalQuantity') {
                             $totalQuantity = $value;
                         }
@@ -58,10 +62,24 @@ class OrderController extends Controller
                         if ($key == 'items') {
                             $items = $value;
                         }
+                        if ($key == 'note') {
+                            $note = $value;
+                        }
+                        if ($key == 'created') {
+                            $created = $value;
+                        }
+                        if ($key == 'orderId') {
+                            $orderId = $value; 
+                        }
+                    }
+
+                    // if created is not null, this means it is updated from administrator -- delete this order and recreate
+                    if ($orderId != null) {
+                        DB::table('orders')->where('id', $orderId)->delete();
                     }
 
                     // Save to orders table
-                    $orderId = $this->saveOrderTable($customerId, $totalQuantity, $totalPrice, $note);
+                    $orderIdNew = $this->saveOrderTable($customerId, $totalQuantity, $totalPrice, $note, $created);
 
                     $keys = array_keys($items);
                     foreach ($keys as $key) {   // $key is serialNumber
@@ -72,7 +90,7 @@ class OrderController extends Controller
 
                         // Save to order_products table
                         $summary = $this->retrieveProductSummary($product, $subItems, $totalPricePerItem);
-                        $orderProductId = $this->saveOrderProductsTable($orderId, $product->id, $quantity, $summary);
+                        $orderProductId = $this->saveOrderProductsTable($orderIdNew, $product->id, $quantity, $summary);
 
                         // Save to subItems tables
                         $this->saveSubItems($orderProductId, $subItems);
@@ -87,7 +105,11 @@ class OrderController extends Controller
         if (is_null($exception)) {
             // ToDo -- Send email to customer
             Session::forget('cart');
-            return response()->json(['status'=>1, 'msg'=>'Your order has been submitted succussfully.']);
+            if ($orderId != null) {
+                return response()->json(['status'=>1, 'msg'=>'Your order has been submitted succussfully.', 'editOrder'=>true]);
+            } else {
+                return response()->json(['status'=>1, 'msg'=>'Your order has been submitted succussfully.']);
+            }
         } else {
             return response()->json(['status'=>3, 'msg'=>$exception]);
         }
@@ -132,10 +154,17 @@ class OrderController extends Controller
         }
     }
 
-    protected function saveOrderTable($customerId, $quantity, $total, $note) {
-        $orderId = DB::table('orders')->insertGetId([
-            'customer_id'=>$customerId, 'quantity'=>$quantity, 'total'=>$total, 'note'=>$note, 'order_at'=>Carbon::now() 
-        ]);
+    protected function saveOrderTable($customerId, $quantity, $total, $note, $created) {
+        $orderId = null;
+        if ($created != null) {
+            $orderId = DB::table('orders')->insertGetId([
+                'customer_id'=>$customerId, 'quantity'=>$quantity, 'total'=>$total, 'note'=>$note, 'created_at'=>$created, 'updated_at'=>Carbon::now() 
+            ]);
+        } else {
+            $orderId = DB::table('orders')->insertGetId([
+                'customer_id'=>$customerId, 'quantity'=>$quantity, 'total'=>$total, 'note'=>$note, 'created_at'=>Carbon::now() 
+            ]);
+        }
         return $orderId;
     }
 
@@ -219,5 +248,210 @@ class OrderController extends Controller
                 ]);
             }
         }
+    }
+
+    public function listOrders() {
+        $taxRate = 0.0825;
+        $customers = DB::table('customers')->get();
+        $orders = DB::table('orders')
+                    ->select('orders.id', 'orders.customer_id', 'orders.quantity', 'orders.total', 'orders.note', 'orders.created_at', 'orders.updated_at', 'customers.first_name', 'customers.last_name', 'customers.phone', 'customers.email')
+                    ->join('customers','customers.id','=','orders.customer_id')
+                    ->get();
+        
+        
+        /*DB::table('users')
+        ->select('users.id','users.name','profiles.photo')
+        ->join('profiles','profiles.id','=','users.id')
+        ->where(['something' => 'something', 'otherThing' => 'otherThing'])
+        ->get();*/
+        
+        $html = '';
+        $html .=    '<table class="table table-striped table-hover cell-border" id="ordersDatatable" style="padding: 10px;">
+                        <thead>
+                            <tr style="border-top: 1px solid #000;">
+                                <th class="text-center">First Name</th>
+                                <th class="text-center">Last Name</th>
+                                <th class="text-center">Phone</th>
+                                <th class="text-center">Email</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-center">Subtotal</th>
+                                <th class="text-center">Tax</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center">Order Time</th>
+                                <th class="text-center">Updated Time</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>';
+        $html .=        '<tbody>';
+                            if (!empty($orders)):
+                                foreach($orders as $order):
+                                    $phoneNumber = "";
+                                    if( preg_match('/^(\d{3})(\d{3})(\d{4})$/', $order->phone,  $matches)) {
+                                        $phoneNumber = $matches[1] . '-' .$matches[2] . '-' . $matches[3];
+                                    } else {
+                                        $phoneNumber = $order->phone;
+                                    }
+                                    $tax = round(($order->total*$taxRate),2);
+                                    $total = $order->total + $tax;
+
+        $html .=        	        '<tr>';
+        $html .=                        '<td class="align-middle" style="text-align: left;">' .$order->first_name .'</td>';
+        $html .=                        '<td class="align-middle" style="text-align: left;">' .$order->last_name .'</td>';
+        $html .=                        '<td class="align-middle" style="text-align: center;">' .$phoneNumber .'</td>';
+        $html .=                        '<td class="align-middle" style="text-align: left;">' .$order->email .'</td>';
+        $html .=                        '<td class="align-middle" style="text-align: right;">' .$order->quantity .'</td>';
+        $html .=                        '<td class="align-middle" style="text-align: right;">$' .$order->total .'</td>';
+        $html .=                        '<td class="align-middle" style="text-align: right;">$' .$tax  .'</td>';
+        $html .=                        '<td class="align-middle" style="text-align: right;">$' .$total  .'</td>';
+        $html .=                        '<td class="align-middle" style="text-align: center;">' .$order->created_at .'</td>';
+        $html .=                        '<td class="align-middle" style="text-align: center;">' .$order->updated_at .'</td>';
+        $html .=                        '<td>';
+        $html .=                            '<div class="row justify-content-around" style="margin:auto;">';
+        $html .=                                '<a href="order/edit/' .$order->id .'" class="col-md-5 btn btn-primary" title="Edit"><span class="bi-pencil-fill"></span></a>';
+        $html .=                                '<a href="order/delete/' .$order->id .'" class="col-md-5 btn btn-danger" title="Delete" onclick="if(!confirm(' ."'Are you sure?'" .')){return false;}"><span class="bi-x-lg"></span></a>';
+        $html .=                            '</div>';
+        $html .=                        '</td>';
+        $html .=                    '</tr>';
+                                endforeach;
+                            endif;
+
+        $html .=     	'</tbody>
+                        <tfoot>
+                            <tr>
+                                <th class="text-center">First Name</th>
+                                <th class="text-center">Last Name</th>
+                                <th class="text-center">Phone</th>
+                                <th class="text-center">Email</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-center">Subtotal</th>
+                                <th class="text-center">Tax</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center">Order Time</th>
+                                <th class="text-center">Updated Time</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </tfoot>';
+        $html .=	'</table>';
+        
+        //scrollY: "530px", there is a bug for scrollY in DataTable: Header not align automatically when change window size. So, commented out
+        $html .=    '<script>
+                        $(document).ready(function(){
+                            $("#ordersDatatable").DataTable({
+                                //scrollY: "530px",
+                                scrollCollapse: true,
+                                "columnDefs": [{
+                                    targets: [7],
+                                    orderable: false
+                                }]
+                            });
+                        });    
+                    </script>';
+        
+        echo $html;
+    }
+
+    public function orderDelete($id) {
+        $order = DB::table('orders')->where('id', $id);
+        if ($order->delete()) {
+            if (Session::has('cart')) {
+                if (Session::get('cart')->orderId == $id) {
+                    Session::forget('cart');
+                }
+            }
+            return redirect('/order');
+        }
+    }
+
+    public function orderEdit($id) {
+        $this->loadOrderToSession($id);
+        return view('cart');
+    }
+
+    protected function loadOrderToSession($orderId) {
+        Session::forget('cart');
+        $newCart = new Cart(null);
+
+        $order = DB::table('orders')->where('id', $orderId)->first();
+        $newCart->addNote($order->note);
+        $newCart->addOrderIdAndCreatedDateTime($order->id, $order->created_at);
+        $this->loginAsCustomer($order->customer_id);
+
+        $order_products = DB::table('order_products')->where('order_id', $orderId)->get();
+        foreach($order_products as $order_product) {
+            $subItems = array();
+            $product = DB::table('products')->where('id', $order_product->product_id)->first();
+            if ($product->menu_id == 1) {   // Appetizers
+                // no subItems for Appetizers
+            } else if ($product->menu_id == 2) {    // Drinks
+                $subItems = $this->retrieveSubItemsForDrinks($order_product->id, $product, $order_product->quantity);
+            } else if ($product->menu_id == 4) {
+                $subItems = $this->retrieveSubItemsForSingle($order_product->id, $product, $order_product->quantity);
+            } else if ($product->menu_id == 3) {
+                $subItems = $this->retrieveSubItemsForCombos($order_product->id);
+            }
+            $newCart->addNewItem($product, $order_product->quantity, $subItems);
+        }
+
+        Session::put('cart', $newCart);        
+    }
+
+    protected function loginAsCustomer($customerId) {
+        Session::forget('customer');
+        $customer = DB::table('customers')->where('id', $customerId)->first();
+        if ($customer) {
+            Session::put('customer', $customer);
+        }
+    }
+
+    protected function retrieveSubItemsForDrinks($orderProductId, $product, $quantity) {
+        $subItems = [];
+        $drinkArray = [];
+        $drink = DB::table('drinks')->where('name', $product->category)->first();
+        $orderDrink = DB::table('order_drinks')->where('order_product_id', $orderProductId)->first(); 
+        $drinkArray = array("category"=>"DrinkOnly", "id"=>$drink->id, "quantity"=>$quantity, 'selectBoxId'=>$orderDrink->type_id);
+        array_push($subItems, $drinkArray);
+        return $subItems;
+    }
+
+    protected function retrieveSubItemsForSingle($orderProductId, $product, $quantity) {
+        $subItems = [];
+        if ($product->category == "Side") {
+            $orderSide = DB::table('order_sides')->where('order_product_id', $orderProductId)->first();
+            $sideArray = array("category"=>"Side", "id"=>$orderSide->side_id, "quantity"=>$quantity);
+            array_push($subItems, $sideArray);
+        } else {
+            $orderEntree = DB::table('order_entrees')->where('order_product_id', $orderProductId)->first();
+            $entree = DB::table('entrees')->where('id', $orderEntree->entree_id)->first();
+            $entreeArray = array("category"=>"Entree","id"=>$orderEntree->entree_id, "quantity"=>$quantity);
+            array_push($subItems, $entreeArray);
+        }
+        return $subItems;
+    }
+
+    protected function retrieveSubItemsForCombos($orderProductId) {
+        $subItems = [];
+        // For Side
+        $orderSubSides = DB::table('order_sub_sides')->where('order_product_id', $orderProductId)->get();
+        foreach ($orderSubSides as $orderSubSide) {
+            $sideArray = array("category"=>"Side", "id"=>$orderSubSide->side_id, "quantity"=>$orderSubSide->quantity);
+            array_push($subItems, $sideArray);
+        }
+        // For Entree
+        $orderSubEntrees = DB::table('order_sub_entrees')->where('order_product_id', $orderProductId)->get();
+        foreach ($orderSubEntrees as $orderSubEntree) {
+            $entreeArray = array("category"=>"Entree", "id"=>$orderSubEntree->entree_id, "quantity"=>$orderSubEntree->quantity);
+            array_push($subItems, $entreeArray);
+        }
+        // For Drink
+        $orderSubDrinks = DB::table('order_sub_drinks')->where('order_product_id', $orderProductId)->get();
+        foreach ($orderSubDrinks as $orderSubDrink) {
+            if ($orderSubDrink->type_id != null) {
+                $drinkArray = array("category"=>"Drink", "id"=>$orderSubDrink->drink_id, "quantity"=>$orderSubDrink->quantity, "selectBoxId"=>$orderSubDrink->type_id);
+            } else {
+                $drinkArray = array("category"=>"Drink", "id"=>$orderSubDrink->drink_id, "quantity"=>$orderSubDrink->quantity);
+            }
+            array_push($subItems, $drinkArray);
+        }   
+        return $subItems;
     }
 }
