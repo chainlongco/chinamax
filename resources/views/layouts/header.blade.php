@@ -25,23 +25,44 @@
                 </li>
             </ul>
             
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item dropdown">
-                    <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Customer
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/customer/list">My Customers</a></li>
-                        <li><a class="dropdown-item" href="/customer/add">Add Customer</a></li>
-                    </ul>
-                  </li>
-            </ul>
+            <?php
+                $canAccessCustomerOrOrder = false;
+                if (Session::has('user')) {
+                    $user = Session::get('user');
+                    $roles = DB::table('roles')
+                        ->select('roles.name')
+                        ->join('role_users', 'role_id', '=', 'roles.id')
+                        ->where('role_users.user_id', $user->id)
+                        ->get();
+                    foreach ($roles as $role) {
+                        if ($role->name == "Admin" || $role->name == "Owner" || $role->name == "Manager" || $role->name == "Employee"){
+                            $canAccessCustomerOrOrder = true;
+                            break;
+                        }
+                    }
+                }
+            ?>
+            @if ($canAccessCustomerOrOrder)
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Customer
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/customer/list">My Customers</a></li>
+                            <li><a class="dropdown-item" href="/customer/add">Add Customer</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            @endif
 
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/order">Order</a>
-                </li>
-            </ul>
+            @if ($canAccessCustomerOrOrder)
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/order">Order</a>
+                    </li>
+                </ul>
+            @endif    
             
             <div class="nav navbar-nav ms-auto">
                 <a href="/cart" class="nav-item nav-link active">
