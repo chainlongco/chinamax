@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 
+
+/* Middleware:
+    1. Create middleware -- php artisan make:middleware IsAdmin
+    2. Register in Kernel.php at $routeMiddleware
+    3. Apply to web.php: Route::group(['middleware' => 'isAdmin'], function () {}
+*/
+
 class IsAdmin
 {
     /**
