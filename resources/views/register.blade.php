@@ -29,7 +29,9 @@
                             <input type="password" class="form-control" name="password" id="password">
                             <span class="text-danger error-text password_error"></span>
                         </div>
-                        <button type="submit" class="btn btn-primary" id="submitRegister">Submit</button>
+                        <div style="float:right; display:block;">
+                            <button type="submit" class="btn btn-primary" id="submitRegister">Submit</button>
+                        </div>
                     </form>
                 </div>
             </div>
