@@ -79,6 +79,10 @@ Route::get('orders-list', [OrderController::class, 'listOrders']);
 Route::get('/order/delete/{id}', [OrderController::class, 'orderDelete']);
 Route::get('/order/edit/{id}', [OrderController::class, 'orderEdit']);
 
+Route::get('/users-list', [UserController::class, 'listusers']);
+Route::get('/user-delete', [UserController::class, 'userDelete']);
+Route::get('/user-edit', [UserController::class, 'userEdit']);
+
 Route::get('/restricted', function(){
     return view('restricted');
 });
@@ -92,6 +96,9 @@ Route::group(['middleware' => 'isAdmin'], function () {
     });
     Route::get('/customer/add', [CustomerController::class, 'customerAdd']);
     Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
+    Route::get('/user/list', function(){
+        return view('myusers');
+    });
 });
 
 Route::group(['middleware' => 'isOwner'], function () {
