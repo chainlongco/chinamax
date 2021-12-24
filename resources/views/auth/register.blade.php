@@ -3,6 +3,10 @@
 @section('content')
 <br>
 
+<?php
+    use Illuminate\Support\Facades\Session;
+?>
+
 <div class="container">
     <div class="row">
         <div class="col-md-6 offset-md-3">
@@ -11,26 +15,31 @@
                     <h3>User Register</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register-submit') }}" id="register_form">
+                    <form method="post" action="{{ url('/register/submit') }}" id="register_form">
                         @csrf
-                        <div class="mb-3">
+                        <div class="form-group mb-3">
                             <label for="name" class="form-label">User Name</label>
                             <input type="text" class="form-control" name="name" id="name">
                             <span class="text-danger error-text name_error"></span>
                         </div>
-                        <div class="mb-3">
+                        <div class="form-group mb-3">
                             <label for="email" class="form-label">Email Address</label>
                             <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp">
                             <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                            <span class="text-danger error-text email_error"></span>
+                            <span class="text-danger error-text name_error"></span>
                         </div>
-                        <div class="mb-3">
+                        <div class="form-group mb-3">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" name="password" id="password">
-                            <span class="text-danger error-text password_error"></span>
+                            <span class="text-danger error-text name_error"></span>
                         </div>
-                        <div style="float:right; display:block;">
-                            <button type="submit" class="btn btn-primary" id="submitRegister">Submit</button>
+                        <div>
+                            <div style="float:left; display:block;">
+                                <a href="{{ route('auth.login') }}">I already have an account, sign in</a>
+                            </div>
+                            <div style="float:right; display:block;">
+                                <button type="submit" class="btn btn-primary" id="submitRegister">Sign Up</button>
+                            </div>
                         </div>
                     </form>
                 </div>

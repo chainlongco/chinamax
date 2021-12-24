@@ -22,15 +22,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/login', function(){
-    return view('login');
-});
-Route::post('/login', [UserController::class, 'login'])->name('login-submit');
+Route::get('/login', [UserController::class, 'login'])->name('auth.login');
+Route::get('/register', [UserController::class, 'register'])->name('auth.register');
+Route::post('/login', [UserController::class, 'signin'])->name('login-submit');
 Route::get('/logout', [UserController::class, 'logout']);
-Route::get('/register', function(){
-    return view('register');
-});
-Route::post('/register', [UserController::class, 'register'])->name('register-submit');
+Route::post('/register/submit', [UserController::class, 'signup'])->name('register.submit');
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/detail/{id}', [ProductController::class, 'detail']);
@@ -96,9 +92,7 @@ Route::group(['middleware' => 'isAdmin'], function () {
     });
     Route::get('/customer/add', [CustomerController::class, 'customerAdd']);
     Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
-    Route::get('/user/list', function(){
-        return view('myusers');
-    });
+    Route::get('/user/list', [UserController::class, 'loadUsers']);
 });
 
 Route::group(['middleware' => 'isOwner'], function () {
@@ -127,11 +121,6 @@ Route::group(['middleware' => 'isEmployee'], function () {
     Route::get('/order', function(){
         return view('myorders');
     });
-    Route::get('/customer/list', function(){
-        return view('mycustomers');
-    });
-    Route::get('/customer/add', [CustomerController::class, 'customerAdd']);
-    Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
 });
 
 

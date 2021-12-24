@@ -11,17 +11,9 @@
                     <h3>User Log in</h3>
                 </div>
                 <div class="card-body">
-
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li> {{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
+                    <div id="loginalert">
+                    </div>
+                
                     <form method="POST" action="{{ route('login-submit') }}" id="login_form">
                         @csrf
                         <div class="mb-3">
@@ -43,8 +35,13 @@
                             <input type="checkbox" class="form-check-input" id="exampleCheck1">
                             <label class="form-check-label" for="exampleCheck1">Check me out</label>
                         </div>-->   
-                        <div style="float:right; display:block;">               
-                            <button type="submit" class="btn btn-primary" id="submitLogin">Submit</button>
+                        <div>
+                            <div style="float:left; display:block;">               
+                                <a href="{{ route('auth.register') }}">I don't have an account, create new</a>
+                            </div>
+                            <div style="float:right; display:block;">               
+                                <button type="submit" class="btn btn-primary" id="submitLogin">Sign In</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -76,7 +73,12 @@
                             $('span.' + prefix + '_error').text(value[0]);
                         });
                     } else if (data.status==1) {
-                        alert(data.msg);
+                        //alert(data.msg);
+                        var message = "";
+                        message += '<div class="alert alert-danger">';
+                        message += data.msg;
+                        message += '</div>';
+                        $('#loginalert').html(message);
                         //$('span.match_error').text(data.msg);
                     } else {
                         //alert(data.status);
@@ -84,7 +86,7 @@
                         const base_path = '{{ url('/') }}\/';
                         //alert(base_path);
                         //window.location.href = base_path + 'products';
-                        window.location.href = base_path + 'order';
+                        window.location.href = base_path + 'menu';
                     }
                 }
             });

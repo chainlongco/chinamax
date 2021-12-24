@@ -28,6 +28,7 @@
             <?php
                 $canAccessCustomerOrOrder = false;
                 $canAccessUser = false;
+                $canAccessOrderOnly = false;
                 if (Session::has('user')) {
                     $user = Session::get('user');
                     $roles = DB::table('roles')
@@ -36,7 +37,7 @@
                         ->where('role_users.user_id', $user->id)
                         ->get();
                     foreach ($roles as $role) {
-                        if ($role->name == "Admin" || $role->name == "Owner" || $role->name == "Manager" || $role->name == "Employee"){
+                        if ($role->name == "Admin" || $role->name == "Owner" || $role->name == "Manager"){
                             $canAccessCustomerOrOrder = true;
                             break;
                         }
@@ -47,10 +48,16 @@
                             break;
                         }
                     }
+                    foreach ($roles as $role) {
+                        if ($role->name == "Employee") {
+                            $canAccessOrderOnly = true;
+                            break;
+                        }
+                    }
                 }
             ?>
             
-            @if ($canAccessCustomerOrOrder)
+            @if ($canAccessCustomerOrOrder || $canAccessOrderOnly)
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/order">Order</a>

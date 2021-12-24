@@ -12,7 +12,7 @@
     <br>
     <h2 class="text-center">My Users</h2>
     <br>
-    
+
     <div id="userslist">
 
     </div>
@@ -21,6 +21,15 @@
 
 <script>
     $(document).ready(function(){
+        $("#usersDatatable").DataTable({
+            //scrollY: "530px",
+            scrollCollapse: true,
+            "columnDefs": [{
+                targets: [6],
+                orderable: false
+            }]
+        });
+
         $.ajax({
             type:'GET',
             url:'/users-list',
@@ -57,6 +66,7 @@
                 }
             });
         });
+
     });
 </script>
 @endsection
