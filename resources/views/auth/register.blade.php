@@ -72,7 +72,7 @@
                         });
                     } else {
                         $('#register_form')[0].reset();
-                        //alert(data.msg);
+                        alert(data.msg);
                         const base_path = '{{ url('/') }}\/';
                         window.location.href = base_path + 'login';
                     }

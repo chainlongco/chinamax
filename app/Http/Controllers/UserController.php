@@ -10,6 +10,7 @@ use App\Models\User;
 use Validator;
 use Illuminate\Support\Facades\Auth;
 //use Illuminate\Validation\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
@@ -27,16 +28,17 @@ class UserController extends Controller
     {
         // Not using Ajax call -- not working 
         // Using Ajax Call
-        $validator = Validator::make($request->all(), 
         //$request->validate(
+        $validator = Validator::make($request->all(), 
+        //$validator = Validator::make($this->response->json(), 
             [
                 'email' => 'required|email',
                 'password' => 'required'    
             ],
-            [
-                'email.required' => 'This field is required',
-                'password.required' => 'This field is required',
-            ]
+            /*[
+                'email.required' => 'Email is required',
+                'password.required' => 'Password is required',
+            ]*/
         );
         if ($validator->passes()) {
             $user = DB::table('users')->where('email', $request->email)->first();
@@ -63,7 +65,7 @@ class UserController extends Controller
 
         //$request->validate([
         $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:users|max:254',
+            'name' => 'required|unique:users|max:20',
             'email' => 'required|unique:users|email',
             'password'=>'required'
         ]);
@@ -74,7 +76,7 @@ class UserController extends Controller
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             if ($user->save()){
-                return response()->json(['status'=>1, 'msg'=>'New User has been successfully registered']);
+                return response()->json(['status'=>1, 'msg'=>'New User has been successfully registered. Please contact Administrator to assign this new user for access control rights like Order History, Customer Information and User Information.']);
             }
         } else {
             return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
@@ -111,11 +113,13 @@ class UserController extends Controller
     public function userDelete(Request $request)
     {
         $user = User::find($request->id);
-        $user->roles()->detach();
-        if ($user->delete()){
-            return $this->listUsers();
+        if($user) {
+            $user->roles()->detach();
+            if ($user->delete()){
+                return $this->listUsers();
+            }
         }
-        return response()->json(['msg'=>$user->name ." cannot be deleted."]);
+        return response()->json(['msg'=>'Deletion failed.']);
     }
 
     public function loadUsers() {
@@ -139,11 +143,11 @@ class UserController extends Controller
                                 <th colspan="4" class="text-center">Roles</th>
                                 <th rowspan="2" class="align-middle text-center">Actions</th>
                             </tr>
-                            <tr>        
+                            <tr>
                                 <th class="text-center">Admin</th>
                                 <th class="text-center">Owner</th>
                                 <th class="text-center">Manager</th>
-                                <th class="text-center">Employee</th>                  
+                                <th class="text-center">Employee</th>
                             </tr>
                         </thead>';
         $html .=        '<tbody>';
@@ -168,7 +172,7 @@ class UserController extends Controller
                                         } else if ($role->name == "Employee") {
                                             $employee = true;
                                         }
-                                    endforeach;    
+                                    endforeach;
         $html .=        	        '<tr>';
         $html .=                        '<td class="align-middle">' .$user->name .'</td>';
         $html .=                        '<td class="align-middle">' .$user->email .'</td>';
@@ -204,14 +208,13 @@ class UserController extends Controller
         $html .=    '<script>
                         $(document).ready(function(){
                             $("#usersDatatable").DataTable({
-                                //scrollY: "530px",
                                 scrollCollapse: true,
                                 "columnDefs": [{
                                     targets: [6],
                                     orderable: false
                                 }]
                             });
-                        });    
+                        });
                     </script>';
         
         echo $html;
