@@ -49,23 +49,15 @@ Route::get('/order/{serialNumber}', [ProductController::class, 'editWithSerialNu
 Route::get('/order-edit', [ProductController::class, 'orderEdit']);
 Route::get('/order-updated', [ProductController::class, 'orderUpdated']);
 
-Route::get('/customers-list', [CustomerController::class, 'listCustomers']);
-Route::get('/customer/delete/{id}', [CustomerController::class, 'customerDelete']);
-Route::get('/customer/edit/{id}', [CustomerController::class, 'customerEdit']);
-
 Route::get('/checkout', function(){
     return view('checkout');
 });
 Route::post('/checkout', [OrderController::class, 'checkout'])->name('place-order-submit');
 
-Route::get('/customerSignup', function(){
-    return view('customersignup');
-});
+Route::get('/customerRegister', [CustomerController::class, 'customerRegister'])->name('customer-signup');
 Route::post('/customerSignup', [CustomerController::class, 'customerSignup'])->name('customer-signup-submit');
-Route::get('/customerLogin', function(){
-    return view('customerlogin');
-});
-Route::post('/customerLogin', [CustomerController::class, 'customerLogin'])->name('customer-login-submit');
+Route::get('/customerLogin', [CustomerController::class, 'customerLogin'])->name('customer-login');
+Route::post('/customerLogin', [CustomerController::class, 'customerSignIn'])->name('customer-login-submit');
 Route::get('/customerLogout', [CustomerController::class, 'customerLogout']);
 
 Route::get('/customerLoginFromCheckout', [CustomerController::class, 'customerLoginFromCheckout']);
@@ -83,44 +75,47 @@ Route::get('/restricted', function(){
     return view('restricted');
 });
 
-Route::group(['middleware' => 'isAdmin'], function () {
+Route::group(['middleware' => 'isEmployee'], function () {
     Route::get('/order', function(){
         return view('myorders');
     });
-    Route::get('/customer/list', function(){
-        return view('mycustomers');
-    });
-    Route::get('/customer/add', [CustomerController::class, 'customerAdd']);
-    Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
-    Route::get('/user/list', [UserController::class, 'loadUsers']);
-});
-
-Route::group(['middleware' => 'isOwner'], function () {
-    Route::get('/order', function(){
-        return view('myorders');
-    });
-    Route::get('/customer/list', function(){
-        return view('mycustomers');
-    });
-    Route::get('/customer/add', [CustomerController::class, 'customerAdd']);
-    Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
 });
 
 Route::group(['middleware' => 'isManager'], function () {
     Route::get('/order', function(){
         return view('myorders');
     });
-    Route::get('/customer/list', function(){
-        return view('mycustomers');
-    });
-    Route::get('/customer/add', [CustomerController::class, 'customerAdd']);
+    Route::get('/customer/list', [CustomerController::class, 'customerList'])->name('customer-list');
+    Route::get('/customer/add', [CustomerController::class, 'customerAdd'])->name('customer-add');
     Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
+    Route::get('/customers-list', [CustomerController::class, 'listCustomers']);
+    Route::get('/customer/delete/{id}', [CustomerController::class, 'customerDelete']);
+    Route::get('/customer/edit/{id}', [CustomerController::class, 'customerEdit']);
 });
 
-Route::group(['middleware' => 'isEmployee'], function () {
+Route::group(['middleware' => 'isOwner'], function () {
     Route::get('/order', function(){
         return view('myorders');
     });
+    Route::get('/customer/list', [CustomerController::class, 'customerList'])->name('customer-list');
+    Route::get('/customer/add', [CustomerController::class, 'customerAdd'])->name('customer-add');
+    Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
+    Route::get('/customers-list', [CustomerController::class, 'listCustomers']);
+    Route::get('/customer/delete/{id}', [CustomerController::class, 'customerDelete']);
+    Route::get('/customer/edit/{id}', [CustomerController::class, 'customerEdit']);
+});
+
+Route::group(['middleware' => 'isAdmin'], function () {
+    Route::get('/order', function(){
+        return view('myorders');
+    });
+    Route::get('/customer/list', [CustomerController::class, 'customerList'])->name('customer-list');
+    Route::get('/customer/add', [CustomerController::class, 'customerAdd'])->name('customer-add');
+    Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
+    Route::get('/user/list', [UserController::class, 'loadUsers']);
+    Route::get('/customers-list', [CustomerController::class, 'listCustomers']);
+    Route::get('/customer/delete/{id}', [CustomerController::class, 'customerDelete']);
+    Route::get('/customer/edit/{id}', [CustomerController::class, 'customerEdit']);
 });
 
 

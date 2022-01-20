@@ -104,13 +104,13 @@
                                     <div class="row">
                                         <div class="mb-3 col-md-6">
                                             <label for="card" class="form-label">Card Number*</label>
-                                            <input type="text" class="form-control" name="card" id="card" value={{ $customer?$cardNumber:"" }}>
+                                            <input type="text" class="form-control" name="card" id="card" value="{{ $customer?$cardNumber:"" }}">
                                             <input type="text" id="card1" class="form-control" style="display: none;">
                                             <span class="text-danger error-text card_error"></span>
                                         </div>
                                         <div class="mb-3 col-md-6">
                                             <label for="expired" class="form-label">Expiration Month/Year*</label>
-                                            <input type="text" class="form-control" name="expired" id="expired" value={{ $customer?$expired:"" }}>
+                                            <input type="text" class="form-control" name="expired" id="expired" value="{{ $customer?$expired:"" }}">
                                             <input type="text" id="expired1" class="form-control" style="display: none;">
                                             <span class="text-danger error-text expired_error"></span>
                                         </div>
@@ -118,12 +118,12 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label for="cvv" class="form-label">CVV*</label>
-                                            <input type="text" class="form-control" name="cvv" id="cvv" value={{ ($customer)?$customer->cvv:"" }}>
+                                            <input type="text" class="form-control" name="cvv" id="cvv" value="{{ ($customer)?$customer->cvv:"" }}">
                                             <span class="text-danger error-text cvv_error"></span>
                                         </div> 
                                         <div class="col-md-6">
                                             <label for="zip" class="form-label">Zip Code*</label>
-                                            <input type="text" class="form-control" name="zip" id="zip" value={{ ($customer)?$customer->zip:"" }}>
+                                            <input type="text" class="form-control" name="zip" id="zip" value="{{ ($customer)?$customer->zip:"" }}">
                                             <span class="text-danger error-text zip_error"></span>
                                         </div>
                                     </div>

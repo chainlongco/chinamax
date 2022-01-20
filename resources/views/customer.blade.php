@@ -13,16 +13,16 @@
                 <div class="card-body">
                     <form method="POST" action="{{ route('customer-submit') }}" id="customer_form">
                         @csrf
-                        <input type="hidden" name="id" id="id" value={{ ($customer)? $customer->id: "" }}>
+                        <input type="hidden" name="id" id="id" value="{{ ($customer)? $customer->id: "" }}">
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="firstname" class="form-label">First Name</label>
-                                <input type="text" class="form-control" name="firstname" id="firstname" value={{ ($customer)? $customer->first_name: "" }}>
+                                <input type="text" class="form-control" name="firstname" id="firstname" value="{{ ($customer)? $customer->first_name: "" }}">
                                 <span class="text-danger error-text firstname_error"></span>
                             </div>
                             <div class="col-md-6">
                                 <label for="lastname" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" name="lastname" id="firstname" value={{ ($customer)? $customer->last_name: "" }}>
+                                <input type="text" class="form-control" name="lastname" id="firstname" value="{{ ($customer)? $customer->last_name: "" }}">
                                 <span class="text-danger error-text lastname_error"></span>
                             </div>
                         </div>
@@ -40,13 +40,13 @@
                                         $phoneNumber = "";
                                     }
                                 ?>
-                                <input type="text" class="form-control" name="phone" id="phone" value={{ $phoneNumber }}>
+                                <input type="text" class="form-control" name="phone" id="phone" value="{{ $phoneNumber }}">
                                 <input type="text" id="phone1" class="form-control" style="display: none;">
                                 <span class="text-danger error-text phone_error"></span>
                             </div>
                             <div class="col-md-6">
                                 <label for="email" class="form-label">Email Address</label>
-                                <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" value={{ ($customer)? $customer->email: "" }}>
+                                <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" value="{{ ($customer)? $customer->email: "" }}">
                                 <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
                                 <span class="text-danger error-text email_error"></span>
                             </div>
@@ -54,29 +54,29 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="address1" class="form-label">Address 1</label>
-                                <input type="text" class="form-control" name="address1" id="address1" value={{ ($customer)? $customer->address1: "" }}>
+                                <input type="text" class="form-control" name="address1" id="address1" value="{{ ($customer)? $customer->address1: "" }}">
                                 <span class="text-danger error-text address1_error"></span>
                             </div>
                             <div class="col-md-6">
                                 <label for="address2" class="form-label">Address 2</label>
-                                <input type="text" class="form-control" name="address2" id="address2" value={{ ($customer)? $customer->address2: "" }}>
+                                <input type="text" class="form-control" name="address2" id="address2" value="{{ ($customer)? $customer->address2: "" }}">
                                 <span class="text-danger error-text address2_error"></span>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label for="city" class="form-label">City</label>
-                                <input type="text" class="form-control" name="city" id="city" value={{ ($customer)? $customer->city: "" }}>
+                                <input type="text" class="form-control" name="city" id="city" value="{{ ($customer)? $customer->city: "" }}">
                                 <span class="text-danger error-text city_error"></span>
                             </div>
                             <div class="col-md-4">
                                 <label for="state" class="form-label">State</label>
-                                <input type="text" class="form-control" name="state" id="state" value={{ ($customer)? $customer->state: "" }}>
+                                <input type="text" class="form-control" name="state" id="state" value="{{ ($customer)? $customer->state: "" }}">
                                 <span class="text-danger error-text state_error"></span>
                             </div>
                             <div class="col-md-4">
                                 <label for="zip" class="form-label">Zip Code</label>
-                                <input type="text" class="form-control" name="zip" id="zip" value={{ ($customer)? $customer->zip: "" }}>
+                                <input type="text" class="form-control" name="zip" id="zip" value="{{ ($customer)? $customer->zip: "" }}">
                                 <span class="text-danger error-text zip_error"></span>
                             </div>
                         </div>
@@ -94,7 +94,7 @@
                                         $cardNumber = "";
                                     }
                                 ?>
-                                <input type="text" class="form-control" name="card" id="card" value={{ $cardNumber }}>
+                                <input type="text" class="form-control" name="card" id="card" value="{{ $cardNumber }}">
                                 <input type="text" id="card1" class="form-control" style="display: none;">
                                 <span class="text-danger error-text card_error"></span>
                             </div>
@@ -111,13 +111,13 @@
                                         $expired = "";
                                     }
                                 ?>    
-                                <input type="text" class="form-control" name="expired" id="expired" placeholder="MM/YY" value={{ $expired }}>
+                                <input type="text" class="form-control" name="expired" id="expired" placeholder="MM/YY" value="{{ $expired }}">
                                 <input type="text" id="expired1" class="form-control" style="display: none;">
                                 <span class="text-danger error-text expired_error"></span>
                             </div>
                             <div class="col-md-4">
                                 <label for="cvv" class="form-label">CVV</label>
-                                <input type="text" class="form-control" name="cvv" id="cvv" value={{ ($customer)? $customer->cvv: "" }}>
+                                <input type="text" class="form-control" name="cvv" id="cvv" value="{{ ($customer)? $customer->cvv: "" }}">
                                 <span class="text-danger error-text cvv_error"></span>
                             </div>
                         </div>
@@ -156,6 +156,8 @@
                         $.each(data.error, function(prefix, val){
                             $('span.'+prefix+'_error').text(val[0]);
                         });
+                    } else if (data.status == 2) {
+                        alert(data.msg);
                     } else {
                         $('#customer_form')[0].reset();
                         alert(data.msg);

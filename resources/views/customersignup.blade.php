@@ -8,7 +8,7 @@
         <div class="col-md-6 offset-md-3">
             <div class="card">
                 <div class="card-header text-center">
-                    <h3>Customer Sign up</h3>
+                    <h3>Customer Register</h3>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('customer-signup-submit') }}" id="customer_signup_form">
@@ -43,7 +43,7 @@
                             <span class="text-danger error-text password_error"></span>
                         </div>
                         <div style="float:right; display:block;">
-                            <button type="submit" class="btn btn-primary" id="submitCustomerSignup">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="submitCustomerSignup">Sign Up</button>
                         </div>    
                     </form>
                 </div>

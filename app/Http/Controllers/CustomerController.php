@@ -11,8 +11,17 @@ use Illuminate\Support\Facades\Session;
 
 class CustomerController extends Controller
 {
+    public function customerLogin()
+    {
+        return view('customerlogin');
+    }
 
-    public function customerLogin(Request $request)
+    public function customerRegister()
+    {
+        return view('customersignup');
+    }
+
+    public function customerSignIn(Request $request)
     {
         // Not using Ajax call -- not working 
 
@@ -34,14 +43,20 @@ class CustomerController extends Controller
         }
     }
 
+    public function customerLogout()
+    {
+        Session::forget('customer');
+        return redirect('/customerLogin');
+    }
+
     public function customerSignup(Request $request)
     {
         // Using Ajax call
         $validator = Validator::make($request->all(), [
-            'firstname' => 'required|max:254',
-            'lastname' => 'required|max:254',
+            'firstname' => 'required|max:20',
+            'lastname' => 'required|max:20',
             'phone' => 'required',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:customers',
             'password' => 'required'
         ]);
 
@@ -75,18 +90,12 @@ class CustomerController extends Controller
                 $customer->email = $request->email;
                 $customer->password = Hash::make($request->password);
                 if ($customer->save()){
-                    return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully signed up']);
+                    return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully signed up.']);
                 }
             }
         } else {
             return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
         }  
-    }
-
-    public function customerLogout()
-    {
-        Session::forget('customer');
-        return redirect('/customerLogin');
     }
 
     public function customerAdd()
@@ -99,33 +108,14 @@ class CustomerController extends Controller
     {
         if ($request->id) {
             $validator = Validator::make($request->all(), [
-                'firstname' => 'required|max:254',
-                'lastname' => 'required|max:254',
+                'firstname' => 'required|max:20',
+                'lastname' => 'required|max:20',
                 'phone' => 'required|unique:customers,phone,' .$request->id,
                 'email' => 'nullable|email|unique:customers,email,' .$request->id,
             ]);
 
             if ($validator->passes()) {
-                $expired = str_replace("/", "", $request->expired);
-                if ($expired == "") {
-                    $expired = null;
-                }
-                $result = DB::table('customers')->where('id',$request->id)
-                    ->update([
-                        'first_name'=>$request->firstname,
-                        'last_name'=>$request->lastname,
-                        'phone'=>str_replace("-", "", $request->phone),
-                        'email'=>$request->email,
-                        'address1'=>$request->address1,
-                        'address2'=>$request->address2,
-                        'city'=>$request->city,
-                        'state'=>$request->state,
-                        'zip'=>$request->zip,
-                        'card_number'=>str_replace("-", "", $request->card),
-                        'expired'=>$expired,
-                        'cvv'=>$request->cvv,
-                    ]);
-                if ($result) {
+                if ($this->saveExistingCustomer($request)) {
                     return response()->json(['status'=>1, 'msg'=>'Existing customer has been successfully updated.']);
                 } else {
                     return response()->json(['status'=>2, 'msg'=>'Update failed']);
@@ -135,8 +125,8 @@ class CustomerController extends Controller
             }
         } else {
             $validator = Validator::make($request->all(), [
-                'firstname' => 'required|max:254',
-                'lastname' => 'required|max:254',
+                'firstname' => 'required|max:20',
+                'lastname' => 'required|max:20',
                 'phone' => 'required|unique:customers',
                 'email' => 'nullable|unique:customers|email'
             ]);
@@ -159,7 +149,7 @@ class CustomerController extends Controller
                 }
                 $customer->expired = $expired;
                 $customer->cvv = $request->cvv;
-                if ($customer->save()){
+                if ($this->saveNewCustomer($customer)){
                     return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully created.']);
                 } else {
                     return response()->json(['status'=>2, 'msg'=>'Create failed']);
@@ -170,19 +160,59 @@ class CustomerController extends Controller
         }
     }
 
+    public function saveNewCustomer($customer)
+    {
+        return $customer->save();
+    }
+
+    public function saveExistingCustomer($request)
+    {
+        $expired = str_replace("/", "", $request->expired);
+        if ($expired == "") {
+            $expired = null;
+        }
+        return DB::table('customers')->where('id',$request->id)
+                ->update([
+                    'first_name'=>$request->firstname,
+                    'last_name'=>$request->lastname,
+                    'phone'=>str_replace("-", "", $request->phone),
+                    'email'=>$request->email,
+                    'address1'=>$request->address1,
+                    'address2'=>$request->address2,
+                    'city'=>$request->city,
+                    'state'=>$request->state,
+                    'zip'=>$request->zip,
+                    'card_number'=>str_replace("-", "", $request->card),
+                    'expired'=>$expired,
+                    'cvv'=>$request->cvv,
+                ]);
+    }
+
     public function customerDelete($id) {
         $customer = DB::table('customers')->where('id', $id);
-        $firstName = $customer->first()->first_name;
-        $lastName = $customer->first()->last_name;
-        if ($customer->delete()) {
-            //return response()->json(['status'=>1, 'msg'=>'Customer: ' .$firstName .' ' .$lastName .' has been successfully deleted.']);
+        if ($customer->first()) {
+            $firstName = $customer->first()->first_name;
+            $lastName = $customer->first()->last_name;
+            if ($customer->delete()) {
+                //return response()->json(['status'=>1, 'msg'=>'Customer: ' .$firstName .' ' .$lastName .' has been successfully deleted.']);
+                return redirect('customer/list');
+            }
+        } else {
             return redirect('customer/list');
-        }
+        } 
     }
 
     public function customerEdit($id) {
         $customer = DB::table('customers')->where('id', $id)->first();
-        return view('customer', compact('customer'));
+        if ($customer) {
+            return view('customer', compact('customer'));
+        } else {
+            return redirect('/customer/add');
+        }
+    }
+
+    public function customerList() {
+        return view('mycustomers');
     }
 
     public function listCustomers() {
