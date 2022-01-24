@@ -30,8 +30,7 @@ class SignInOutTest extends TestCase
         $response = $this->get('/login');
         $response->assertStatus(200);
         $response->assertSee('User Log in');
-        //$response->assertSee('ECommerce');
-        //$response->assertSeeInOrder(['ECommerce', 'ChinaMax', 'Menu', 'Cart', 'Checkout', 'Cart', '0', 'Customer', 'Login', 'Sign Up', 'User', 'Login', 'Register', 'User Log in', 'Email address', 'We', 'll never share your email with anyone else.', 'Password', 'I don', 't have an account, create new', 'Sign In']);
+        //dd($response);
         // Only test Log in page
         $emailDescription = "We'll never share your email with anyone else.";
         $response->assertSee($emailDescription, $escaped = false);

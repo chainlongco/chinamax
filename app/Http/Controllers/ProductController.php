@@ -12,52 +12,6 @@ require_once(public_path() ."/shared/component.php");
 
 class ProductController extends Controller
 {
-    public function orderChoices(Request $request)
-    {   // ToDo -- Needs to rewrite.......
-        $menuId = $request->menuId;
-        $mainMenuId = $request->mainMenuId;
-        $menuName = "";
-        $menu = null;
-        $product = null;
-        $single = null;
-        if (str_contains($menuId, 'p')) {   // From Products table -- Small Platter, Regular Platter, Large Platter, Kid's Meal, Party Tray
-            $productId = substr($menuId, 0, (strlen($menuId) -1));
-            $product = DB::table('products')->where('id', $productId)->first();
-            $menuName = $product->name;
-        } else if (str_contains($menuId, 's')) {     // from Singles table -- for Individual Side/Entree
-            $singleId = substr($menuId, 0, (strlen($menuId) -1));
-            $single = DB::table('singles')->where('id', $singleId)->first();
-            $menuName = $single->name;
-        } else {    // from Menus table -- for Appetizer, Drink, Individual Side/Entree  
-            $menu = DB::table('menus')->where('id', $menuId)->first();
-            $menuName = $menu->name;
-        }
-
-        if ($menuName === "Appetizers") {   // For Appetizers
-            echo loadAppetizesChoices($menu);
-        } else if ($menuName === "Small Platter") { // For Combo
-            echo loadComboChoices($product);
-        } else if ($menuName === "Regular Platter") {   // For Combo
-            echo loadComboChoices($product);
-        } else if ($menuName === "Large Platter") { // For Combo
-            echo loadComboChoices($product);
-        } else if ($menuName === "Party Tray") {    // For Combo
-            echo loadComboChoices($product);
-        } else if ($menuName === "Kid's Meal") {    // For Combo
-            echo loadComboChoices($product);
-        } else if ($menuName === "Side"){   // For Individual Side/Entree
-            echo loadIndividualSideChoices($single, $mainMenuId);
-        } else if ($menuName === "Chicken Entree"){   // For Individual Side/Entree
-            echo loadIndividualEntreeChoices($single, $mainMenuId, "Chicken");
-        } else if ($menuName === "Beef Entree"){   // For Individual Side/Entree
-            echo loadIndividualEntreeChoices($single, $mainMenuId, "Beef");
-        } else if ($menuName === "Shrimp Entree"){   // For Individual Side/Entree
-            echo loadIndividualEntreeChoices($single, $mainMenuId, "Shrimp");
-        } else if ($menuName === "Drinks") {  //For Drink
-            echo loadDrinksChoices($menuName);
-        }
-    }
-
     public function orderAdded(Request $request)
     {
         $productId = $request->productId;

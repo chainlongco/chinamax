@@ -107,6 +107,11 @@ class SignInOutTest extends TestCase
         $this->assertEquals('Shyu', $customer->last_name);
         $this->assertEquals('shyujacky@yahoo.com', $customer->email);
         $this->assertTrue(Hash::check('12345678', $customer->password));
+
+        // Check if we see customer login name on the navbar
+        $response = $this->call('GET', '/cart');
+        $response->assertStatus(200);
+        $response->assertSee('Jacky Shyu');
     }
 
     public function test_log_out()

@@ -43,7 +43,7 @@ Route::get('/cart-note', [ProductController::class, 'cartNote']);
 Route::get('/empty-cart', [ProductController::class, 'emptyCart']);
 
 Route::get('/menu', [MenuController::class, 'menu']);
-Route::get('/order-choices', [ProductController::class, 'orderChoices']);
+Route::get('/order-choices', [MenuController::class, 'orderChoices']);
 Route::get('/order-added', [ProductController::class, 'orderAdded']);
 Route::get('/order/{serialNumber}', [ProductController::class, 'editWithSerialNumber']);
 Route::get('/order-edit', [ProductController::class, 'orderEdit']);
