@@ -155,9 +155,6 @@
             var quantity = $(quantityElementId).val();
             quantity = Number(quantity) + 1;
             $(quantityElementId).val(quantity);
-            // reload cart and price detail
-            //fetchPriceDetail(productId, quantity);
-            //setTimeout(fetchCartCount, 600, productId, quantity);  // Needs to delay to execute to wait for Session quantity to be set
             fetchCartAndPriceDetail(serialNumber, quantity);
         });
 
@@ -172,21 +169,12 @@
             if (quantity == 0) {
                 if (confirm('Are you sure to remove this item?')) {   
                     $(quantityElementId).val(quantity);
-                   
-                    // reload cart, price detail and list
-                    //fetchOrderListForRemove(productId);
-                    //fetchPriceDetail(productId, quantity);
-                    //setTimeout(fetchCartCount, 600, productId, quantity);  // Needs to delay to execute to wait for Session quantity to be set
                     fetchAllThree(serialNumber, quantity);
                 } else {
                     $(quantityElementId).val(Number(quantity)+1);
                 }
             } else {
                 $(quantityElementId).val(quantity);
-
-                // reload cart and price detail
-                //fetchPriceDetail(productId, quantity);
-                //setTimeout(fetchCartCount, 600, productId, quantity);  // Needs to delay to execute to wait for Session quantity to be set
                 fetchCartAndPriceDetail(serialNumber, quantity);
             }
         });
@@ -196,10 +184,6 @@
             e.preventDefault();
             if (confirm('Are you sure to remove this item?')) {
                 var serialNumber = retrieveSerialNumberForCartButtons("remove", this.id);
-                // reload cart, price detail and list
-                //fetchOrderListForRemove(productId);
-                //fetchPriceDetail(productId, 0);
-                //setTimeout(fetchCartCount, 600, productId, 0);  // Needs to delay to execute to wait for Session quantity to be set
                 fetchAllThree(serialNumber, 0);
             }
         });
@@ -208,15 +192,15 @@
             e.preventDefault();
             /* To Edit the existing order:
                 1. Create an AJAX call here.
-                2. Create a Route in web.php: Route::get('/order-edit', [ProductController::class, 'orderEdit']);
-                3. Create the function for the Route in ProductController.php: public function orderEdit(Request $request) {
+                2. Create a Route in web.php: Route::get('/order-edit', [OrderController::class, 'orderEditForPopup']);
+                3. Create the function for the Route in OrderController.php: public function orderEditForPopup(Request $request) {
                 4. Create a function to handle the response data to build Modal popup: like loadEditModalForAppetizers in common.js
                 5. The Modal popup is in cart.blade.php: id="editBodyFooter"
                 ------------------------------------------------------------
                 After Modal popup:
                 1. Create action handler in cart.blade.php:  $(document).on('click', '.updateCart', function(e){
                 2. This action handler will call a function which will have an AJAX call: function updateCart(serialNumber, productId, quantity, subItems) {
-                3. Create a Route in web.php: Route::get('/order-updated', [ProductController::class, 'orderUpdated']);
+                3. Create a Route in web.php: Route::get('/order-updated', [OrderController::class, 'orderUpdated']);
                 4. Create the function for the Route in ProductController.php: public function orderUpdated(Request $request)
             */         
             var serialNumber = retrieveSerialNumberForCartButtons('edit', this.id);
@@ -427,59 +411,7 @@
 
             const base_path = '{{ url('/') }}\/';
             window.location.href = base_path + 'checkout';
-        }); 
-
-
-        
-
-
-
-        
-
-
-
-
-        
-        function fetchPriceDetail(productId, quantity) 
-        {
-            $.ajax({
-                type: 'GET',
-                url: '/cart-price',
-                data: {'id': productId, 'quantity': quantity},
-                success: function(response) {
-                    //console.log(response);
-                    $('#pricedetail').html(response);
-                }
-            });
-        }
-
-        function fetchOrderListForRemove(productId)
-        {
-            $.ajax({
-                type: 'GET',
-                url: '/cart-order',
-                data: {'id': productId},
-                success: function(response) {
-                    //console.log(response);
-                    $('#orderlist').html(response);
-                }
-            });
-        }
-
-        function fetchCartCount(productId, quantity)
-        {
-            $.ajax({
-                type: 'GET',
-                url: '/cart-count',
-                data: {'id': productId, 'quantity': quantity},
-                success: function(response) {
-                    //console.log(response);      
-                    $('#cartCount').html(response);
-                }
-            });
-        }
-
-        
+        });  
     });
 
 </script>

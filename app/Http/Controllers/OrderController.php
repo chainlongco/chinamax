@@ -13,6 +13,11 @@ require_once(public_path() ."/shared/component.php");
 
 class OrderController extends Controller
 {
+    public function cart()
+    {
+        return view('cart');
+    }
+    
     public function checkout(Request $request) {
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|max:254',
@@ -360,6 +365,7 @@ class OrderController extends Controller
             }
             return redirect('/order');
         }
+        return redirect('/order');
     }
 
     public function orderEdit($id) {
@@ -453,5 +459,197 @@ class OrderController extends Controller
             array_push($subItems, $drinkArray);
         }   
         return $subItems;
+    }
+
+    public function orderEditForPopup(Request $request) {
+        $serialNumber = $request->serialNumber;
+        $cart = new Cart(Session::get('cart'));
+        $items = $cart->items;
+        $item = $items[$serialNumber];
+        $product = $item['item'];
+        $quantity = $item['quantity'];
+        $subItems = $item['subItems'];
+        $totalPricePerItem = $item['totalPricePerItem'];
+        if ($product->menu_id == 1) {   // Appetizers
+            return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity]);
+        } else if ($product->menu_id == 2) {    // Drinks
+            $drink = DB::table('drinks')->where('name', $product->category)->first();
+            if ($drink->tablename == "") {  // Water and Bottle Water
+                return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'drink'=>$drink]);
+            } else {
+                $sizeProducts = DB::table('products')->where('category', $product->category)->get();
+                $keys = array_keys($subItems);
+                foreach ($keys as $key) {
+                    $category = $subItems[$key]['category'];
+                    if ($category == "DrinkOnly") {
+                        if (array_key_exists('selectDrink', $subItems[$key])) {
+                             $selectDrink = $subItems[$key]['selectDrink'];
+                        }
+                    }
+                }
+                $selectDrinks = DB::table($drink->tablename)->get();
+                if ($sizeProducts->count() == 1) {   
+                    return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'drink'=>$drink, 'selectDrinks'=>$selectDrinks, 'selectDrink'=>$selectDrink, 'sizeProducts'=>$sizeProducts]);
+                } else {    // Greater than 1 -- need Select Box for Fountain Drink and Fresh Juice -- size
+                    return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'drink'=>$drink, 'selectDrinks'=>$selectDrinks, 'selectDrink'=>$selectDrink, 'sizeProducts'=>$sizeProducts]);
+                }             
+            }
+        } else if ($product->menu_id == 4) {    // Individual Side/Entree
+            if ($product->category == "Side") {
+                $productSides = DB::table('products')->where('category', "Side")->get();
+                $keys = array_keys($subItems);
+                foreach ($keys as $key) {
+                    $category = $subItems[$key]['category'];
+                    if ($category == "Side") {
+                        $side = $subItems[$key]['item'];
+                    }
+                }
+                return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'productSidesOrEntrees'=>$productSides, 'sideOrEntree'=>$side]);
+            } else if ($product->category == "Chicken" || $product->category == "Beef" || $product->category == "Shrimp") {
+                if ($product->category == "Chicken") {
+                    $productEntrees = DB::table('products')->where('category', "Chicken")->get();
+                } else if ($product->category == "Beef") {
+                    $productEntrees = DB::table('products')->where('category', "Beef")->get();
+                } else if ($product->category == "Shrimp") {
+                    $productEntrees = DB::table('products')->where('category', "Shrimp")->get();
+                }
+                $keys = array_keys($subItems);
+                foreach ($keys as $key) {
+                    $category = $subItems[$key]['category'];
+                    if ($category == "Entree") {
+                        $entree = $subItems[$key]['item'];
+                    }
+                }
+                return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'productSidesOrEntrees'=>$productEntrees, 'sideOrEntree'=>$entree]);
+            }
+        } else if ($product->menu_id == 3) {    // Combo
+            $sides = DB::table('sides')->get();
+            $chickenEntrees = DB::table('entrees')->where('category', 'Chicken')->get();
+            $beefEntrees = DB::table('entrees')->where('category', 'Beef')->get();
+            $shrimpEntrees = DB::table('entrees')->where('category', 'Shrimp')->get();
+            $combo = DB::table('combos')->where('product_id', $product->id)->first();
+            $comboDrinks = DB::table('combodrinks')->get();
+            $fountains = DB::table('fountains')->get();
+            return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'sides'=>$sides, 'chickenEntrees'=>$chickenEntrees, 'beefEntrees'=>$beefEntrees, 'shrimpEntrees'=>$shrimpEntrees, 'combo'=>$combo, 'comboDrinks'=>$comboDrinks, 'fountains'=>$fountains, 'subItems'=>$subItems]);
+        } else {
+            return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'subItems'=>$subItems, 'totalPricePerItem'=>$totalPricePerItem]);
+        }
+    }
+
+    public function orderUpdated(Request $request)
+    {
+        $serialNumber = $request->serialNumber;
+        $quantity = $request->quantity;
+        $productId = $request->productId;
+        $subItems = json_decode($request->subItems, true);
+        $oldCart = Session::get('cart');
+        $newCart = new Cart($oldCart);
+        $newCart->updateItem($serialNumber, $productId, $quantity, $subItems);
+        Session::put('cart', $newCart);
+        $priceDetail = retrievePriceDetail();
+        $items = $newCart->items;   //$storedItem = ['item'=>$item, 'subItem'=>$subItem, 'quantity'=>$quantity];
+        return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
+    }
+
+    public function orderAdded(Request $request)
+    {
+        $productId = $request->productId;
+        $quantity = $request->quantity;
+        $subItems = json_decode($request->subItems, true);
+
+        $combo = DB::table('combos')->where('product_id', $productId)->first();
+        $pass = $this->validateSideAndEntreeAndDrink($productId, $subItems);
+        if(!$pass) {
+            return response()->json(['status'=>0, 'message'=>"Please select side and entree before you add order to cart."]);
+        }
+        
+        $product = DB::table('products')->where('id', $productId)->first();
+        $oldCart = null;
+        $count = 0;
+        if (Session::has('cart')) {
+            $oldCart = Session::get('cart');      
+        }
+        $newCart = new Cart($oldCart);
+        $newCart->addNewItem($product, $quantity, $subItems);
+        Session::put('cart', $newCart);
+        $count = $newCart->totalQuantity;
+        echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
+    }
+
+    protected function validateSideAndEntreeAndDrink($productId, $subItems)
+    {
+        $pass = true;
+        $combo = DB::table('combos')->where('product_id', $productId)->first();
+        if(!is_null($combo)) {
+            $side = $combo->side;
+            $entree = $combo->entree;
+            $drink = $combo->drink;
+            $quantityOfSubItems = $this->retrieveQuantityOfSubItems($subItems);
+            if (($quantityOfSubItems['side'] == $side) && ($quantityOfSubItems['entree'] == $entree) && ($quantityOfSubItems['drink'] == $drink)) {
+                $pass = true;
+            } else {
+                $pass = false;
+            }
+        }
+        return $pass;
+    }
+
+    protected function retrieveQuantityOfSubItems($subItems)
+    {
+        $quantityOfSubItems = [];
+        $side = 0;
+        $entree = 0;
+        $drink = 0;
+
+        $keys = array_keys($subItems);
+        foreach ($keys as $key) {         
+            $category = $subItems[$key]['category'];
+            $quantity = $subItems[$key]['quantity'];
+            
+            if ($category == "Side") {
+                $side += $quantity;
+            }
+            if ($category == "Entree") {
+                $entree += $quantity;
+            }
+            if ($category == "Drink") {
+                $drink += $quantity;
+            }
+        }
+        $quantityOfSubItems['side'] = $side;
+        $quantityOfSubItems['entree'] = $entree;
+        $quantityOfSubItems['drink'] = $drink;
+        return $quantityOfSubItems;
+    }
+
+    public function emptyCart() {
+        Session::forget('cart');
+        $priceDetail = retrievePriceDetail();
+        $items = [];
+        return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
+    }
+
+    public function cartNote(Request $request) {
+        $oldCart = null;
+        if (Session::has('cart')) {
+            $oldCart = Session::get('cart');
+        }
+        $newCart = new Cart($oldCart);
+        $newCart->addNote($request->note);
+        Session::put('cart', $newCart);
+        return response()->json(['note'=>$newCart->note]);
+    }
+
+    public function cartQuantityUpdated(Request $request)
+    {
+        $serialNumber = $request->serialNumber;
+        $quantity = $request->quantity;
+        $oldCart = Session::get('cart');
+        $newCart = new Cart($oldCart);
+        $newCart->updateItemQuantity($serialNumber, $quantity);
+        Session::put('cart', $newCart);
+        $priceDetail = retrievePriceDetail();
+        $items = $newCart->items;   //$storedItem = ['item'=>$item, 'subItem'=>$subItem, 'quantity'=>$quantity];
+        return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
     }
 }

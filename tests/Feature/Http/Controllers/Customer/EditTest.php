@@ -22,29 +22,16 @@ class EditTest extends TestCase
     {
         parent::setUp();
 
-        Role::create([
-            'name'=>'Admin',
-            'description'=>'Administrator role'
-        ]);
-        /*Role::create([
-            'name'=>'Owner',
-            'description'=>'Owner role'
-        ]);
-        Role::create([
-            'name'=>'Manager',
-            'description'=>'Manager role'
-        ]);*/
-        $user = User::create([
-            'name'=>'Admin Shyu',
-            'email'=>'shyuadmin@yahoo.com',
-            'password'=>Hash::make('12345678')
-        ]);
-        $adminRole = DB::table('roles')->select('id')->where('name', 'Admin')->first();
-        //$ownerRole = DB::table('roles')->select('id')->where('name', 'Owner')->first();
-        //$managerRole = DB::table('roles')->select('id')->where('name', 'Manager')->first();
+        $adminRole = Role::create(['name'=>'Admin', 'description'=>'Administrator role']);
+        $ownerRole = Role::create(['name'=>'Owner', 'description'=>'Owner role']);
+        $managerRole = Role::create(['name'=>'Manager', 'description'=>'Manager role']);
+        $employeeRole = Role::create(['name'=>'Employee', 'description'=>'Employee role']);  
+
+        $user = User::create(['name'=>'Admin Shyu', 'email'=>'shyuadmin@yahoo.com', 'password'=>Hash::make('12345678')]);
         $user->roles()->attach($adminRole);
-        //$user->roles()->attach($ownerRole);
-        //$user->roles()->attach($managerRole);
+        $user->roles()->attach($ownerRole);
+        $user->roles()->attach($managerRole);
+        $user->roles()->attach($employeeRole);
 
         Customer::create([
             'first_name'=>'Jacky',
