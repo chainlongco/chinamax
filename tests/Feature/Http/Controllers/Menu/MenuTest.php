@@ -299,16 +299,20 @@ class MenuTest extends TestCase
         ]);
 
         DB::table('combodrinks')->insert([
-            ['name'=>'Small Drink',
-                'description'=>"Small fountain drink for kid's meal",
-                'price'=>0,
-                'gallery'=>'SoftDrinkFountain.jpg',
-                'tablename'=>'fountains'],
-            ['name'=>'Bottle Water',
-                'description'=>"Bottle water for kid's meal",
-                'price'=>0.75,
-                'gallery'=>'BottleWater.jpg',
-                'tablename'=>''],
+            ['name'=>'Small Drink', 'description'=>"Small fountain drink for kid's meal", 'price'=>0, 'gallery'=>'SoftDrinkFountain.jpg', 'tablename'=>'fountains'],
+            ['name'=>'Bottle Water', 'description'=>"Bottle water for kid's meal", 'price'=>0.75, 'gallery'=>'BottleWater.jpg', 'tablename'=>''],
+        ]);
+
+        DB::table('cans')->insert([
+            ['name'=>"Coke"], ['name'=>"Diet Coke"], ['name'=>"Sprite"], ['name'=>"Dr Pepper"]
+        ]);
+        
+        DB::table('fountains')->insert([
+            ['name'=>'Coke'], ['name'=>'Diet Coke'], ['name'=>'Coke Zero'], ['name'=>'Root Beer'], ['name'=>'Fruitopia'], ['name'=>'Nestea'], ['name'=>'Sprite'], ['name'=>'Fanta']
+        ]);
+
+        DB::table('juices')->insert([
+            ['name'=>'Orange'], ['name'=>'Kiwi'], ['name'=>'Watermelon'], ['name'=>'Strawberry']
         ]);
     }
 

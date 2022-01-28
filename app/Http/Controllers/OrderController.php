@@ -17,242 +17,76 @@ class OrderController extends Controller
     {
         return view('cart');
     }
-    
-    public function checkout(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'firstname' => 'required|max:254',
-            'lastname' => 'required|max:254',
-            'phone' => 'required',
-            'email' => 'required|email',
-            'zip'=> 'required',
-            'card'=> 'required',
-            'expired'=> 'required',
-            'cvv'=> 'required'
-        ]);
-        if (!$validator->passes()) {
-            return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
+
+    public function orderAdded(Request $request)
+    {
+        $productId = $request->productId;
+        $quantity = $request->quantity;
+        $subItems = json_decode($request->subItems, true);
+
+        $combo = DB::table('combos')->where('product_id', $productId)->first();
+        $pass = $this->validateSideAndEntreeAndDrink($productId, $subItems);
+        if(!$pass) {
+            return response()->json(['status'=>0, 'message'=>"Please select side and entree before you add order to cart."]);
         }
+        
+        $product = DB::table('products')->where('id', $productId)->first();
+        $oldCart = null;
+        $count = 0;
+        if (Session::has('cart')) {
+            $oldCart = Session::get('cart');      
+        }
+        $newCart = new Cart($oldCart);
+        $newCart->addNewItem($product, $quantity, $subItems);
+        Session::put('cart', $newCart);
+        $count = $newCart->totalQuantity;
+        echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
+    }
 
-        $exception = null;
-        $cart = Session::get('cart');
-        $orderId = $cart->orderId;
-        // Save customer information
-        // Save to orders table
-        // Save to order_products table (Retrive summary field)
-        // Save to order_sub_sides table
-        // Save to order_sub_entrees table
-        // Save to order_sub_drinks table
-        // Save to order_drinks table
-        // Save to order_sides table
-        // Save to order_entrees table
-        $exception = DB::transaction(function() use ($request, $cart) {
-            try {
-                $customerId = $this->retrieveCustomerId($request);
-                if (Session::has('cart')){
-                    $elements = "";
-                    $items = array();
-                    $totalQuantity = 0;
-                    $totalPrice = 0;
-                    $subItems = array();
-                    $note = "";
-                    $created = null;
-                    $orderId = null;
-                    foreach ($cart as $key=>$value) {
-                        if ($key == 'totalQuantity') {
-                            $totalQuantity = $value;
-                        }
-                        if ($key == 'totalPrice') {
-                            $totalPrice = $value;
-                        }
-                        if ($key == 'items') {
-                            $items = $value;
-                        }
-                        if ($key == 'note') {
-                            $note = $value;
-                        }
-                        if ($key == 'created') {
-                            $created = $value;
-                        }
-                        if ($key == 'orderId') {
-                            $orderId = $value; 
-                        }
-                    }
-
-                    // if created is not null, this means it is updated from administrator -- delete this order and recreate
-                    if ($orderId != null) {
-                        DB::table('orders')->where('id', $orderId)->delete();
-                    }
-
-                    // Save to orders table
-                    $orderIdNew = $this->saveOrderTable($customerId, $totalQuantity, $totalPrice, $note, $created);
-
-                    $keys = array_keys($items);
-                    foreach ($keys as $key) {   // $key is serialNumber
-                        $product = $items[$key]['item'];
-                        $quantity = $items[$key]['quantity'];
-                        $subItems = $items[$key]['subItems'];
-                        $totalPricePerItem = $items[$key]['totalPricePerItem'];
-
-                        // Save to order_products table
-                        $summary = $this->retrieveProductSummary($product, $subItems, $totalPricePerItem);
-                        $orderProductId = $this->saveOrderProductsTable($orderIdNew, $product->id, $quantity, $summary);
-
-                        // Save to subItems tables
-                        $this->saveSubItems($orderProductId, $subItems);
-                    }
-
-                    // ToDo -- Submit Credit Card Charge
-                }
-            } catch (Exception $e) {
-                return $e;
-            }
-        });
-        if (is_null($exception)) {
-            // ToDo -- Send email to customer
-            Session::forget('cart');
-            if ($orderId != null) {
-                return response()->json(['status'=>1, 'msg'=>'Your order has been submitted succussfully.', 'editOrder'=>true]);
+    protected function validateSideAndEntreeAndDrink($productId, $subItems)
+    {
+        $pass = true;
+        $combo = DB::table('combos')->where('product_id', $productId)->first();
+        if(!is_null($combo)) {
+            $side = $combo->side;
+            $entree = $combo->entree;
+            $drink = $combo->drink;
+            $quantityOfSubItems = $this->retrieveQuantityOfSubItems($subItems);
+            if (($quantityOfSubItems['side'] == $side) && ($quantityOfSubItems['entree'] == $entree) && ($quantityOfSubItems['drink'] == $drink)) {
+                $pass = true;
             } else {
-                return response()->json(['status'=>1, 'msg'=>'Your order has been submitted succussfully.']);
-            }
-        } else {
-            return response()->json(['status'=>3, 'msg'=>$exception]);
-        }
-    }
-
-    protected function retrieveCustomerId(Request $request) {
-        if (Session::has('customer')) {
-            $customer = Session::get('customer');
-            $this->updateCardInformation($customer, $request);
-            return $customer->id;
-        } else {
-            $customer = DB::table('customers')->where('email', $request->email)->first();
-            if ($customer) {
-                $this->updateCardInformation($customer, $request);
-                return $customer->id;
-            } else {
-                $customerId = null;
-                $customerId = DB::table('customers')->insertGetId([
-                    'first_name'=>$request->firstname, 
-                    'last_name'=>$request->lastname, 
-                    'phone'=>$request->phone, 
-                    'email'=>$request->email,
-                    'zip'=>$request->zip,
-                    'card_number'=>str_replace("-", "", $request->card),
-                    'expired'=>str_replace("/", "", $request->expired),
-                    'cvv'=>$request->cvv,
-                ]);
-                return $customerId;
+                $pass = false;
             }
         }
+        return $pass;
     }
 
-    protected function updateCardInformation($customer, $request) {
-        if ($customer->card_number == null) {
-            DB::table('customers')->where('id', $customer->id)
-                ->update([
-                    'zip'=>$request->zip,
-                    'card_number'=>str_replace("-", "", $request->card),
-                    'expired'=>str_replace("/", "", $request->expired),
-                    'cvv'=>$request->cvv
-                ]);
-        }
-    }
-
-    protected function saveOrderTable($customerId, $quantity, $total, $note, $created) {
-        $orderId = null;
-        if ($created != null) {
-            $orderId = DB::table('orders')->insertGetId([
-                'customer_id'=>$customerId, 'quantity'=>$quantity, 'total'=>$total, 'note'=>$note, 'created_at'=>$created, 'updated_at'=>Carbon::now() 
-            ]);
-        } else {
-            $orderId = DB::table('orders')->insertGetId([
-                'customer_id'=>$customerId, 'quantity'=>$quantity, 'total'=>$total, 'note'=>$note, 'created_at'=>Carbon::now() 
-            ]);
-        }
-        return $orderId;
-    }
-
-    protected function retrieveProductSummary($product, $subItems, $totalPricePerItem) {
-        $productSummary = "";
-        $subItemsSummary = retrieveSummary($subItems);
-        $totalPriceDisplay = retrieveTotalPriceDisplay($product, $subItems, $totalPricePerItem);
-
-        $productSummary .= $product->name ." (" .$product->description .")\n";
-        if ($subItemsSummary != "") {
-            $productSummary .= $subItemsSummary ."\n";
-        }    
-        $productSummary .= $totalPriceDisplay;
-        return $productSummary;
-    }
-
-    protected function saveOrderProductsTable($orderId, $productId, $quantity, $summary) {
-        $orderProductId = DB::table('order_products')->insertGetId([
-            'order_id'=>$orderId, 'product_id'=>$productId, 'quantity'=>$quantity, 'summary'=>$summary
-        ]);
-        return $orderProductId;
-    }
-
-    protected function saveSubItems($orderProductId, $subItems) {
-        if (($subItems == null) || count($subItems) == 0) {
-            return;
-        }
+    protected function retrieveQuantityOfSubItems($subItems)
+    {
+        $quantityOfSubItems = [];
+        $side = 0;
+        $entree = 0;
+        $drink = 0;
 
         $keys = array_keys($subItems);
         foreach ($keys as $key) {         
             $category = $subItems[$key]['category'];
             $quantity = $subItems[$key]['quantity'];
-            $item = $subItems[$key]['item'];
             
             if ($category == "Side") {
-                if (count($keys) > 1) { // This means combo not Individual Side/Entree                     
-                    // Save to order_sub_sides table
-                    DB::table('order_sub_sides')->insert([
-                        'order_product_id'=>$orderProductId, 'quantity'=>$quantity, 'side_id'=>$item->id 
-                    ]);
-                } else {
-                    // Save to order_sides table
-                    DB::table('order_sides')->insert([
-                        'order_product_id'=>$orderProductId, 'side_id'=>$item->id 
-                    ]);
-                } 
+                $side += $quantity;
             }
             if ($category == "Entree") {
-                if (count($keys) > 1) { // This means combo not Individual Side/Entree 
-                    // Save to order_sub_entrees table
-                    DB::table('order_sub_entrees')->insert([
-                        'order_product_id'=>$orderProductId, 'quantity'=>$quantity, 'entree_id'=>$item->id 
-                    ]);
-                } else {
-                    // Save to order_entrees table
-                    DB::table('order_entrees')->insert([
-                        'order_product_id'=>$orderProductId, 'entree_id'=>$item->id 
-                    ]);
-                }
+                $entree += $quantity;
             }
             if ($category == "Drink") {
-                // Save to order_sub_drinks table
-                $typeId = null;
-                if (array_key_exists('selectDrink', $subItems[$key])) {
-                     $selectDrink = $subItems[$key]['selectDrink'];
-                     $typeId = $selectDrink->id;
-                }
-                DB::table('order_sub_drinks')->insert([
-                    'order_product_id'=>$orderProductId, 'quantity'=>$quantity, 'drink_id'=>$item->id, 'type_id'=>$typeId
-                ]);  
-            }
-            if ($category == "DrinkOnly") {
-                // Save to order_drinks table
-                $typeId = null;
-                if (array_key_exists('selectDrink', $subItems[$key])) {
-                     $selectDrink = $subItems[$key]['selectDrink'];
-                     $typeId = $selectDrink->id;
-                }
-                DB::table('order_drinks')->insert([
-                    'order_product_id'=>$orderProductId, 'drink_id'=>$item->id, 'type_id'=>$typeId
-                ]);
+                $drink += $quantity;
             }
         }
+        $quantityOfSubItems['side'] = $side;
+        $quantityOfSubItems['entree'] = $entree;
+        $quantityOfSubItems['drink'] = $drink;
+        return $quantityOfSubItems;
     }
 
     public function listOrders() {
@@ -466,10 +300,10 @@ class OrderController extends Controller
         $cart = new Cart(Session::get('cart'));
         $items = $cart->items;
         $item = $items[$serialNumber];
-        $product = $item['item'];
+        $product = $item['productItem'];
         $quantity = $item['quantity'];
         $subItems = $item['subItems'];
-        $totalPricePerItem = $item['totalPricePerItem'];
+        $totalPricePerProductItem = $item['totalPricePerProductItem'];
         if ($product->menu_id == 1) {   // Appetizers
             return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity]);
         } else if ($product->menu_id == 2) {    // Drinks
@@ -532,7 +366,7 @@ class OrderController extends Controller
             $fountains = DB::table('fountains')->get();
             return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'sides'=>$sides, 'chickenEntrees'=>$chickenEntrees, 'beefEntrees'=>$beefEntrees, 'shrimpEntrees'=>$shrimpEntrees, 'combo'=>$combo, 'comboDrinks'=>$comboDrinks, 'fountains'=>$fountains, 'subItems'=>$subItems]);
         } else {
-            return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'subItems'=>$subItems, 'totalPricePerItem'=>$totalPricePerItem]);
+            return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity, 'subItems'=>$subItems, 'totalPricePerProductItem'=>$totalPricePerProductItem]);
         }
     }
 
@@ -549,77 +383,6 @@ class OrderController extends Controller
         $priceDetail = retrievePriceDetail();
         $items = $newCart->items;   //$storedItem = ['item'=>$item, 'subItem'=>$subItem, 'quantity'=>$quantity];
         return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
-    }
-
-    public function orderAdded(Request $request)
-    {
-        $productId = $request->productId;
-        $quantity = $request->quantity;
-        $subItems = json_decode($request->subItems, true);
-
-        $combo = DB::table('combos')->where('product_id', $productId)->first();
-        $pass = $this->validateSideAndEntreeAndDrink($productId, $subItems);
-        if(!$pass) {
-            return response()->json(['status'=>0, 'message'=>"Please select side and entree before you add order to cart."]);
-        }
-        
-        $product = DB::table('products')->where('id', $productId)->first();
-        $oldCart = null;
-        $count = 0;
-        if (Session::has('cart')) {
-            $oldCart = Session::get('cart');      
-        }
-        $newCart = new Cart($oldCart);
-        $newCart->addNewItem($product, $quantity, $subItems);
-        Session::put('cart', $newCart);
-        $count = $newCart->totalQuantity;
-        echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
-    }
-
-    protected function validateSideAndEntreeAndDrink($productId, $subItems)
-    {
-        $pass = true;
-        $combo = DB::table('combos')->where('product_id', $productId)->first();
-        if(!is_null($combo)) {
-            $side = $combo->side;
-            $entree = $combo->entree;
-            $drink = $combo->drink;
-            $quantityOfSubItems = $this->retrieveQuantityOfSubItems($subItems);
-            if (($quantityOfSubItems['side'] == $side) && ($quantityOfSubItems['entree'] == $entree) && ($quantityOfSubItems['drink'] == $drink)) {
-                $pass = true;
-            } else {
-                $pass = false;
-            }
-        }
-        return $pass;
-    }
-
-    protected function retrieveQuantityOfSubItems($subItems)
-    {
-        $quantityOfSubItems = [];
-        $side = 0;
-        $entree = 0;
-        $drink = 0;
-
-        $keys = array_keys($subItems);
-        foreach ($keys as $key) {         
-            $category = $subItems[$key]['category'];
-            $quantity = $subItems[$key]['quantity'];
-            
-            if ($category == "Side") {
-                $side += $quantity;
-            }
-            if ($category == "Entree") {
-                $entree += $quantity;
-            }
-            if ($category == "Drink") {
-                $drink += $quantity;
-            }
-        }
-        $quantityOfSubItems['side'] = $side;
-        $quantityOfSubItems['entree'] = $entree;
-        $quantityOfSubItems['drink'] = $drink;
-        return $quantityOfSubItems;
     }
 
     public function emptyCart() {
@@ -649,7 +412,244 @@ class OrderController extends Controller
         $newCart->updateItemQuantity($serialNumber, $quantity);
         Session::put('cart', $newCart);
         $priceDetail = retrievePriceDetail();
-        $items = $newCart->items;   //$storedItem = ['item'=>$item, 'subItem'=>$subItem, 'quantity'=>$quantity];
+        $items = $newCart->items;   //$storedItem = ['productItem'=>$productItem, 'subItem'=>$subItem, 'quantity'=>$quantity];
         return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
+    }
+
+    public function checkout(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'firstname' => 'required|max:254',
+            'lastname' => 'required|max:254',
+            'phone' => 'required',
+            'email' => 'required|email',
+            'zip'=> 'required',
+            'card'=> 'required',
+            'expired'=> 'required',
+            'cvv'=> 'required'
+        ]);
+        if (!$validator->passes()) {
+            return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
+        }
+
+        $exception = null;
+        $cart = Session::get('cart');
+        $orderId = $cart->orderId;
+        // Save customer information
+        // Save to orders table
+        // Save to order_products table (Retrive summary field)
+        // Save to order_sub_sides table
+        // Save to order_sub_entrees table
+        // Save to order_sub_drinks table
+        // Save to order_drinks table
+        // Save to order_sides table
+        // Save to order_entrees table
+        $exception = DB::transaction(function() use ($request, $cart) {
+            try {
+                $customerId = $this->retrieveCustomerId($request);
+                if (Session::has('cart')){
+                    $elements = "";
+                    $items = array();
+                    $totalQuantity = 0;
+                    $totalPrice = 0;
+                    $subItems = array();
+                    $note = "";
+                    $created = null;
+                    $orderId = null;
+                    foreach ($cart as $key=>$value) {
+                        if ($key == 'totalQuantity') {
+                            $totalQuantity = $value;
+                        }
+                        if ($key == 'totalPrice') {
+                            $totalPrice = $value;
+                        }
+                        if ($key == 'items') {
+                            $items = $value;
+                        }
+                        if ($key == 'note') {
+                            $note = $value;
+                        }
+                        if ($key == 'created') {
+                            $created = $value;
+                        }
+                        if ($key == 'orderId') {
+                            $orderId = $value; 
+                        }
+                    }
+
+                    // if created is not null, this means it is updated from administrator -- delete this order and recreate
+                    if ($orderId != null) {
+                        DB::table('orders')->where('id', $orderId)->delete();
+                    }
+
+                    // Save to orders table
+                    $orderIdNew = $this->saveOrderTable($customerId, $totalQuantity, $totalPrice, $note, $created);
+
+                    $keys = array_keys($items);
+                    foreach ($keys as $key) {   // $key is serialNumber
+                        $product = $items[$key]['productItem'];
+                        $quantity = $items[$key]['quantity'];
+                        $subItems = $items[$key]['subItems'];
+                        $totalPricePerProductItem = $items[$key]['totalPricePerProductItem'];
+
+                        // Save to order_products table
+                        $summary = $this->retrieveProductSummary($product, $subItems, $totalPricePerProductItem);
+                        $orderProductId = $this->saveOrderProductsTable($orderIdNew, $product->id, $quantity, $summary);
+
+                        // Save to subItems tables
+                        $this->saveSubItems($orderProductId, $subItems);
+                    }
+
+                    // ToDo -- Submit Credit Card Charge
+                }
+            } catch (Exception $e) {
+                return $e;
+            }
+        });
+        if (is_null($exception)) {
+            // ToDo -- Send email to customer
+            Session::forget('cart');
+            if ($orderId != null) {
+                return response()->json(['status'=>1, 'msg'=>'Your order has been submitted succussfully.', 'editOrder'=>true]);
+            } else {
+                return response()->json(['status'=>1, 'msg'=>'Your order has been submitted succussfully.']);
+            }
+        } else {
+            return response()->json(['status'=>3, 'msg'=>$exception]);
+        }
+    }
+
+    protected function retrieveCustomerId(Request $request) {
+        if (Session::has('customer')) {
+            $customer = Session::get('customer');
+            $this->updateCardInformation($customer, $request);
+            return $customer->id;
+        } else {
+            $customer = DB::table('customers')->where('email', $request->email)->first();
+            if ($customer) {
+                $this->updateCardInformation($customer, $request);
+                return $customer->id;
+            } else {
+                $customerId = null;
+                $customerId = DB::table('customers')->insertGetId([
+                    'first_name'=>$request->firstname, 
+                    'last_name'=>$request->lastname, 
+                    'phone'=>$request->phone, 
+                    'email'=>$request->email,
+                    'zip'=>$request->zip,
+                    'card_number'=>str_replace("-", "", $request->card),
+                    'expired'=>str_replace("/", "", $request->expired),
+                    'cvv'=>$request->cvv,
+                ]);
+                return $customerId;
+            }
+        }
+    }
+
+    protected function updateCardInformation($customer, $request) {
+        if ($customer->card_number == null) {
+            DB::table('customers')->where('id', $customer->id)
+                ->update([
+                    'zip'=>$request->zip,
+                    'card_number'=>str_replace("-", "", $request->card),
+                    'expired'=>str_replace("/", "", $request->expired),
+                    'cvv'=>$request->cvv
+                ]);
+        }
+    }
+
+    protected function saveOrderTable($customerId, $quantity, $total, $note, $created) {
+        $orderId = null;
+        if ($created != null) {
+            $orderId = DB::table('orders')->insertGetId([
+                'customer_id'=>$customerId, 'quantity'=>$quantity, 'total'=>$total, 'note'=>$note, 'created_at'=>$created, 'updated_at'=>Carbon::now() 
+            ]);
+        } else {
+            $orderId = DB::table('orders')->insertGetId([
+                'customer_id'=>$customerId, 'quantity'=>$quantity, 'total'=>$total, 'note'=>$note, 'created_at'=>Carbon::now() 
+            ]);
+        }
+        return $orderId;
+    }
+
+    protected function retrieveProductSummary($product, $subItems, $totalPricePerProductItem) {
+        $productSummary = "";
+        $subItemsSummary = retrieveSummary($subItems);
+        $totalPriceDisplay = retrieveTotalPriceDisplay($product, $subItems, $totalPricePerProductItem);
+
+        $productSummary .= $product->name ." (" .$product->description .")\n";
+        if ($subItemsSummary != "") {
+            $productSummary .= $subItemsSummary ."\n";
+        }    
+        $productSummary .= $totalPriceDisplay;
+        return $productSummary;
+    }
+
+    protected function saveOrderProductsTable($orderId, $productId, $quantity, $summary) {
+        $orderProductId = DB::table('order_products')->insertGetId([
+            'order_id'=>$orderId, 'product_id'=>$productId, 'quantity'=>$quantity, 'summary'=>$summary
+        ]);
+        return $orderProductId;
+    }
+
+    protected function saveSubItems($orderProductId, $subItems) {
+        if (($subItems == null) || count($subItems) == 0) {
+            return;
+        }
+
+        $keys = array_keys($subItems);
+        foreach ($keys as $key) {         
+            $category = $subItems[$key]['category'];
+            $quantity = $subItems[$key]['quantity'];
+            $item = $subItems[$key]['item'];
+            
+            if ($category == "Side") {
+                if (count($keys) > 1) { // This means combo not Individual Side/Entree                     
+                    // Save to order_sub_sides table
+                    DB::table('order_sub_sides')->insert([
+                        'order_product_id'=>$orderProductId, 'quantity'=>$quantity, 'side_id'=>$item->id 
+                    ]);
+                } else {
+                    // Save to order_sides table
+                    DB::table('order_sides')->insert([
+                        'order_product_id'=>$orderProductId, 'side_id'=>$item->id 
+                    ]);
+                } 
+            }
+            if ($category == "Entree") {
+                if (count($keys) > 1) { // This means combo not Individual Side/Entree 
+                    // Save to order_sub_entrees table
+                    DB::table('order_sub_entrees')->insert([
+                        'order_product_id'=>$orderProductId, 'quantity'=>$quantity, 'entree_id'=>$item->id 
+                    ]);
+                } else {
+                    // Save to order_entrees table
+                    DB::table('order_entrees')->insert([
+                        'order_product_id'=>$orderProductId, 'entree_id'=>$item->id 
+                    ]);
+                }
+            }
+            if ($category == "Drink") {
+                // Save to order_sub_drinks table
+                $typeId = null;
+                if (array_key_exists('selectDrink', $subItems[$key])) {
+                     $selectDrink = $subItems[$key]['selectDrink'];
+                     $typeId = $selectDrink->id;
+                }
+                DB::table('order_sub_drinks')->insert([
+                    'order_product_id'=>$orderProductId, 'quantity'=>$quantity, 'drink_id'=>$item->id, 'type_id'=>$typeId
+                ]);  
+            }
+            if ($category == "DrinkOnly") {
+                // Save to order_drinks table
+                $typeId = null;
+                if (array_key_exists('selectDrink', $subItems[$key])) {
+                     $selectDrink = $subItems[$key]['selectDrink'];
+                     $typeId = $selectDrink->id;
+                }
+                DB::table('order_drinks')->insert([
+                    'order_product_id'=>$orderProductId, 'drink_id'=>$item->id, 'type_id'=>$typeId
+                ]);
+            }
+        }
     }
 }

@@ -749,19 +749,19 @@
             }
             $keys = array_keys($items);
             foreach ($keys as $key) {   // $key is serialNumber
-                $product = $items[$key]['item'];
+                $product = $items[$key]['productItem'];
                 $quantity = $items[$key]['quantity'];
                 $subItems = $items[$key]['subItems'];
-                $totalPricePerItem = $items[$key]['totalPricePerItem'];
-                $elements = $elements .cartElement($key, $product, $quantity, $subItems, $totalPricePerItem);
+                $totalPricePerProductItem = $items[$key]['totalPricePerProductItem'];
+                $elements = $elements .cartElement($key, $product, $quantity, $subItems, $totalPricePerProductItem);
             }
         } 
     }
 
-    function cartElement($key, $product, $quantity, $subItems, $totalPricePerItem)
+    function cartElement($key, $product, $quantity, $subItems, $totalPricePerProductItem)
     {   // $key is serialNumber, using serialNumber instead of productId is the example like User can order many Regular Platters with different Sides and Entrees. But they are the same productId.
         $orderSummary = retrieveSummary($subItems);
-        $totalPriceDisplay = retrieveTotalPriceDisplay($product, $subItems, $totalPricePerItem);
+        $totalPriceDisplay = retrieveTotalPriceDisplay($product, $subItems, $totalPricePerProductItem);
         
         // Handle image for Individaul Side/Entree and Drink
         $image = $product->gallery;
@@ -821,19 +821,19 @@
             }
             $keys = array_keys($items);
             foreach ($keys as $key) {   // $key is serialNumber
-                $product = $items[$key]['item'];
+                $product = $items[$key]['productItem'];
                 $quantity = $items[$key]['quantity'];
                 $subItems = $items[$key]['subItems'];
-                $totalPricePerItem = $items[$key]['totalPricePerItem'];
-                $elements = $elements .cartElementForCheckout($key, $product, $quantity, $subItems, $totalPricePerItem);
+                $totalPricePerProductItem = $items[$key]['totalPricePerProductItem'];
+                $elements = $elements .cartElementForCheckout($key, $product, $quantity, $subItems, $totalPricePerProductItem);
             }
         } 
     }
 
-    function cartElementForCheckout($key, $product, $quantity, $subItems, $totalPricePerItem)
+    function cartElementForCheckout($key, $product, $quantity, $subItems, $totalPricePerProductItem)
     {   // $key is serialNumber, using serialNumber instead of productId is the example like User can order many Regular Platters with different Sides and Entrees. But they are the same productId.
         $orderSummary = retrieveSummary($subItems);
-        $totalPriceDisplay = retrieveTotalPriceDisplay($product, $subItems, $totalPricePerItem);
+        $totalPriceDisplay = retrieveTotalPriceDisplay($product, $subItems, $totalPricePerProductItem);
         
         // Handle image for Individaul Side/Entree and Drink
         $image = $product->gallery;
@@ -932,12 +932,12 @@
         return $summary;
     }
 
-    function retrieveTotalPriceDisplay($product, $subItems, $totalPricePerItem) {
+    function retrieveTotalPriceDisplay($product, $subItems, $totalPricePerProductItem) {
         $totalPriceDisplay = "";
 
         $extraCharge = retrieveExtraCharge($subItems);
         if ($extraCharge > 0) {
-            $totalPriceDisplay .= "$" .number_format($product->price, 2, '.', ',') ." + $" .number_format($extraCharge, 2, '.', ',') ." = $" .number_format($totalPricePerItem, 2, '.', ',');
+            $totalPriceDisplay .= "$" .number_format($product->price, 2, '.', ',') ." + $" .number_format($extraCharge, 2, '.', ',') ." = $" .number_format($totalPricePerProductItem, 2, '.', ',');
         } else {
             $totalPriceDisplay .= "$" .number_format($product->price, 2, '.', ',');
         }

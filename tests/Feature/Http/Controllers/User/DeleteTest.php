@@ -33,6 +33,10 @@ class DeleteTest extends TestCase
 
     public function test_delete_user_success()
     {
+        // Log in as administrator to access user list
+        $response = $this->post('/login', ['email'=>'shyuadmin@yahoo.com', 'password'=>'12345678']);
+        $response->assertStatus(200);
+
         // After delete, deleteUser method calls -- return $this->listUsers();. Therefore, we expected not data in tbody
         $expected = '';
         $expected .= '~<tbody></tbody>~';
@@ -46,6 +50,10 @@ class DeleteTest extends TestCase
 
     public function test_delete_user_not_success()
     {
+        // Log in as administrator to access user list
+        $response = $this->post('/login', ['email'=>'shyuadmin@yahoo.com', 'password'=>'12345678']);
+        $response->assertStatus(200);
+
         $response = $this->call('GET', '/user-delete', ['id'=>'2']);
         //$response->assertStatus(200);
         $message = $response->json()['msg'];

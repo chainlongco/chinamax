@@ -76,23 +76,23 @@ function loadOrderListElements(items)
     $('#orderlist').html("");
     $.each(items, function(key, value) {
         //console.log(key, value);
-        product = value['item'];
+        product = value['productItem'];
         quantity = value['quantity'];
         subItems = value['subItems'];
-        totalPricePerItem = value['totalPricePerItem'];
+        totalPricePerProductItem = value['totalPricePerProductItem'];
         var html = '';
-        html = orderListElement(key, product, quantity, subItems, totalPricePerItem);
+        html = orderListElement(key, product, quantity, subItems, totalPricePerProductItem);
         $('#orderlist').append(html);
     });
 }
 
-function orderListElement(key, product, quantity, subItems, totalPricePerItem)
+function orderListElement(key, product, quantity, subItems, totalPricePerProductItem)
 {   // $key is serialNumber, using serialNumber instead of productId is the example like User can order many Regular Platters with different Sides and Entrees. But they are the same productId.
     var orderSummary = retrieveSummary(subItems);
     var extraCharge = retrieveExtraCharge(subItems);
     var totalPriceDisplay = "";
     if (extraCharge > 0) {
-        totalPriceDisplay = "$" + product['price'].toFixed(2) + " + $" + extraCharge.toFixed(2) + " = $" + totalPricePerItem.toFixed(2);
+        totalPriceDisplay = "$" + product['price'].toFixed(2) + " + $" + extraCharge.toFixed(2) + " = $" + totalPricePerProductItem.toFixed(2);
     } else {
         totalPriceDisplay = "$" + product['price'].toFixed(2);
     }

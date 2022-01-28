@@ -230,7 +230,7 @@
                             // scrollable is set at chinamax.css -- .modal-body
                             html = loadEditModalForCombo(response.serialNumber, response.product, response.quantity, response.sides, response.chickenEntrees, response.beefEntrees, response.shrimpEntrees, response.combo, response.comboDrinks, response.fountains);
                     } else {
-                        html = loadEditModal(response.serialNumber, response.product, response.quantity, response.subitems, response.totalPricePerItem);
+                        html = loadEditModal(response.serialNumber, response.product, response.quantity, response.subitems, response.totalPricePerProductItem);
                     }
                     $("#editBodyFooter").html(html);
                     $("#editModal").show();
