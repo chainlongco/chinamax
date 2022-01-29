@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Menu;
 use App\Http\Product;
 use App\Http\Single;
+use App\Http\Controllers\OrderController;
 
 class AddOrderTest extends TestCase
 {
@@ -1022,5 +1023,60 @@ class AddOrderTest extends TestCase
         $this->assertEquals('One small drink, one side and one entree', $item['productItem']->description);
         $this->assertEquals('KidsMeal.jpg', $item['productItem']->gallery);
         $this->assertEquals('', $item['productItem']->category);
+    }
+
+    public function test_retrieveQuantityOfSubItems()
+    {
+        $subItems = array();
+        $sideItem = array('category'=>'Side', 'id'=>1, 'quantity'=>0.5);
+        array_push($subItems, $sideItem);
+        $sideItem = array('category'=>'Side', 'id'=>2, 'quantity'=>0.5);
+        array_push($subItems, $sideItem);
+        $entreeItem = array('category'=>'Entree', 'id'=>1, 'quantity'=>1);
+        array_push($subItems, $entreeItem);
+        $drinkItem = array('category'=>'Drink', 'id'=>2, 'quantity'=>1);
+        array_push($subItems, $drinkItem);
+        
+        $controller = new OrderController();
+        $quantityOfSubItems = $controller->retrieveQuantityOfSubItems($subItems);
+        $this->assertEquals(1, $quantityOfSubItems['Side']);
+        $this->assertEquals(1, $quantityOfSubItems['Entree']);
+        $this->assertEquals(1, $quantityOfSubItems['Drink']);
+    }
+
+    public function test_validateSideAndEntreeAndDrink_failed()
+    {
+        $productId = 16;
+        $subItems = array();
+        $sideItem = array('category'=>'Side', 'id'=>1, 'quantity'=>0.5);
+        array_push($subItems, $sideItem);
+        $sideItem = array('category'=>'Side', 'id'=>2, 'quantity'=>0.5);
+        array_push($subItems, $sideItem);
+        $entreeItem = array('category'=>'Entree', 'id'=>1, 'quantity'=>1);
+        array_push($subItems, $entreeItem);
+        $drinkItem = array('category'=>'Drink', 'id'=>2, 'quantity'=>2);
+        array_push($subItems, $drinkItem);
+
+        $controller = new OrderController();
+        $pass = $controller->validateSideAndEntreeAndDrink($productId, $subItems);
+        $this->assertFalse($pass);
+    }
+
+    public function test_validateSideAndEntreeAndDrink_success()
+    {
+        $productId = 16;
+        $subItems = array();
+        $sideItem = array('category'=>'Side', 'id'=>1, 'quantity'=>0.5);
+        array_push($subItems, $sideItem);
+        $sideItem = array('category'=>'Side', 'id'=>2, 'quantity'=>0.5);
+        array_push($subItems, $sideItem);
+        $entreeItem = array('category'=>'Entree', 'id'=>1, 'quantity'=>1);
+        array_push($subItems, $entreeItem);
+        $drinkItem = array('category'=>'Drink', 'id'=>2, 'quantity'=>1);
+        array_push($subItems, $drinkItem);
+
+        $controller = new OrderController();
+        $pass = $controller->validateSideAndEntreeAndDrink($productId, $subItems);
+        $this->assertTrue($pass);
     }
 }

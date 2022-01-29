@@ -43,7 +43,7 @@ class OrderController extends Controller
         echo "<span id=\"cart_count\" class=\"text-warning bg-light\">" .$count ."</span>";
     }
 
-    protected function validateSideAndEntreeAndDrink($productId, $subItems)
+    public function validateSideAndEntreeAndDrink($productId, $subItems)
     {
         $pass = true;
         $combo = DB::table('combos')->where('product_id', $productId)->first();
@@ -52,7 +52,7 @@ class OrderController extends Controller
             $entree = $combo->entree;
             $drink = $combo->drink;
             $quantityOfSubItems = $this->retrieveQuantityOfSubItems($subItems);
-            if (($quantityOfSubItems['side'] == $side) && ($quantityOfSubItems['entree'] == $entree) && ($quantityOfSubItems['drink'] == $drink)) {
+            if (($quantityOfSubItems['Side'] == $side) && ($quantityOfSubItems['Entree'] == $entree) && ($quantityOfSubItems['Drink'] == $drink)) {
                 $pass = true;
             } else {
                 $pass = false;
@@ -61,7 +61,7 @@ class OrderController extends Controller
         return $pass;
     }
 
-    protected function retrieveQuantityOfSubItems($subItems)
+    public function retrieveQuantityOfSubItems($subItems)
     {
         $quantityOfSubItems = [];
         $side = 0;
@@ -83,9 +83,9 @@ class OrderController extends Controller
                 $drink += $quantity;
             }
         }
-        $quantityOfSubItems['side'] = $side;
-        $quantityOfSubItems['entree'] = $entree;
-        $quantityOfSubItems['drink'] = $drink;
+        $quantityOfSubItems['Side'] = $side;
+        $quantityOfSubItems['Entree'] = $entree;
+        $quantityOfSubItems['Drink'] = $drink;
         return $quantityOfSubItems;
     }
 
