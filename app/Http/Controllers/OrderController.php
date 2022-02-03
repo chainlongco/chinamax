@@ -97,13 +97,6 @@ class OrderController extends Controller
                     ->join('customers','customers.id','=','orders.customer_id')
                     ->get();
         
-        
-        /*DB::table('users')
-        ->select('users.id','users.name','profiles.photo')
-        ->join('profiles','profiles.id','=','users.id')
-        ->where(['something' => 'something', 'otherThing' => 'otherThing'])
-        ->get();*/
-        
         $html = '';
         $html .=    '<table class="table table-striped table-hover cell-border" id="ordersDatatable" style="padding: 10px;">
                         <thead>
@@ -212,27 +205,28 @@ class OrderController extends Controller
         $newCart = new Cart(null);
 
         $order = DB::table('orders')->where('id', $orderId)->first();
-        $newCart->addNote($order->note);
-        $newCart->addOrderIdAndCreatedDateTime($order->id, $order->created_at);
-        $this->loginAsCustomer($order->customer_id);
+        if ($order) {
+            $newCart->addNote($order->note);
+            $newCart->addOrderIdAndCreatedDateTime($order->id, $order->created_at);
+            $this->loginAsCustomer($order->customer_id);
 
-        $order_products = DB::table('order_products')->where('order_id', $orderId)->get();
-        foreach($order_products as $order_product) {
-            $subItems = array();
-            $product = DB::table('products')->where('id', $order_product->product_id)->first();
-            if ($product->menu_id == 1) {   // Appetizers
-                // no subItems for Appetizers
-            } else if ($product->menu_id == 2) {    // Drinks
-                $subItems = $this->retrieveSubItemsForDrinks($order_product->id, $product, $order_product->quantity);
-            } else if ($product->menu_id == 4) {
-                $subItems = $this->retrieveSubItemsForSingle($order_product->id, $product, $order_product->quantity);
-            } else if ($product->menu_id == 3) {
-                $subItems = $this->retrieveSubItemsForCombos($order_product->id);
+            $order_products = DB::table('order_products')->where('order_id', $orderId)->get();
+            foreach($order_products as $order_product) {
+                $subItems = array();
+                $product = DB::table('products')->where('id', $order_product->product_id)->first();
+                if ($product->menu_id == 1) {   // Appetizers
+                    // no subItems for Appetizers
+                } else if ($product->menu_id == 2) {    // Drinks
+                    $subItems = $this->retrieveSubItemsForDrinks($order_product->id, $product, $order_product->quantity);
+                } else if ($product->menu_id == 4) {
+                    $subItems = $this->retrieveSubItemsForSingle($order_product->id, $product, $order_product->quantity);
+                } else if ($product->menu_id == 3) {
+                    $subItems = $this->retrieveSubItemsForCombos($order_product->id);
+                }
+                $newCart->addNewItem($product, $order_product->quantity, $subItems);
             }
-            $newCart->addNewItem($product, $order_product->quantity, $subItems);
-        }
-
-        Session::put('cart', $newCart);        
+            Session::put('cart', $newCart);
+        }        
     }
 
     protected function loginAsCustomer($customerId) {

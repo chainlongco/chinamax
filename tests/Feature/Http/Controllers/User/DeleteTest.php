@@ -37,15 +37,16 @@ class DeleteTest extends TestCase
         $response = $this->post('/login', ['email'=>'shyuadmin@yahoo.com', 'password'=>'12345678']);
         $response->assertStatus(200);
 
-        // After delete, deleteUser method calls -- return $this->listUsers();. Therefore, we expected not data in tbody
-        $expected = '';
-        $expected .= '~<tbody></tbody>~';
-        $this->expectOutputRegex($expected);
-        //$controller = new UserController();
-        //$response = $controller->listUsers();
+        $user = DB::table('users')->where('id', 1)->first();
+        $this->assertEquals('Admin Shyu', $user->name);
 
         $response = $this->call('GET', '/user-delete', ['id'=>'1']);
         $response->assertStatus(200);
+        $message = $response->json()['msg'];
+        $this->assertEquals('The roles of Admin Shyu have been deleted successfully.', $message);
+
+        $user = DB::table('users')->where('id', 1)->first();
+        $this->assertEquals(null, $user);
     }
 
     public function test_delete_user_not_success()

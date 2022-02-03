@@ -92,31 +92,36 @@ class UserController extends Controller
         $managerRole = DB::table('roles')->select('id')->where('name', 'Manager')->first();
         $employeeRole = DB::table('roles')->select('id')->where('name', 'Employee')->first();
         $user = User::find($request->id);
-        $message = 'The roles of ' .$user->name .' have been updated successfully.';
-        $user->roles()->detach();
-        if ($request->admin == 'true') {
-            $user->roles()->attach($adminRole);
+        if ($user) {
+            $message = 'The roles of ' .$user->name .' have been updated successfully.';
+            $user->roles()->detach();
+            if ($request->admin == 'true') {
+                $user->roles()->attach($adminRole);
+            }
+            if ($request->owner == 'true') {
+                $user->roles()->attach($ownerRole);
+            }
+            if ($request->manager == 'true') {
+                $user->roles()->attach($managerRole);
+            }
+            if ($request->employee == 'true') {
+                $user->roles()->attach($employeeRole);
+            }
+            //return response()->json(['msg'=>'The roles of ' .$user->name .' have been updated successfully.']);
+            return response()->json(['msg'=>$message]);
         }
-        if ($request->owner == 'true') {
-            $user->roles()->attach($ownerRole);
-        }
-        if ($request->manager == 'true') {
-            $user->roles()->attach($managerRole);
-        }
-        if ($request->employee == 'true') {
-            $user->roles()->attach($employeeRole);
-        }
-        //return response()->json(['msg'=>'The roles of ' .$user->name .' have been updated successfully.']);
-        return response()->json(['msg'=>$message]);
+        return response()->json(['msg'=>'User not found.']);
     }
 
     public function userDelete(Request $request)
     {
         $user = User::find($request->id);
         if($user) {
+            $message = 'The roles of ' .$user->name .' have been deleted successfully.';
             $user->roles()->detach();
             if ($user->delete()){
-                return $this->listUsers();
+                $html = $this->listUsersHtml();
+                return response()->json(['msg'=>$message, 'html'=>$html]);
             }
         }
         return response()->json(['msg'=>'Deletion failed.']);
@@ -130,6 +135,11 @@ class UserController extends Controller
     }
 
     public function listUsers() {
+        $html = $this->listUsersHtml();
+        echo $html;
+    }
+
+    public function listUsersHtml() {
         $users = DB::table('users')
                     ->select('id', 'name', 'email')
                     ->get();
@@ -183,7 +193,7 @@ class UserController extends Controller
         $html .=                        '<td>';
         $html .=                            '<div class="row justify-content-around" style="margin:auto;">';
         $html .=                                '<a href="" id="usersave' .$user->id .'" class="col-md-5 btn btn-primary usersave" title="Save"><span class="bi bi-save"></span></a>';
-        $html .=                                '<a href="" id="userdelete' .$user->id .'" class="col-md-5 btn btn-danger userdelete" title="Delete" onclick="if(!confirm(' ."'Are you sure?'" .')){return false;}"><span class="bi-x-lg"></span></a>';
+        $html .=                                '<a href="" id="userdelete' .$user->id .'" class="col-md-5 btn btn-danger userdelete" title="Delete" onclick="if(confirm(' ."'Are you sure?'" .')){return true;}else{event.stopPropagation(); event.preventDefault();};"><span class="bi-x-lg"></span></a>';
         $html .=                            '</div>';
         $html .=                        '</td>';
         $html .=                    '</tr>';
@@ -217,7 +227,7 @@ class UserController extends Controller
                         });
                     </script>';
         
-        echo $html;
+        return $html;
 
 
         /*

@@ -676,3 +676,16 @@ function loadEditModalForCombo(serialNumber, product, quantity, sides, chickenEn
     html += '</div>';
     return html;                
 }
+
+function loadMessage($message) {
+    var html = "";
+    html += '<div class="modal-body">';
+    html += '   <div class="col-md-12 text-center">';
+    html += '       <h5>' + $message + '</h5>';
+    html += '   </div>';
+    html += '</div>';
+    html += '<div class="modal-footer">';
+    html += '   <button type="button" class="btn btn-primary okModal" data-bs-dismiss="modal">OK</button>';
+    html += '</div>';
+    return html;
+}

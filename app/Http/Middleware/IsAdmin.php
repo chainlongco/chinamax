@@ -11,12 +11,7 @@ use Illuminate\Support\Facades\DB;
 /* Middleware:
     1. Create middleware -- php artisan make:middleware IsAdmin
     2. Register in Kernel.php at $routeMiddleware
-    3. Apply to web.php: Route::group(['middleware' => 'isAdmin'], function () {}
-    Note: Need to add in order in web.php file -- group isAdmin at the latest, otherwise, Route::get('/customer/list', function(){ not working if user not attach all of roles:
-        Route::group(['middleware' => 'isEmployee'], function () {
-        Route::group(['middleware' => 'isManager'], function () {
-        Route::group(['middleware' => 'isOwner'], function () {
-        Route::group(['middleware' => 'isAdmin'], function () {            
+    3. Apply to web.php: Route::group(['middleware' => 'isAdmin'], function () {}         
 */
 
 class IsAdmin

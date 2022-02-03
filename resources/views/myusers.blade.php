@@ -17,8 +17,22 @@
 
     </div>
 </div>
+
+<div class="modal" id="userModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div id="userModalBody">
+        </div>
+    </div>
+</div>
+
 <br>
 
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
     $(document).ready(function(){
         $("#usersDatatable").DataTable({
@@ -38,7 +52,8 @@
             }
         });
 
-        $(document).on('click', '.usersave', function(){
+        $(document).on('click', '.usersave', function(e){
+            e.preventDefault();
             var id = retrieveId("usersave", this.id);
             var admin = $('#roleadmin' + id).is(":checked");
             var owner = $('#roleowner' + id).is(":checked");
@@ -49,20 +64,22 @@
                 url:'/user-edit',
                 data: {'id':id, 'admin': admin, 'owner':owner, 'manager':manager, 'employee':employee},
                 success: function(response) {
-                    //$('#userslist').html(response);
+                    //swal(response.msg);
                     alert(response.msg);
                 }
             });
         });
 
-        $(document).on('click', '.userdelete', function(){
+        $(document).on('click', '.userdelete', function(e){
+            e.preventDefault();
             var id = retrieveId("userdelete", this.id);
             $.ajax({
                 type:'GET',
                 url:'/user-delete',
                 data: {'id':id},
                 success: function(response) {
-                    $('#userslist').html(response);
+                    $('#userslist').html(response.html);
+                    //alert(response.msg);  // Match delete in Customer, Order List - no alert after delete
                 }
             });
         });
