@@ -2,9 +2,6 @@
 @section('title', 'Order')
 @section('content')
 
-<?php
-    //require_once(public_path() ."/shared/component.php");
-?>
     <br>
     <div class="container-fluid">
         <div class="row">

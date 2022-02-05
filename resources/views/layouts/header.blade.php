@@ -22,7 +22,6 @@
                 <li class="nav-item" id="checkoutMenu">
                     <!-- <a class="nav-link active" aria-current="page" href="/checkout">Checkout</a> -->
                     <?php
-                        //require_once(public_path() ."/shared/component.php");
                         $utility = new Utility();
                         $utility->checkoutElement();
                     ?>

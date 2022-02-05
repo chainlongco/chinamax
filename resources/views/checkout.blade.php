@@ -4,7 +4,6 @@
 
 <?php
     use App\Shared\Utility;
-    //require_once(public_path() ."/shared/component.php");
 ?>
 
 <br>

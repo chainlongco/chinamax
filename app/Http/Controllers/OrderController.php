@@ -10,8 +10,6 @@ use App\Shared\Cart;
 use Validator;
 use App\Shared\Utility;
 
-//require_once(public_path() ."/shared/component.php");
-
 class OrderController extends Controller
 {
     public function cart()

@@ -383,16 +383,16 @@ class FunctionTest extends TestCase
 
     public function test_loadOrderToSession()
     {
-        $controller = new OrderController();
-        //$this->loadOrderToSession(1);
+        $controller = new OrderControllerTest();
+        $controller->loadOrderToSession(1);
     }
 }
 
-/*class OrderControllerTest11 extends OrderController
+class OrderControllerTest extends OrderController
 {
     public function loadOrderToSession($orderId)
     {
-        return $this->loadOrderToSession($orderId);
+        return parent::loadOrderToSession($orderId);
     }
-}*/
+}
 

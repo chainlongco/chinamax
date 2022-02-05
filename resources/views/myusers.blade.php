@@ -2,10 +2,6 @@
 @section('title', 'My Users')
 @section('content')
 
-<?php
-    //require_once(public_path() ."/shared/component.php");
-?>
-
 <br>
 
 <div class="container">

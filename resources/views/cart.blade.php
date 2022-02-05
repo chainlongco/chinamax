@@ -5,7 +5,6 @@
 <?php
     use App\Shared\Cart;
     use App\Shared\Utility;
-    //require_once(public_path() ."/shared/component.php");
 ?>
 
 <div id="mycart">
