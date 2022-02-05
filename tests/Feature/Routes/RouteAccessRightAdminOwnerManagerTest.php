@@ -176,7 +176,7 @@ class RouteAccessRightAdminOwnerManagerTest extends TestCase
 
     public function test_rights_for_get_customer_submit()
     {
-        // Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
+        // Route::post('/customer/add', [CustomerController::class, 'createUpdateCustomer'])->name('customer-submit');
         // Without any role
         $response = $this->call('POST', '/customer/add');
         $response->assertStatus(302);

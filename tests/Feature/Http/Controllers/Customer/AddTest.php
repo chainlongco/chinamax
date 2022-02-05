@@ -181,7 +181,7 @@ class AddTest extends TestCase
     {
         $fakeRequest = Request::create('/', 'GET', ['firstname'=>'Jacky', 'lastname'=>'Shyu', 'phone'=>'2146808281']); //************** Very important fake Request
         $customerControllerTest = new CustomerControllerTestForAdd();
-        $response = $customerControllerTest->createCustomer($fakeRequest);
+        $response = $customerControllerTest->createUpdateCustomer($fakeRequest);
        
         //dd(get_class_methods($response));  //********** Very important way
 

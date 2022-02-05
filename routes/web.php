@@ -68,7 +68,7 @@ Route::group(['middleware' => 'isEmployee'], function () {  // This means employ
 Route::group(['middleware' => 'isManager'], function () {   // This means manager, owner and admin can access the following routes
     Route::get('/customer/list', [CustomerController::class, 'customerList'])->name('customer-list');
     Route::get('/customer/add', [CustomerController::class, 'customerAdd'])->name('customer-add');
-    Route::post('/customer/add', [CustomerController::class, 'createCustomer'])->name('customer-submit');
+    Route::post('/customer/add', [CustomerController::class, 'createUpdateCustomer'])->name('customer-submit');
     Route::get('/customers-list', [CustomerController::class, 'listCustomers']);
     Route::get('/customer/delete/{id}', [CustomerController::class, 'customerDelete']);
     Route::get('/customer/edit/{id}', [CustomerController::class, 'customerEdit']);

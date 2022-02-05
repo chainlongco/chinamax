@@ -5,7 +5,7 @@ namespace App\Shared;
 use Illuminate\Support\Facades\DB;
 
 
-Class Cart {
+class Cart {
     public $serialNumber = 0;
     public $items = array();
     public $totalQuantity = 0;
@@ -93,6 +93,7 @@ Class Cart {
     }
 
     protected function canNewItemBeMerged($productItem, $quantity, $subItems) {
+        if (!$productItem) return false;
         $keys = Array_keys($this->items);
         foreach ($keys as $key) {
             if ($this->items[$key]['productItem']->id == $productItem->id) {
@@ -155,9 +156,11 @@ Class Cart {
         return $newSubItems;
     }
 
-    protected function retrieveTotalPricePerProductItemWithExtraCharge($productItem, $subItems) {
-        $totalPricePerProductItem = $productItem->price;
-
+    protected function retrieveTotalPricePerProductItemWithExtraCharge($productItem, $subItems) { 
+        $totalPricePerProductItem = 0;
+        if ($productItem) {
+            $totalPricePerProductItem = $productItem->price;
+        }
         if (($subItems == null) || count($subItems) == 0) {
             return $totalPricePerProductItem;
         }

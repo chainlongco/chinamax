@@ -165,7 +165,7 @@ class EditTest extends TestCase
     {
         $request = Request::create('/', 'POST', ['id'=>1, 'firstname'=>'Jacky', 'lastname'=>'Shyu', 'phone'=>'1234567890']);
         $customerControllerTest = new CustomerControllerTestForEdit();
-        $response = $customerControllerTest->createCustomer($request);
+        $response = $customerControllerTest->createUpdateCustomer($request);
 
         $statusCode = $response->getStatusCode();
         $this->assertEquals(200, $statusCode);

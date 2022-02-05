@@ -61,37 +61,15 @@ class CustomerController extends Controller
         ]);
 
         if ($validator->passes()) {
-            $customerByEmail = DB::table('customers')->where('email', $request->email)->first();
-            if ($customerByEmail) {
-                //echo 'update';
-                if ($customerByEmail->password == null) {
-                    //echo "password is null";
-                    $result = DB::table('customers')->where('email', $request->email)
-                        ->update([
-                            'first_name'=>$request->firstname,
-                            'last_name'=>$request->lastname,
-                            'phone'=>str_replace("-", "", $request->phone),
-                            'email'=>$request->email,
-                            'password'=>Hash::make($request->password)
-                        ]);
-                    if ($result){
-                        return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully signed up']);
-                    }
-                } else {
-                    //echo "password is NOT null";
-                    return response()->json(['status'=>2, 'msg'=>'Customer already signed up']);
-                }
-            } else {
-                //echo "add";
-                $customer = new Customer();
-                $customer->first_name = $request->firstname;
-                $customer->last_name = $request->lastname;
-                $customer->phone = str_replace("-", "", $request->phone);
-                $customer->email = $request->email;
-                $customer->password = Hash::make($request->password);
-                if ($customer->save()){
-                    return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully signed up.']);
-                }
+            // email is unique and validated in $validator
+            $customer = new Customer();
+            $customer->first_name = $request->firstname;
+            $customer->last_name = $request->lastname;
+            $customer->phone = str_replace("-", "", $request->phone);
+            $customer->email = $request->email;
+            $customer->password = Hash::make($request->password);
+            if ($customer->save()){
+                return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully signed up.']);
             }
         } else {
             return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
@@ -104,8 +82,9 @@ class CustomerController extends Controller
         return view('customer', compact('customer'));
     }
 
-    public function createCustomer(Request $request)
+    public function createUpdateCustomer(Request $request)
     {
+        // From customersignup.blade.php
         if ($request->id) {
             $validator = Validator::make($request->all(), [
                 'firstname' => 'required|max:20',
@@ -195,7 +174,7 @@ class CustomerController extends Controller
             $lastName = $customer->first()->last_name;
             if ($customer->delete()) {
                 //return response()->json(['status'=>1, 'msg'=>'Customer: ' .$firstName .' ' .$lastName .' has been successfully deleted.']);
-                return redirect('customer/list');
+                return redirect('customer/list');   // This is not using AJAX call which is different from userDelete(ajax call)
             }
         } else {
             return redirect('customer/list');

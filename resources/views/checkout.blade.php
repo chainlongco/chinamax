@@ -202,7 +202,7 @@
         });
         $('#customersignup').on('click', function(){
             const base_path = '{{ url('/') }}\/';
-            window.location.href = base_path + 'customerSignup';
+            window.location.href = base_path + 'customerRegister';
         });
 
         // ***** Phone Start *****

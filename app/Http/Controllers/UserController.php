@@ -121,10 +121,11 @@ class UserController extends Controller
             $user->roles()->detach();
             if ($user->delete()){
                 $html = $this->listUsersHtml();
-                return response()->json(['msg'=>$message, 'html'=>$html]);
+                return response()->json(['msg'=>$message, 'html'=>$html]);  // This is using AJAX call which is different from customerDelete(not ajax call)
             }
         }
-        return response()->json(['msg'=>'Deletion failed.']);
+        $html = $this->listUsersHtml();
+        return response()->json(['msg'=>'Deletion failed.', 'html'=>$html]);
     }
 
     public function loadUsers() {

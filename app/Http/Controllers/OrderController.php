@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Shared\Cart;
 use Validator;
+use App\Shared\component;
 
-require_once(public_path() ."/shared/component.php");
+//require_once(public_path() ."/shared/component.php");
 
 class OrderController extends Controller
 {
