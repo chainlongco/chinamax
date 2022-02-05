@@ -4,7 +4,8 @@
 
 <?php
     use App\Shared\Cart;
-    require_once(public_path() ."/shared/component.php");
+    use App\Shared\Utility;
+    //require_once(public_path() ."/shared/component.php");
 ?>
 
 <div id="mycart">
@@ -32,7 +33,8 @@
                     <hr>
                     <div id="orderlist">
                         <?php
-                            orderListDivElement();             
+                            $utility = new Utility();
+                            $utility->orderListDivElement();             
                         ?>
                     </div>
                 </div>
@@ -63,8 +65,9 @@
                 </div>
                 <div class="py-3">
                     <div id="pricedetail">
-                        <?php 
-                            priceDetailDivElement();
+                        <?php
+                            $utility = new Utility();
+                            $utility->priceDetailDivElement();
                         ?>
                     </div>
                 </div>

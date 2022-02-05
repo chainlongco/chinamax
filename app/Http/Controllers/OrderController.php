@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Shared\Cart;
 use Validator;
-use App\Shared\component;
+use App\Shared\Utility;
 
-require_once(public_path() ."/shared/component.php");
+//require_once(public_path() ."/shared/component.php");
 
 class OrderController extends Controller
 {
@@ -375,14 +375,16 @@ class OrderController extends Controller
         $newCart = new Cart($oldCart);
         $newCart->updateItem($serialNumber, $productId, $quantity, $subItems);
         Session::put('cart', $newCart);
-        $priceDetail = retrievePriceDetail();
+        $utility = new Utility();
+        $priceDetail = $utility->retrievePriceDetail();
         $items = $newCart->items;   //$storedItem = ['item'=>$item, 'subItem'=>$subItem, 'quantity'=>$quantity];
         return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
     }
 
     public function emptyCart() {
         Session::forget('cart');
-        $priceDetail = retrievePriceDetail();
+        $utility = new Utility();
+        $priceDetail = $utility->retrievePriceDetail();
         $items = [];
         return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
     }
@@ -406,7 +408,8 @@ class OrderController extends Controller
         $newCart = new Cart($oldCart);
         $newCart->updateItemQuantity($serialNumber, $quantity);
         Session::put('cart', $newCart);
-        $priceDetail = retrievePriceDetail();
+        $utility = new Utility();
+        $priceDetail = $utility->retrievePriceDetail();
         $items = $newCart->items;   //$storedItem = ['productItem'=>$productItem, 'subItem'=>$subItem, 'quantity'=>$quantity];
         return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
     }
@@ -568,8 +571,9 @@ class OrderController extends Controller
 
     protected function retrieveProductSummary($product, $subItems, $totalPricePerProductItem) {
         $productSummary = "";
-        $subItemsSummary = retrieveSummary($subItems);
-        $totalPriceDisplay = retrieveTotalPriceDisplay($product, $subItems, $totalPricePerProductItem);
+        $utility = new Utility();
+        $subItemsSummary = $utility->retrieveSummary($subItems);
+        $totalPriceDisplay = $utility->retrieveTotalPriceDisplay($product, $subItems, $totalPricePerProductItem);
 
         $productSummary .= $product->name ." (" .$product->description .")\n";
         if ($subItemsSummary != "") {

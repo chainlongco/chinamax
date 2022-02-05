@@ -1,3 +1,6 @@
+<?php
+    use App\Shared\Utility;
+?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">ChinaMax</a>
@@ -19,8 +22,9 @@
                 <li class="nav-item" id="checkoutMenu">
                     <!-- <a class="nav-link active" aria-current="page" href="/checkout">Checkout</a> -->
                     <?php
-                        require_once(public_path() ."/shared/component.php");
-                        checkoutElement();
+                        //require_once(public_path() ."/shared/component.php");
+                        $utility = new Utility();
+                        $utility->checkoutElement();
                     ?>
                 </li>
             </ul>
@@ -93,7 +97,8 @@
                         <i class="fas fa-shopping-cart"></i>Cart
                         <span id="cartCount">        
                             <?php
-                                cartCountSpanElement();
+                                $utility = new Utility();
+                                $utility->cartCountSpanElement();
                             ?>
                         </span>
                     </h5>

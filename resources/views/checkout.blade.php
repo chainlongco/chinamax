@@ -3,7 +3,8 @@
 @section('content')
 
 <?php
-    require_once(public_path() ."/shared/component.php");
+    use App\Shared\Utility;
+    //require_once(public_path() ."/shared/component.php");
 ?>
 
 <br>
@@ -137,17 +138,20 @@
                         <div class="card-body">
                             <div id="orderlist">
                                 <?php
-                                    orderListDivElementForCheckout();             
+                                    $utility = new Utility();
+                                    $utility->orderListDivElementForCheckout();             
                                 ?>
                             </div>
                             <div id="ordernote">
                                 <?php
-                                    orderNoteDivElementForCheckout();
+                                    $utility = new Utility();
+                                    $utility->orderNoteDivElementForCheckout();
                                 ?>
                             </div>
                             <div id="pricedetail">
-                                <?php 
-                                    priceDetailDivElementForCheckout();
+                                <?php
+                                    $utility = new Utility();
+                                    $utility->priceDetailDivElementForCheckout();
                                 ?>
                             </div>
                             <br>
