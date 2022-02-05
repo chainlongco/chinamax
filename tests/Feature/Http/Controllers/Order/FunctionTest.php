@@ -388,11 +388,11 @@ class FunctionTest extends TestCase
     }
 }
 
-class OrderControllerTest11 extends OrderController
+/*class OrderControllerTest11 extends OrderController
 {
     public function loadOrderToSession($orderId)
     {
         return $this->loadOrderToSession($orderId);
     }
-}
+}*/
 
