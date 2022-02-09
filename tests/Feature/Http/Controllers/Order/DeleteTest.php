@@ -62,6 +62,27 @@ class DeleteTest extends TestCase
         $response = $this->post('/login', ['email'=>'shyuadmin@yahoo.com', 'password'=>'12345678']);
         $response->assertStatus(200);
 
-        
+        // Log in as administrator to access order
+        $response = $this->get('/order/delete/10');
+        $response->assertStatus(302);   // not 302 means it can be accessed
+        $response->assertRedirect('/order');
+    }
+
+    public function test_orderDelete_success()
+    {
+        $response = $this->get('/login');
+        $response = $this->post('/login', ['email'=>'shyuadmin@yahoo.com', 'password'=>'12345678']);
+        $response->assertStatus(200);
+
+        $order = DB::table('orders')->where('id', 1)->first();
+        $this->assertEquals("13.77", $order->total);
+
+        // Log in as administrator to access order
+        $response = $this->get('/order/delete/1');
+        $response->assertStatus(302);   // not 302 means it can be accessed
+        $response->assertRedirect('/order');
+
+        $order = DB::table('orders')->where('id', 1)->first();
+        $this->assertEquals(null, $order);
     }
 }

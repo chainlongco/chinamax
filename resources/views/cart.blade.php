@@ -217,23 +217,33 @@
                     if (response.product['menu_id'] == 1) {
                         $(".modal-dialog").css("max-width", "25vw");
                         html = loadEditModalForAppetizers(response.serialNumber, response.product, response.quantity);
-                    } else if (response.product['menu_id'] == 2) {
+                    }
+
+                    if (response.product['menu_id'] == 2) {
                         $(".modal-dialog").css("max-width", "25vw");
                         if (response.drink['tablename'] == "") {    // For Water and Bottle Water
                             html = loadEditModalForDrinksWithoutSelectBox(response.serialNumber, response.product, response.quantity, response.drink, response.selectDrinks);
                         } else {
                             html = loadEditModalForDrinksWithSelectDrinksOrSelectSizes(response.serialNumber, response.product, response.quantity, response.drink, response.selectDrinks, response.selectDrink, response.sizeProducts);        
                         }
-                    } else if (response.product['menu_id'] == 4) {
+                    } 
+                    
+                    if (response.product['menu_id'] == 4) {
                         $(".modal-dialog").css("max-width", "25vw");
                         html = loadEditModalForSingleSideEntree(response.serialNumber, response.product, response.quantity, response.productSidesOrEntrees, response.sideOrEntree);
-                    } else if (response.product['menu_id'] == 3) {
+                    }
+                    
+                    if (response.product['menu_id'] == 3) {
                             $(".modal-dialog").css("max-width", "75vw");
                             // scrollable is set at chinamax.css -- .modal-body
                             html = loadEditModalForCombo(response.serialNumber, response.product, response.quantity, response.sides, response.chickenEntrees, response.beefEntrees, response.shrimpEntrees, response.combo, response.comboDrinks, response.fountains);
-                    } else {
-                        html = loadEditModal(response.serialNumber, response.product, response.quantity, response.subitems, response.totalPricePerProductItem);
                     }
+
+                    //} else {
+                        // Do not remember why I need this else. So, I commented out
+                        //html = loadEditModal(response.serialNumber, response.product, response.quantity, response.subitems, response.totalPricePerProductItem);
+                    //}
+                    
                     $("#editBodyFooter").html(html);
                     $("#editModal").show();
 

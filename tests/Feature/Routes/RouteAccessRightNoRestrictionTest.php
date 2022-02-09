@@ -137,7 +137,7 @@ class RouteAccessRightNoRestrictionTest extends TestCase
     {
         // Route::get('/order-edit', [OrderController::class, 'orderEditForPopup']);
         $response = $this->call('GET', '/order-edit');
-        $response->assertStatus(500);   // This means it passes the 302 (Redirect to /restricted) which is 'You do not have permission to access this page.'
+        $response->assertStatus(200);   // This means it passes the 302 (Redirect to /restricted) which is 'You do not have permission to access this page.'
     }
 
     public function test_get_order_updated()

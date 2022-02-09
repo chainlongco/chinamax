@@ -7,11 +7,14 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use App\Http\Menu;
-use App\Http\Product;
-use App\Http\Single;
+use App\Models\Menu;
+use App\Models\Product;
+use App\Models\Single;
+use App\Models\Customer;
+use App\Models\Order;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CustomerController;
+use App\Shared\Cart;
 
 class FunctionTest extends TestCase
 {
@@ -317,6 +320,22 @@ class FunctionTest extends TestCase
         DB::table('juices')->insert([
             ['name'=>'Orange'], ['name'=>'Kiwi'], ['name'=>'Watermelon'], ['name'=>'Strawberry']
         ]);
+
+        Customer::create([
+            'first_name'=>'Jacky',
+            'last_name'=>'Shyu',
+            'email'=>'shyujacky@yahoo.com',
+            'password'=>'$2y$04$hP7s3NfMq3Ne7r83MDokIeu0KzX1u8NZIiWRs1RjJDUZgRD2SuUOm',
+            'phone'=>'1234567890',
+            'address1'=>'100 Centry Road', 
+            'address2'=>'Suite 100', 
+            'city'=>'Grapevine', 
+            'state'=>'TX', 'zip'=>'76051', 
+            'card_number'=>'1234567890123456', 
+            'expired'=>'1212', 
+            'cvv'=>'123'
+        ]);
+
     }
 
     public function test_retrieveQuantityOfSubItems()
@@ -381,10 +400,487 @@ class FunctionTest extends TestCase
         $this->assertEquals(false, $quantitiesMatched);
     }
 
-    public function test_loadOrderToSession()
+    public function test_loadOrderToSession_Appetizers()
     {
+        Order::create([
+            'customer_id'=>1,
+            'quantity'=>3,
+            'total'=>'13.77',
+            'note'=>'Extra soy source'
+        ]);
+
+        DB::table('order_products')->insert([
+            'order_id'=>1,
+            'product_id'=>1,
+            'quantity'=>3,
+            'summary'=>'Egg Roll (5) (5 egg rolls $4.59)'
+        ]);
+
         $controller = new OrderControllerTest();
         $controller->loadOrderToSession(1);
+        $cart = new Cart(Session::get('cart'));
+        
+        $orderId = $cart->orderId;
+        $this->assertEquals(1, $orderId);
+
+        $menuId = $cart->items;
+        $this->assertEquals(1, $cart->items[1]['productItem']->menu_id);    // Appetizer
+        //dd($cart);
+    }
+
+    public function test_loadOrderToSession_Drinks()
+    {
+        Order::create([
+            'customer_id'=>1,
+            'quantity'=>1,
+            'total'=>'125',
+            'note'=>'Extra cup of ice'
+        ]);
+
+        DB::table('order_products')->insert([
+            'order_id'=>1,
+            'product_id'=>6,
+            'quantity'=>1,
+            'summary'=>'Canned Soft Drink : Soft drink canned Flaver: Coke $1.25'
+        ]);
+
+        DB::table('order_drinks')->insert([
+            'order_product_id'=>1,
+            'drink_id'=>3,
+            'type_id'=>1,
+        ]);
+
+        $controller = new OrderControllerTest();
+        $controller->loadOrderToSession(1);
+        $cart = new Cart(Session::get('cart'));
+        
+        $orderId = $cart->orderId;
+        $this->assertEquals(1, $orderId);
+
+        $menuId = $cart->items;
+        $this->assertEquals(2, $cart->items[1]['productItem']->menu_id);    // Drinks
+        //dd($cart);
+    }
+
+    public function test_loadOrderToSession_Singles_Side()  // retrieveSubItemsForSingle method
+    {
+        Order::create([
+            'customer_id'=>1,
+            'quantity'=>1,
+            'total'=>'2.49',
+            'note'=>'Mild spice'
+        ]);
+
+        DB::table('order_products')->insert([
+            'order_id'=>1,
+            'product_id'=>17,
+            'quantity'=>1,
+            'summary'=>'Small Side : Small size of side Side: Fried Rice $2.49'
+        ]);
+        
+        DB::table('order_sides')->insert([
+            'order_product_id'=>1,
+            'side_id'=>1,
+        ]);
+
+        $controller = new OrderControllerTest();
+        $controller->loadOrderToSession(1);
+        $cart = new Cart(Session::get('cart'));
+        
+        $orderId = $cart->orderId;
+        $this->assertEquals(1, $orderId);
+
+        $menuId = $cart->items;
+        $this->assertEquals(4, $cart->items[1]['productItem']->menu_id);    // Singles: Sides
+        //dd($cart);
+    }
+
+    public function test_loadOrderToSession_Singles_Entree()    // Also test retrieveSubItemsForSingle method
+    {
+        Order::create([
+            'customer_id'=>1,
+            'quantity'=>1,
+            'total'=>'2.49',
+            'note'=>'Mild spice'
+        ]);
+
+        DB::table('order_products')->insert([
+            'order_id'=>1,
+            'product_id'=>20,
+            'quantity'=>1,
+            'summary'=>'Small Chicken : Small size of chicken entree Entree: BBQ Chicken $5.49'
+        ]);
+        
+        DB::table('order_entrees')->insert([
+            'order_product_id'=>1,
+            'entree_id'=>1,
+        ]);
+
+        $controller = new OrderControllerTest();
+        $controller->loadOrderToSession(1);
+        $cart = new Cart(Session::get('cart'));
+        
+        $orderId = $cart->orderId;
+        $this->assertEquals(1, $orderId);
+
+        $menuId = $cart->items;
+        $this->assertEquals(4, $cart->items[1]['productItem']->menu_id);    // Singles: Entrees
+        //dd($cart);
+    }
+
+    public function test_loadOrderToSession_Combo_Small_Platter()   // Also test retrieveSubItemsForCombos method
+    {
+        Order::create([
+            'customer_id'=>1,
+            'quantity'=>1,
+            'total'=>'6.40',
+            'note'=>'Mild spice'
+        ]);
+
+        DB::table('order_products')->insert([
+            'order_id'=>1,
+            'product_id'=>13,
+            'quantity'=>1,
+            'summary'=>'Small Platter : Any 1 side & 1 entree Side: Fried Rice(1) Entree: BBQ Chicken(1) $6.40'
+        ]);
+        
+        DB::table('order_sub_sides')->insert([
+            'order_product_id'=>1,
+            'side_id'=>1,
+            'quantity'=>1
+        ]);
+
+        DB::table('order_sub_entrees')->insert([
+            'order_product_id'=>1,
+            'entree_id'=>1,
+            'quantity'=>1
+        ]);
+
+        $controller = new OrderControllerTest();
+        $controller->loadOrderToSession(1);
+        $cart = new Cart(Session::get('cart'));
+        
+        $orderId = $cart->orderId;
+        $this->assertEquals(1, $orderId);
+
+        $menuId = $cart->items;
+        $this->assertEquals(3, $cart->items[1]['productItem']->menu_id);    // Combo
+        //dd($cart);
+    }
+
+    public function test_loadOrderToSession_Combo_kids_meal_with_soft_drink()   // Also test retrieveSubItemsForCombos method
+    {
+        Order::create([
+            'customer_id'=>1,
+            'quantity'=>1,
+            'total'=>'4.99',
+            'note'=>'No ice'
+        ]);
+
+        DB::table('order_products')->insert([
+            'order_id'=>1,
+            'product_id'=>16,
+            'quantity'=>1,
+            'summary'=>'Kids Meal : One small drink, one side and one entree Side: Fried Rice(1) Entree: BBQ Chicken(1) Drink: Small Drink - Coke $4.99'
+        ]);
+        
+        DB::table('order_sub_sides')->insert([
+            'order_product_id'=>1,
+            'side_id'=>1,
+            'quantity'=>1
+        ]);
+
+        DB::table('order_sub_entrees')->insert([
+            'order_product_id'=>1,
+            'entree_id'=>1,
+            'quantity'=>1
+        ]);
+
+        DB::table('order_sub_drinks')->insert([
+            'order_product_id'=>1,
+            'drink_id'=>1,
+            'type_id'=>1,
+            'quantity'=>1
+        ]);
+
+        $controller = new OrderControllerTest();
+        $controller->loadOrderToSession(1);
+        $cart = new Cart(Session::get('cart'));
+        
+        $orderId = $cart->orderId;
+        $this->assertEquals(1, $orderId);
+
+        $menuId = $cart->items;
+        $this->assertEquals(3, $cart->items[1]['productItem']->menu_id);    // Combo
+        //dd($cart);
+    }
+
+    public function test_loadOrderToSession_Combo_kids_meal_with_bottle_water()   // Also test retrieveSubItemsForCombos method
+    {
+        Order::create([
+            'customer_id'=>1,
+            'quantity'=>1,
+            'total'=>'4.99',
+            'note'=>'No ice'
+        ]);
+
+        DB::table('order_products')->insert([
+            'order_id'=>1,
+            'product_id'=>16,
+            'quantity'=>1,
+            'summary'=>'Kids Meal : One small drink, one side and one entree Side: Fried Rice(1) Entree: BBQ Chicken(1) Drink: Small Drink - Coke $4.99'
+        ]);
+        
+        DB::table('order_sub_sides')->insert([
+            'order_product_id'=>1,
+            'side_id'=>1,
+            'quantity'=>1
+        ]);
+
+        DB::table('order_sub_entrees')->insert([
+            'order_product_id'=>1,
+            'entree_id'=>1,
+            'quantity'=>1
+        ]);
+
+        DB::table('order_sub_drinks')->insert([
+            'order_product_id'=>1,
+            'drink_id'=>2,
+            'quantity'=>1
+        ]);
+
+        $controller = new OrderControllerTest();
+        $controller->loadOrderToSession(1);
+        $cart = new Cart(Session::get('cart'));
+        
+        $orderId = $cart->orderId;
+        $this->assertEquals(1, $orderId);
+
+        $menuId = $cart->items;
+        $this->assertEquals(3, $cart->items[1]['productItem']->menu_id);    // Combo
+        //dd($cart);
+    }
+
+    public function test_orderUpdated()
+    {
+        $response = $this->call('GET', '/order-added', ['productId'=>1, 'quantity'=>1, 'subItems'=>'']);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/order-updated', ['serialNumber'=>1, 'productId'=>1, 'quantity'=>2, 'subItmes'=>'']);
+        $response->assertStatus(200);
+        $cart = new Cart(Session::get('cart'));
+        $this->assertEquals(2, $cart->totalQuantity);
+    }
+
+    public function test_orderEditForPopup_appetizers()
+    {
+        $response = $this->call('GET', '/order-added', ['productId'=>1, 'quantity'=>1, 'subItems'=>'']);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/order-edit', ['serialNumber'=>1]);
+        $response->assertStatus(200);
+        //dd($response->json()['serialNumber']);
+        $this->assertEquals(1, $response->json()['serialNumber']);
+        $this->assertEquals('Egg Roll (5)', $response->json()['product']['name']);
+        $this->assertEquals(1, $response->json()['quantity']);
+    }
+
+    public function test_orderEditForPopup_drinks_water()
+    {
+        $response = $this->call('GET', '/order-added', ['productId'=>4, 'quantity'=>1, 'subItems'=>'']);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/order-edit', ['serialNumber'=>1]);
+        $response->assertStatus(200);
+        //dd($response->json()['serialNumber']);
+        $this->assertEquals(1, $response->json()['serialNumber']);
+        $this->assertEquals('Water', $response->json()['product']['name']);
+        $this->assertEquals(1, $response->json()['quantity']);
+    }
+
+    public function test_orderEditForPopup_drinks_canned_soft_drink()
+    {
+        $subItems = array();
+        $drinkItem = array('category'=>'DrinkOnly', 'id'=>3, 'quantity'=>1, 'selectBoxId'=>1);
+        array_push($subItems, $drinkItem);
+        $response = $this->call('GET', '/order-added', ['productId'=>6, 'quantity'=>1, 'subItems'=>json_encode($subItems)]);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/order-edit', ['serialNumber'=>1]);
+        $response->assertStatus(200);
+        //dd($response->json());
+        $this->assertEquals(1, $response->json()['serialNumber']);
+        $this->assertEquals('Canned Soft Drink', $response->json()['product']['name']);
+        $this->assertEquals(1, $response->json()['quantity']);
+        $this->assertEquals('Canned Drink', $response->json()['drink']['name']);
+        $this->assertEquals('Coke', $response->json()['selectDrink']['name']);
+        $this->assertEquals(1, count($response->json()['sizeProducts']));
+    }
+
+    public function test_orderEditForPopup_drinks_small_fountain_soft_drink()
+    {
+        $subItems = array();
+        $drinkItem = array('category'=>'DrinkOnly', 'id'=>4, 'quantity'=>1, 'selectBoxId'=>1);
+        array_push($subItems, $drinkItem);
+        $response = $this->call('GET', '/order-added', ['productId'=>7, 'quantity'=>1, 'subItems'=>json_encode($subItems)]);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/order-edit', ['serialNumber'=>1]);
+        $response->assertStatus(200);
+        //dd($response->json());
+        $this->assertEquals(1, $response->json()['serialNumber']);
+        $this->assertEquals('Fountain Soft Drink Small', $response->json()['product']['name']);
+        $this->assertEquals(1, $response->json()['quantity']);
+        $this->assertEquals('Fountain Drink', $response->json()['drink']['name']);
+        $this->assertEquals('Coke', $response->json()['selectDrink']['name']);
+        $this->assertEquals(3, count($response->json()['sizeProducts']));
+    }
+
+    public function test_orderEditForPopup_singles_side()
+    {
+        $subItems = array();
+        $sideItem = array('category'=>'Side', 'id'=>1, 'quantity'=>1);
+        array_push($subItems, $sideItem);
+        $response = $this->call('GET', '/order-added', ['productId'=>17, 'quantity'=>1, 'subItems'=>json_encode($subItems)]);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/order-edit', ['serialNumber'=>1]);
+        $response->assertStatus(200);
+        //dd($response->json());
+        $this->assertEquals(1, $response->json()['serialNumber']);
+        $this->assertEquals('Small Side', $response->json()['product']['name']);
+        $this->assertEquals(1, $response->json()['quantity']);
+        //dd($response->json()['productSidesOrEntrees']);
+        $this->assertEquals(3, count($response->json()['productSidesOrEntrees']));
+        $this->assertEquals('Fried Rice', $response->json()['sideOrEntree']['name']);
+    }
+
+    public function test_orderEditForPopup_singles_entree_chicken()
+    {
+        $subItems = array();
+        $entreeItem = array('category'=>'Entree', 'id'=>1, 'quantity'=>1);
+        array_push($subItems, $entreeItem);
+        $response = $this->call('GET', '/order-added', ['productId'=>20, 'quantity'=>1, 'subItems'=>json_encode($subItems)]);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/order-edit', ['serialNumber'=>1]);
+        $response->assertStatus(200);
+        //dd($response->json());
+        $this->assertEquals(1, $response->json()['serialNumber']);
+        $this->assertEquals('Small Chicken', $response->json()['product']['name']);
+        $this->assertEquals(1, $response->json()['quantity']);
+        //dd($response->json()['productSidesOrEntrees']);
+        $this->assertEquals(3, count($response->json()['productSidesOrEntrees']));
+        $this->assertEquals('BBQ Chicken', $response->json()['sideOrEntree']['name']);
+    }
+
+    public function test_orderEditForPopup_singles_entree_beef()
+    {
+        $subItems = array();
+        $entreeItem = array('category'=>'Entree', 'id'=>10, 'quantity'=>1);
+        array_push($subItems, $entreeItem);
+        $response = $this->call('GET', '/order-added', ['productId'=>23, 'quantity'=>1, 'subItems'=>json_encode($subItems)]);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/order-edit', ['serialNumber'=>1]);
+        $response->assertStatus(200);
+        //dd($response->json());
+        $this->assertEquals(1, $response->json()['serialNumber']);
+        $this->assertEquals('Small Beef', $response->json()['product']['name']);
+        $this->assertEquals(1, $response->json()['quantity']);
+        //dd($response->json()['productSidesOrEntrees']);
+        $this->assertEquals(3, count($response->json()['productSidesOrEntrees']));
+        $this->assertEquals('Beef Broccoli', $response->json()['sideOrEntree']['name']);
+    }
+
+    public function test_orderEditForPopup_singles_entree_shrimp()
+    {
+        $subItems = array();
+        $entreeItem = array('category'=>'Entree', 'id'=>13, 'quantity'=>1);
+        array_push($subItems, $entreeItem);
+        $response = $this->call('GET', '/order-added', ['productId'=>26, 'quantity'=>1, 'subItems'=>json_encode($subItems)]);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/order-edit', ['serialNumber'=>1]);
+        $response->assertStatus(200);
+        //dd($response->json());
+        $this->assertEquals(1, $response->json()['serialNumber']);
+        $this->assertEquals('Small Shrimp', $response->json()['product']['name']);
+        $this->assertEquals(1, $response->json()['quantity']);
+        //dd($response->json()['productSidesOrEntrees']);
+        $this->assertEquals(3, count($response->json()['productSidesOrEntrees']));
+        $this->assertEquals('Broccoli Shrimp', $response->json()['sideOrEntree']['name']);
+    }
+
+    public function test_orderEditForPopup_combo_party_tray()
+    {
+        $subItems = array();
+        $sideItem = array('category'=>'Side', 'id'=>1, 'quantity'=>1);
+        array_push($subItems, $sideItem);
+        $sideItem = array('category'=>'Side', 'id'=>2, 'quantity'=>2);
+        array_push($subItems, $sideItem);
+        $entreeItem = array('category'=>'Entree', 'id'=>1, 'quantity'=>1);
+        array_push($subItems, $entreeItem);
+        $entreeItem = array('category'=>'Entree', 'id'=>10, 'quantity'=>1);
+        array_push($subItems, $entreeItem);
+        $entreeItem = array('category'=>'Entree', 'id'=>13, 'quantity'=>1);
+        array_push($subItems, $entreeItem);
+        $response = $this->call('GET', '/order-added', ['productId'=>15, 'quantity'=>1, 'subItems'=>json_encode($subItems)]);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/order-edit', ['serialNumber'=>1]);
+        $response->assertStatus(200);
+        //dd($response->json());
+        $this->assertEquals(1, $response->json()['serialNumber']);
+        $this->assertEquals('Party Tray', $response->json()['product']['name']);
+        $this->assertEquals(1, $response->json()['quantity']);
+        $this->assertEquals(3, count($response->json()['sides']));
+        $this->assertEquals(9, count($response->json()['chickenEntrees']));
+        $this->assertEquals(3, count($response->json()['beefEntrees']));
+        $this->assertEquals(2, count($response->json()['shrimpEntrees']));
+        $this->assertEquals(3, $response->json()['combo']['side']);
+        $this->assertEquals(3, $response->json()['combo']['entree']);
+        $this->assertEquals(2, count($response->json()['comboDrinks']));
+        $this->assertEquals(8, count($response->json()['fountains']));
+        $this->assertEquals(5, count($response->json()['subItems']));
+        $this->assertEquals('Fried Rice', $response->json()['subItems'][0]['item']['name']);
+        $this->assertEquals('Chow Mein', $response->json()['subItems'][1]['item']['name']);
+        $this->assertEquals('BBQ Chicken', $response->json()['subItems'][2]['item']['name']);
+        $this->assertEquals('Beef Broccoli', $response->json()['subItems'][3]['item']['name']);
+        $this->assertEquals('Broccoli Shrimp', $response->json()['subItems'][4]['item']['name']);
+    }
+    
+    public function test_orderEditForPopup_cart_is_empty()
+    {
+        $response = $this->call('GET', '/order-edit', ['serialNumber'=>1]);
+        $response->assertStatus(200);
+        //dd($response->json());
+    }
+
+    public function test_get_cart_note_with_existing_note()
+    {
+        // Route::get('/cart-note', [OrderController::class, 'cartNote']);
+        $response = $this->call('GET', '/cart-note', ['note'=>'Mild spicy']);
+        $response->assertStatus(200);
+        $note = $response->json()['note'];
+        $this->assertEquals('Mild spicy', $note);
+
+        $response = $this->call('GET', '/cart-note', ['note'=>'Mild spicy updated']);
+        $response->assertStatus(200);
+        $note = $response->json()['note'];
+        $this->assertEquals('Mild spicy updated', $note);
+    }
+
+    public function test_cartQuantityUpdated_with_appetizer()
+    {
+        $response = $this->call('GET', '/order-added', ['productId'=>1, 'quantity'=>1, 'subItems'=>'']);
+        $response->assertStatus(200);
+
+        $response = $this->call('GET', '/cart-quantity', ['serialNumber'=>1, 'quantity'=>2]);
+        //dd($response->json()['priceDetail']);
+        //dd($response->json()['items']);
+        $this->assertEquals(2, $response->json()['priceDetail']['totalQuantity']);
+        $this->assertEquals(2, $response->json()['items'][1]['quantity']);
     }
 }
 

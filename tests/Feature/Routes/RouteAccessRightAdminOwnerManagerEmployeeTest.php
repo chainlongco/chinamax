@@ -52,7 +52,7 @@ class RouteAccessRightAdminOwnerManagerEmployeeTest extends TestCase
             'last_name'=>'Shyu',
             'email'=>'shyujacky@yahoo.com',
             'password'=>'$2y$04$hP7s3NfMq3Ne7r83MDokIeu0KzX1u8NZIiWRs1RjJDUZgRD2SuUOm',
-            'phone'=>'1234567890',
+            'phone'=>'12345',       // also test phone number is not 10 digits -- $phoneNumber = $order->phone; in listOrders method of OrderController.php
             'address1'=>'100 Centry Road', 
             'address2'=>'Suite 100', 
             'city'=>'Grapevine', 

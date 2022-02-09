@@ -7,9 +7,9 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use App\Http\Menu;
-use App\Http\Product;
-use App\Http\Single;
+use App\Models\Menu;
+use App\Models\Product;
+use App\Models\Single;
 use App\Http\Controllers\OrderController;
 
 class AddOrderTest extends TestCase
@@ -316,6 +316,27 @@ class AddOrderTest extends TestCase
         DB::table('juices')->insert([
             ['name'=>'Orange'], ['name'=>'Kiwi'], ['name'=>'Watermelon'], ['name'=>'Strawberry']
         ]);
+    }
+
+    public function test_add_appetizer_with_existing_order_for_testing_session_has_cart()
+    {
+        $productId = 1;
+        $quantity = 2;
+        $subItems = array();
+
+        $expect = '~<span id="cart_count" class="text-warning bg-light">2</span>~';
+        $this->expectOutputRegex($expect);
+        $response = $this->call('GET', '/order-added', ['productId'=>$productId, 'quantity'=>$quantity, 'subItems'=>json_encode($subItems)]);
+        $response->assertStatus(200);
+
+        $productId = 2;
+        $quantity = 1;
+        $subItems = array();
+
+        $expect = '~<span id="cart_count" class="text-warning bg-light">3</span>~';
+        $this->expectOutputRegex($expect);
+        $response = $this->call('GET', '/order-added', ['productId'=>$productId, 'quantity'=>$quantity, 'subItems'=>json_encode($subItems)]);
+        $response->assertStatus(200);
     }
 
     public function test_add_appetizer()
@@ -1023,6 +1044,24 @@ class AddOrderTest extends TestCase
         $this->assertEquals('One small drink, one side and one entree', $item['productItem']->description);
         $this->assertEquals('KidsMeal.jpg', $item['productItem']->gallery);
         $this->assertEquals('', $item['productItem']->category);
+    }
+
+    public function test_add_regular_platter_with_wrong_side_quantity()
+    {
+        $productId = 13;
+        $quantity = 2;
+        $subItems = array();
+        $sideItem = array('category'=>'Side', 'id'=>1, 'quantity'=>2);  // 'quantity' should be 1
+        array_push($subItems, $sideItem);
+        $entreeItem = array('category'=>'Entree', 'id'=>1, 'quantity'=>2);
+        array_push($subItems, $entreeItem);
+
+        $response = $this->call('GET', '/order-added', ['productId'=>$productId, 'quantity'=>$quantity, 'subItems'=>json_encode($subItems)]);
+        $response->assertStatus(200);
+        $status = $response->json()['status'];
+        $this->assertEquals(0, $status);
+        $message = $response->json()['message'];
+        $this->assertEquals('Please select side and entree before you add order to cart.', $message);
     }
 
     public function test_retrieveQuantityOfSubItems()
