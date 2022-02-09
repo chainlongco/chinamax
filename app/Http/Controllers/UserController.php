@@ -78,9 +78,8 @@ class UserController extends Controller
             if ($user->save()){
                 return response()->json(['status'=>1, 'msg'=>'New User has been successfully registered. Please contact Administrator to assign this new user for access control rights like Order History, Customer Information and User Information.']);
             }
-        } else {
-            return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
         }
+        return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
         //return redirect(route('auth.login'))->with('success', 'Model added successfully');
         //return back()->with('success_message', 'Custom Text Updated!');
     }

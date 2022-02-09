@@ -177,6 +177,36 @@ class EditTest extends TestCase
         $message = $content->msg;
         $this->assertEquals('Update failed', $message);
     }
+
+    public function test_update_exist_customer_for_expired()
+    {
+        // Log in as administrator to access user list
+        $response = $this->post('/login', ['email'=>'shyuadmin@yahoo.com', 'password'=>'12345678']);
+        $response->assertStatus(200);
+
+        $response = $this->call('POST', route('customer-submit'), ['id'=>1, 'firstname'=>'Jacky', 'lastname'=>'Shyu', 'phone'=>'2146808281', 'email'=>'shyujacky@gmail.com', 'address1'=>'100 Centry Road updated', 'address2'=>'Suite 100 updated', 'city'=>'Grapevine updated', 'state'=>'CA', 'zip'=>'76051', 'card'=>'1234567890123457', 'expired'=>'', 'cvv'=>'111']);
+        $response->assertStatus(200);
+        
+        $status = $response->json()['status'];
+        $this->assertEquals(1, $status);
+
+        $message = $response->json()['msg'];
+        $this->assertEquals('Existing customer has been successfully updated.', $message);
+
+        $customer = DB::table('customers')->where('email', 'shyujacky@gmail.com')->first();
+        $this->assertEquals('Jacky', $customer->first_name);
+        $this->assertEquals('Shyu', $customer->last_name);
+        $this->assertEquals('2146808281', $customer->phone);
+        $this->assertEquals('shyujacky@gmail.com', $customer->email);
+        $this->assertEquals('100 Centry Road updated', $customer->address1);
+        $this->assertEquals('Suite 100 updated', $customer->address2);
+        $this->assertEquals('Grapevine updated', $customer->city);
+        $this->assertEquals('CA', $customer->state);
+        $this->assertEquals('76051', $customer->zip);
+        $this->assertEquals('1234567890123457', $customer->card_number);
+        $this->assertEquals(null, $customer->expired);
+        $this->assertEquals('111', $customer->cvv);
+    } 
 }
 
 class CustomerControllerTestForEdit extends CustomerController

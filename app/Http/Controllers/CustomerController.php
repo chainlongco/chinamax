@@ -71,9 +71,9 @@ class CustomerController extends Controller
             if ($customer->save()){
                 return response()->json(['status'=>1, 'msg'=>'New Customer has been successfully signed up.']);
             }
-        } else {
-            return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);
-        }  
+        }
+        
+        return response()->json(['status'=>0, 'error'=>$validator->errors()->toArray()]);  
     }
 
     public function customerAdd()
@@ -176,9 +176,8 @@ class CustomerController extends Controller
                 //return response()->json(['status'=>1, 'msg'=>'Customer: ' .$firstName .' ' .$lastName .' has been successfully deleted.']);
                 return redirect('customer/list');   // This is not using AJAX call which is different from userDelete(ajax call)
             }
-        } else {
-            return redirect('customer/list');
-        } 
+        }
+        return redirect('customer/list'); 
     }
 
     public function customerEdit($id) {
@@ -211,11 +210,9 @@ class CustomerController extends Controller
         $html .=        '<tbody>';
                             if (!empty($customers)):
                                 foreach($customers as $customer):
-                                    $phoneNumber = "";
+                                    $phoneNumber = $customer->phone;
                                     if( preg_match('/^(\d{3})(\d{3})(\d{4})$/', $customer->phone,  $matches)) {
                                         $phoneNumber = $matches[1] . '-' .$matches[2] . '-' . $matches[3];
-                                    } else {
-                                        $phoneNumber = $customer->phone;
                                     }
         $html .=        	        '<tr>';
         $html .=                        '<td class="align-middle">' .$customer->first_name .'</td>';
