@@ -40,7 +40,7 @@
                         ->where('role_users.user_id', $user->id)
                         ->get();
                     foreach ($roles as $role) {
-                        if ($role->name == "Admin" || $role->name == "Owner" || $role->name == "Manager"){
+                        if ($role->name == "Admin" || $role->name == "Manager"){
                             $canAccessCustomerOrOrder = true;
                             break;
                         }

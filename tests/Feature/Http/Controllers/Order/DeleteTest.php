@@ -23,13 +23,11 @@ class DeleteTest extends TestCase
         parent::setUp();
 
         $adminRole = Role::create(['name'=>'Admin', 'description'=>'Administrator role']);
-        $ownerRole = Role::create(['name'=>'Owner', 'description'=>'Owner role']);
         $managerRole = Role::create(['name'=>'Manager', 'description'=>'Manager role']);
         $employeeRole = Role::create(['name'=>'Employee', 'description'=>'Employee role']);  
 
         $user = User::create(['name'=>'Admin Shyu', 'email'=>'shyuadmin@yahoo.com', 'password'=>Hash::make('12345678')]);
         $user->roles()->attach($adminRole);
-        $user->roles()->attach($ownerRole);
         $user->roles()->attach($managerRole);
         $user->roles()->attach($employeeRole);
 

@@ -26,17 +26,14 @@ class IsAdminTest extends TestCase
         parent::setUp();
 
         $adminRole = Role::create(['name'=>'Admin','description'=>'Administrator role']);
-        $ownerRole = Role::create(['name'=>'Owner','description'=>'Owner role']);
         $managerRole = Role::create(['name'=>'Manager','description'=>'Manager role']);
         $employeeRole = Role::create(['name'=>'Employee','description'=>'Employee role']);
 
         $adminUser = User::create(['name'=>'Admin Only', 'email'=>'shyuadmin@yahoo.com', 'password'=>Hash::make('12345678')]);
-        $ownerUser = User::create(['name'=>'Owner Only', 'email'=>'shyuowner@yahoo.com', 'password'=>Hash::make('12345678')]);
         $managerUser = User::create(['name'=>'Manager Only', 'email'=>'shyumanager@yahoo.com', 'password'=>Hash::make('12345678')]);
         $employeeUser = User::create(['name'=>'Employee Only', 'email'=>'shyuemployee@yahoo.com', 'password'=>Hash::make('12345678')]);
         
         $adminUser->roles()->attach($adminRole);
-        $ownerUser->roles()->attach($ownerRole);
         $managerUser->roles()->attach($managerRole);
         $employeeUser->roles()->attach($employeeRole);
     }

@@ -23,10 +23,6 @@ class EditTest extends TestCase
             'description'=>'Administrator role'
         ]);
         Role::create([
-            'name'=>'Owner',
-            'description'=>'Owner role'
-        ]);
-        Role::create([
             'name'=>'Manager',
             'description'=>'Manager role'
         ]);
@@ -49,7 +45,7 @@ class EditTest extends TestCase
         $response = $this->post('/login', ['email'=>'shyuadmin@yahoo.com', 'password'=>'12345678']);
         $response->assertStatus(200);
 
-        $response = $this->call('GET', '/user-edit', ['id'=>'1', 'admin'=>'true', 'owner'=>'true', 'manager'=>'true', 'employee'=>'true']);
+        $response = $this->call('GET', '/user-edit', ['id'=>'1', 'admin'=>'true', 'manager'=>'true', 'employee'=>'true']);
         $message = $response->json()['msg'];
         $this->assertEquals('The roles of Admin Shyu have been updated successfully.', $message);
     }

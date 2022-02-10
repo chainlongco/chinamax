@@ -57,15 +57,15 @@ Route::get('/restricted', function(){
 
 Route::get('/order', function(){
     return view('myorders');
-})->middleware('isEmployee');   // This means employee, manager, owner and admin can access
+})->middleware('isEmployee');   // This means employee, manager and admin can access
 
-Route::group(['middleware' => 'isEmployee'], function () {  // This means employee, manager, owner and admin can access
+Route::group(['middleware' => 'isEmployee'], function () {  // This means employee, manager and admin can access
     Route::get('orders-list', [OrderController::class, 'listOrders']);
     Route::get('/order/delete/{id}', [OrderController::class, 'orderDelete']);
     Route::get('/order/edit/{id}', [OrderController::class, 'orderEdit']);
 });
 
-Route::group(['middleware' => 'isManager'], function () {   // This means manager, owner and admin can access the following routes
+Route::group(['middleware' => 'isManager'], function () {   // This means manager and admin can access the following routes
     Route::get('/customer/list', [CustomerController::class, 'customerList'])->name('customer-list');
     Route::get('/customer/add', [CustomerController::class, 'customerAdd'])->name('customer-add');
     Route::post('/customer/add', [CustomerController::class, 'createUpdateCustomer'])->name('customer-submit');

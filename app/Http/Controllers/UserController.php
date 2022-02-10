@@ -87,7 +87,6 @@ class UserController extends Controller
     public function userEdit(Request $request)
     {
         $adminRole = DB::table('roles')->select('id')->where('name', 'Admin')->first();
-        $ownerRole = DB::table('roles')->select('id')->where('name', 'Owner')->first();
         $managerRole = DB::table('roles')->select('id')->where('name', 'Manager')->first();
         $employeeRole = DB::table('roles')->select('id')->where('name', 'Employee')->first();
         $user = User::find($request->id);
@@ -96,9 +95,6 @@ class UserController extends Controller
             $user->roles()->detach();
             if ($request->admin == 'true') {
                 $user->roles()->attach($adminRole);
-            }
-            if ($request->owner == 'true') {
-                $user->roles()->attach($ownerRole);
             }
             if ($request->manager == 'true') {
                 $user->roles()->attach($managerRole);
@@ -150,12 +146,11 @@ class UserController extends Controller
                             <tr>
                                 <th rowspan="2" class="align-middle text-center">Name</th>
                                 <th rowspan="2" class="align-middle text-center">Email</th>
-                                <th colspan="4" class="text-center">Roles</th>
+                                <th colspan="3" class="text-center">Roles</th>
                                 <th rowspan="2" class="align-middle text-center">Actions</th>
                             </tr>
                             <tr>
                                 <th class="text-center">Admin</th>
-                                <th class="text-center">Owner</th>
                                 <th class="text-center">Manager</th>
                                 <th class="text-center">Employee</th>
                             </tr>
@@ -169,14 +164,11 @@ class UserController extends Controller
                                         ->where('role_users.user_id', $user->id)
                                         ->get();
                                     $admin = false;
-                                    $owner = false;
                                     $manager = false;
                                     $employee = false;
                                     foreach ($roles as $role):
                                         if ($role->name == "Admin") {
                                             $admin = true;
-                                        } else if ($role->name == "Owner") {
-                                            $owner = true;
                                         } else if ($role->name == "Manager") {
                                             $manager = true;
                                         } else if ($role->name == "Employee") {
@@ -187,7 +179,6 @@ class UserController extends Controller
         $html .=                        '<td class="align-middle">' .$user->name .'</td>';
         $html .=                        '<td class="align-middle">' .$user->email .'</td>';
         $html .=                        '<td class="align-middle text-center"><input type="checkbox" class="roleadmin" id="roleadmin' .$user->id .'" style="height:20px; width:20px;" ' .($admin?"checked":"") .'>'  .'</td>';
-        $html .=                        '<td class="align-middle text-center"><input type="checkbox" class="roleowner" id="roleowner' .$user->id .'" style="height:20px; width:20px;" ' .($owner?"checked":"") .'>'  .'</td>';
         $html .=                        '<td class="align-middle text-center"><input type="checkbox" class="rolemanager" id="rolemanager' .$user->id .'" style="height:20px; width:20px;" ' .($manager?"checked":"") .'>'  .'</td>';
         $html .=                        '<td class="align-middle text-center"><input type="checkbox" class="roleemployee" id="roleemployee' .$user->id .'" style="height:20px; width:20px;" ' .($employee?"checked":"") .'>'  .'</td>';
         $html .=                        '<td>';
@@ -206,7 +197,6 @@ class UserController extends Controller
                                 <th class="text-center">Name</th>
                                 <th class="text-center">Email</th>
                                 <th class="text-center">Admin</th>
-                                <th class="text-center">Owner</th>
                                 <th class="text-center">Manager</th>
                                 <th class="text-center">Employee</th>
                                 <th class="text-center">Actions</th>
@@ -241,7 +231,6 @@ class UserController extends Controller
                 </tr>
                 <tr>        
                     <th class="text-center">Admin</th>
-                    <th class="text-center">Owner</th>
                     <th class="text-center">Manager</th>
                     <th class="text-center">Employee</th>                  
                 </tr>
@@ -256,14 +245,11 @@ class UserController extends Controller
                                 ->where('role_users.user_id', $user->id)
                                 ->get();
                             $admin = false;
-                            $owner = false;
                             $manager = false;
                             $employee = false;
                             foreach ($roles as $role):
                                 if ($role->name == "Admin") {
                                     $admin = true;
-                                } else if ($role->name == "Owner") {
-                                    $owner = true;
                                 } else if ($role->name == "Manager") {
                                     $manager = true;
                                 } else if ($role->name == "Employee") {
@@ -275,7 +261,6 @@ class UserController extends Controller
                     <td class="align-middle"> {{ $user->name }} </td>
                     <td class="align-middle"> {{ $user->email }} </td>
                     <td class="align-middle text-center"><input type="checkbox" class="roleadmin" id="roleadmin{{ $user->id }}" style="height:20px; width:20px;" {{ ($admin?"checked":"") }}></td>
-                    <td class="align-middle text-center"><input type="checkbox" class="roleowner" id="roleowner{{ $user->id }}" style="height:20px; width:20px;" {{ ($owner?"checked":"") }}></td>
                     <td class="align-middle text-center"><input type="checkbox" class="rolemanager" id="rolemanager{{ $user->id }}" style="height:20px; width:20px;" {{ ($manager?"checked":"") }}></td>
                     <td class="align-middle text-center"><input type="checkbox" class="roleemployee" id="roleemployee{{ $user->id }}" style="height:20px; width:20px;" {{ ($employee?"checked":"") }}></td>
                     <td>
@@ -296,7 +281,6 @@ class UserController extends Controller
                     <th class="text-center">Name</th>
                     <th class="text-center">Email</th>
                     <th class="text-center">Admin</th>
-                    <th class="text-center">Owner</th>
                     <th class="text-center">Manager</th>
                     <th class="text-center">Employee</th>
                     <th class="text-center">Actions</th>

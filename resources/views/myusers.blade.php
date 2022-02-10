@@ -52,13 +52,12 @@
             e.preventDefault();
             var id = retrieveId("usersave", this.id);
             var admin = $('#roleadmin' + id).is(":checked");
-            var owner = $('#roleowner' + id).is(":checked");
             var manager = $('#rolemanager' + id).is(":checked");
             var employee = $('#roleemployee' + id).is(":checked");
             $.ajax({
                 type:'GET',
                 url:'/user-edit',
-                data: {'id':id, 'admin': admin, 'owner':owner, 'manager':manager, 'employee':employee},
+                data: {'id':id, 'admin': admin, 'manager':manager, 'employee':employee},
                 success: function(response) {
                     //swal(response.msg);
                     alert(response.msg);

@@ -20,18 +20,15 @@ class NavBarTest extends TestCase
         parent::setUp();
 
         $adminRole = Role::create(['name'=>'Admin', 'description'=>'Administrator role']);
-        $ownerRole = Role::create(['name'=>'Owner', 'description'=>'Owner role']);
         $managerRole = Role::create(['name'=>'Manager', 'description'=>'Manager role']);
         $employeeRole = Role::create(['name'=>'Employee', 'description'=>'Employee role']);  
 
         $adminUser = User::create(['name'=>'Admin', 'email'=>'shyuadmin@yahoo.com', 'password'=>Hash::make('12345678')]);
         $adminUser->roles()->attach($adminRole);
-        $adminUser->roles()->attach($ownerRole);
         $adminUser->roles()->attach($managerRole);
         $adminUser->roles()->attach($employeeRole);
         
         $ownerUser = User::create(['name'=>'Owner', 'email'=>'shyuowner@yahoo.com', 'password'=>Hash::make('12345678')]);
-        $ownerUser->roles()->attach($ownerRole);
         $ownerUser->roles()->attach($managerRole);
         $ownerUser->roles()->attach($employeeRole);
 

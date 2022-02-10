@@ -17,7 +17,6 @@ class UserSeeder extends Seeder
     public function run()
     {
         $adminRole = DB::table('roles')->select('id')->where('name', 'Admin')->first();
-        $ownerRole = DB::table('roles')->select('id')->where('name', 'Owner')->first();
         $managerRole = DB::table('roles')->select('id')->where('name', 'Manager')->first();
         $employeeRole = DB::table('roles')->select('id')->where('name', 'Employee')->first();
 
@@ -27,7 +26,6 @@ class UserSeeder extends Seeder
         $admin->password = Hash::make('1234');
         $admin->save();
         $admin->roles()->attach($adminRole);
-        $admin->roles()->attach($ownerRole);
         $admin->roles()->attach($managerRole);
         $admin->roles()->attach($employeeRole);
 
@@ -36,7 +34,6 @@ class UserSeeder extends Seeder
         $owner->email = "Owner@yahoo.com";
         $owner->password = Hash::make('1234');
         $owner->save();
-        $owner->roles()->attach($ownerRole);
         $owner->roles()->attach($managerRole);
         $owner->roles()->attach($employeeRole);
 

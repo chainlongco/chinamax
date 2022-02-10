@@ -56,12 +56,11 @@ class UserListTest extends TestCase
                             <tr>
                                 <th rowspan="2" class="align-middle text-center">Name</th>
                                 <th rowspan="2" class="align-middle text-center">Email</th>
-                                <th colspan="4" class="text-center">Roles</th>
+                                <th colspan="3" class="text-center">Roles</th>
                                 <th rowspan="2" class="align-middle text-center">Actions</th>
                             </tr>
                             <tr>
                                 <th class="text-center">Admin</th>
-                                <th class="text-center">Owner</th>
                                 <th class="text-center">Manager</th>
                                 <th class="text-center">Employee</th>
                             </tr>
@@ -85,12 +84,6 @@ class UserListTest extends TestCase
 
         $expected = '';
         $expected .= '~<td class="align-middle text-center"><input type="checkbox" class="roleadmin" id="roleadmin1" style="height:20px; width:20px;" checked></td>~';
-        $this->expectOutputRegex($expected);
-        $controller = new UserController();
-        $response = $controller->listUsers();
-
-        $expected = '';
-        $expected .= '~<td class="align-middle text-center"><input type="checkbox" class="roleowner" id="roleowner1" style="height:20px; width:20px;" ></td>~';
         $this->expectOutputRegex($expected);
         $controller = new UserController();
         $response = $controller->listUsers();
@@ -150,7 +143,6 @@ class UserListTest extends TestCase
                                 <th class="text-center">Name</th>
                                 <th class="text-center">Email</th>
                                 <th class="text-center">Admin</th>
-                                <th class="text-center">Owner</th>
                                 <th class="text-center">Manager</th>
                                 <th class="text-center">Employee</th>
                                 <th class="text-center">Actions</th>
