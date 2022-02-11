@@ -301,15 +301,17 @@
 
             $image = "";
 
-            if (($subItems == null) || count($subItems) == 0) {
+            /*if (($subItems == null) || count($subItems) == 0) {
                 return $image;
-            }
+            }*/
 
-            $keys = array_keys($subItems);
-            foreach ($keys as $key) {
-                $item = $subItems[$key]['item'];
-                $image = $item->gallery;
-            }
+            if (($subItems != null) && count($subItems) != 0) {
+                $keys = array_keys($subItems);
+                foreach ($keys as $key) {
+                    $item = $subItems[$key]['item'];
+                    $image = $item->gallery;
+                }
+            }    
 
             return $image;
         }
