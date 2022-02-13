@@ -320,9 +320,11 @@
                     var selectBoxId = $("#selectDrink" + drinkId).val();
                     var drinkArray = {'category':'DrinkOnly', 'id':drinkId, 'quantity':quantity, 'selectBoxId':selectBoxId};
                     subItems.push(drinkArray);
+                    subItems = JSON.stringify(subItems);    // We need to convert to JSON format when pass data from javascript to PHP.
                 } else {
                     var drinkArray = {'category':'DrinkOnly', 'id':drinkId, 'quantity':quantity, 'selectBoxId':null};
                     subItems.push(drinkArray);
+                    subItems = JSON.stringify(subItems);    // We need to convert to JSON format when pass data from javascript to PHP.
                 }
                 if ($("#productDrinks" + drinkId).val() != undefined) {
                     productId = $("#productDrinks" + drinkId).val();    // productId can be changed selecting different size
@@ -334,6 +336,7 @@
                 var subItems = [];
                 var sideOrEntreeArray = {'category':'Side', 'id':sideId, 'quantity':quantity};
                 subItems.push(sideOrEntreeArray);
+                subItems = JSON.stringify(subItems);    // We need to convert to JSON format when pass data from javascript to PHP.
             }
             if ($("#entreeId").val() != undefined) { // This is for Individual Entree
                 var entreeId = $("#entreeId").val();
@@ -341,9 +344,12 @@
                 var subItems = [];
                 var sideOrEntreeArray = {'category':'Entree', 'id':entreeId, 'quantity':quantity};
                 subItems.push(sideOrEntreeArray);
+                subItems = JSON.stringify(subItems);    // We need to convert to JSON format when pass data from javascript to PHP.
             }
             if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {    // This if for Combo
-                var subItems = retrieveSubItems();  // This method is under choiceitem.js
+                // retrieveSubItemsForCombo method is under choiceitem.js -- This return JSON format. Therefore, we need to convert back to array. 
+                // We need to convert to JSON format when pass data from javascript to PHP.
+                var subItems = (retrieveSubItemsForCombo());
             }
             updateCart(serialNumber, productId, quantity, subItems);
         });

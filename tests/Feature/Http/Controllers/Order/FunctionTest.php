@@ -666,7 +666,7 @@ class FunctionTest extends TestCase
         $response = $this->call('GET', '/order-added', ['productId'=>1, 'quantity'=>1, 'subItems'=>'']);
         $response->assertStatus(200);
 
-        $response = $this->call('GET', '/order-updated', ['serialNumber'=>1, 'productId'=>1, 'quantity'=>2, 'subItmes'=>'']);
+        $response = $this->call('GET', '/order-updated', ['serialNumber'=>1, 'productId'=>1, 'quantity'=>2, 'subItems'=>'']);
         $response->assertStatus(200);
         $cart = new Cart(Session::get('cart'));
         $this->assertEquals(2, $cart->totalQuantity);

@@ -91,7 +91,7 @@
             // Handle image for Individaul Side/Entree and Drink
             $image = $product->gallery;
             if ($image == "") {
-                $image = $this->retrieveImageFromSubItmes($subItems);
+                $image = $this->retrieveImageFromSubItems($subItems);
             }
 
             $element = "
@@ -163,7 +163,7 @@
             // Handle image for Individaul Side/Entree and Drink
             $image = $product->gallery;
             if ($image == "") {
-                $image = $this->retrieveImageFromSubItmes($subItems);
+                $image = $this->retrieveImageFromSubItems($subItems);
             }
 
             $element = " 
@@ -293,7 +293,7 @@
             return $extraCharge;
         }
 
-        protected function retrieveImageFromSubItmes($subItems) {
+        protected function retrieveImageFromSubItems($subItems) {
             // This case for Individual Side/Entree, it should just have one subItem in $subItems
                 //$category = $subItems[$key]['category'];  --> if this is Side
                 //$quantity = $subItems[$key]['quantity'];

@@ -100,7 +100,7 @@ function orderListElement(key, product, quantity, subItems, totalPricePerProduct
     // Handle image for Individaul Side/Entree and Drink
     var image = product['gallery'];
     if (image == "") {
-        image = retrieveImageFromSubItmes(subItems);
+        image = retrieveImageFromSubItems(subItems);
     }
 
     var html = '';
@@ -219,7 +219,7 @@ function retrieveExtraCharge(subItems)
     return extraCharge;
 }
 
-function retrieveImageFromSubItmes(subItems) {
+function retrieveImageFromSubItems(subItems) {
     // This case for Individual Side/Entree, it should just have one subItem in $subItems
         //category = value['category']; --> if this is Side
         //quantity = value['quantity'];

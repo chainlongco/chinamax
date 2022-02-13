@@ -208,7 +208,7 @@ $(document).ready(function(){
         var productId = retrieveId("addToCartForCombo", this.id);
         var quantityElementId = "#quantity" + productId;
         var quantity = $(quantityElementId).val();
-        var subItems = retrieveSubItems();
+        var subItems = retrieveSubItemsForCombo();  // It is converted to JSON format inside retrieveSubItemsForCombo method
         addNewItemToCart(productId, quantity, subItems);
     });    
     /* Combo End */
@@ -445,7 +445,7 @@ function retrieveChoices(menuId, mainMenuId) {
 }
 /* Menu End */
 
-/* Appetizer Start */
+/* Shared */
 function addNewItemToCart(productId, quantity, subItems) {
     $.ajax({
         type:'GET',
@@ -471,7 +471,7 @@ function addNewItemToCart(productId, quantity, subItems) {
         }
     });
 }
-/* Appetizer End */
+/* Shared */
 
 /* Side Start */
 function checkSelectedSideItem(sideId) {
@@ -536,7 +536,7 @@ function disableRestOfEntreeChoices() {
 /* Drink End */
 
 /* SubItem Start */
-function retrieveSubItems() {   // This is for Combo
+function retrieveSubItemsForCombo() {   // This is for Combo
     var subItems = [];
 
     // For side
@@ -590,7 +590,6 @@ function retrieveSubItems() {   // This is for Combo
             }
         });
     }
-
     return JSON.stringify(subItems);
 }    
 /* SubItem End */

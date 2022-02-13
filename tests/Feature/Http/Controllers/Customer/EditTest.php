@@ -168,11 +168,13 @@ class EditTest extends TestCase
         $statusCode = $response->getStatusCode();
         $this->assertEquals(200, $statusCode);
 
-        $content = json_decode($response->content());
-        $status = $content->status;
+        //$content = json_decode($response->content());
+        //$status = $content->status;
+        $status = $response->getData()->status;
         $this->assertEquals(2, $status);
         
-        $message = $content->msg;
+        //$message = $content->msg;
+        $message = $response->getData()->msg;
         $this->assertEquals('Update failed', $message);
     }
 
