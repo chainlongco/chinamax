@@ -22,6 +22,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/scheduler', function() {
+    Artisan::call('schedule:run');
+});
+
 Route::get('/login', [UserController::class, 'login'])->name('auth.login');
 Route::get('/register', [UserController::class, 'register'])->name('auth.register');
 Route::post('/login', [UserController::class, 'signin'])->name('login-submit');

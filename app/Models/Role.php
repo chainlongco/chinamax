@@ -21,9 +21,9 @@ class Role extends Model
         'description',
     ];
 
-    public function users()
+    /*public function users()
     {
         return $this->belongsToMany(User::class, 'role_users', 'role_id', 'user_id');
         //return $this->belongsToMany(User::class)->using(Role_User::class);
-    }
+    }*/
 }
