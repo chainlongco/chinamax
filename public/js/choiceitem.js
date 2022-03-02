@@ -127,13 +127,13 @@ $(document).ready(function(){
             sideMaxQuantity = $("#sideMaxQuantity").val();
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
         }
 
         // For Drink Only 
         if ($(".addToCartForDrinkOnly").text() != "") {
             var drinkId = retrieveId("quantityPlus", this.id);
-            enableAddToCartButtonForDrinkOnly(drinkId);
+            enableAddToCartButtonForDrinkOnly(drinkId, $);
         }
 
     });
@@ -176,13 +176,13 @@ $(document).ready(function(){
             sideMaxQuantity = $("#sideMaxQuantity").val();
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
         }
 
         // For Drink Only 
         if ($(".addToCartForDrinkOnly").text() != "") {
             var drinkId = retrieveId("quantityMinus", this.id);
-            enableAddToCartButtonForDrinkOnly(drinkId);
+            enableAddToCartButtonForDrinkOnly(drinkId, $);
         }
     });
 
@@ -276,7 +276,7 @@ $(document).ready(function(){
             choiceSelection.showSelected();
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
         }
     });
 
@@ -289,7 +289,7 @@ $(document).ready(function(){
             choiceSelection.showSelected();
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
         }
     });
     /* Side End */
@@ -321,7 +321,7 @@ $(document).ready(function(){
             choiceSelection.showSelected();
             sideMaxQuantity = $("#sideMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
         }
     });
 
@@ -334,7 +334,7 @@ $(document).ready(function(){
             choiceSelection.showSelected();
             sideMaxQuantity = $("#sideMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
         }
     });
     /* Entree End */
@@ -362,7 +362,7 @@ $(document).ready(function(){
             sideMaxQuantity = $("#sideMaxQuantity").val();
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
         }
     });
     $(document).on('mouseover', '.choiceItemDrinkWithSelect', function(e){
@@ -387,7 +387,7 @@ $(document).ready(function(){
             sideMaxQuantity = $("#sideMaxQuantity").val();
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
-            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+            enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
         }
     });
     /* Drink End */
@@ -419,7 +419,7 @@ $(document).ready(function(){
     });
     $(document).on('change', '.selectDrink', function(e){
         var drinkId = retrieveId("selectDrink", this.id);
-        enableAddToCartButtonForDrinkOnly(drinkId);
+        enableAddToCartButtonForDrinkOnly(drinkId, $);
     });
     /* Drink Only End */
 
@@ -487,7 +487,7 @@ function checkSelectedSideItem(sideId) {
         
         entreeMaxQuantity = $("#entreeMaxQuantity").val();
         drinkMaxQuantity = $("#drinkMaxQuantity").val();
-        enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+        enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
     }    
 }
 /* Side End */
@@ -507,7 +507,7 @@ function checkSelectedEntreeItem(entreeId) {
    
         sideMaxQuantity = $("#sideMaxQuantity").val();
         drinkMaxQuantity = $("#drinkMaxQuantity").val();
-        enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity);
+        enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
     }
 }
 

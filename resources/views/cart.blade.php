@@ -139,10 +139,14 @@
                     data: {},
                     success: function(response) {
                         $('#ordernote').val("");
-                        loadPriceDetailElements(response.priceDetail);
-                        loadCartCountElements(response.priceDetail['totalQuantity']);
-                        loadOrderListElements(response.items);
-                        loadCheckoutMenuElement(response.priceDetail['totalQuantity']);
+                        var html = loadPriceDetailElements(response.priceDetail);
+                        $('#pricedetail').html(html);
+                        var html = loadCartCountElements(response.priceDetail['totalQuantity']);
+                        $('#cartCount').html(html);
+                        var html = loadOrderListElements(response.items);
+                        $('#orderlist').html(html);
+                        var html = loadCheckoutMenuElement(response.priceDetail['totalQuantity']);
+                        $('#checkoutMenu').html(html);
                     }
                 });
             }
@@ -375,10 +379,14 @@
                         //window.location.href = base_path + 'cart';
                         // After move all js code from order.blade.php to ChoiceItem.js, the base_path becomes NaN
                         //window.location.href = 'cart';
-                        loadPriceDetailElements(response.priceDetail);
-                        loadCartCountElements(response.priceDetail['totalQuantity']);
-                        loadOrderListElements(response.items);
-                        loadCheckoutMenuElement(response.priceDetail['totalQuantity']);
+                        var html = loadPriceDetailElements(response.priceDetail);
+                        $('#pricedetail').html(html);
+                        var html = loadCartCountElements(response.priceDetail['totalQuantity']);
+                        $('#cartCount').html(html);
+                        var html = loadOrderListElements(response.items);
+                        $('#orderlist').html(html);
+                        var html = loadCheckoutMenuElement(response.priceDetail['totalQuantity']);
+                        $('#checkoutMenu').html(html);
                         $(".btn-close").trigger('click');
                     }    
                 }
@@ -394,8 +402,10 @@
                 success: function(response) {
                     //console.log(response.products);      
                     //console.log(response.price);
-                    loadPriceDetailElements(response.priceDetail);
-                    loadCartCountElements(response.priceDetail['totalQuantity']);
+                    var html = loadPriceDetailElements(response.priceDetail);
+                    $('#pricedetail').html(html);
+                    var html = loadCartCountElements(response.priceDetail['totalQuantity']);
+                    $('#cartCount').html(html);
                 }
             });
         }
@@ -409,10 +419,14 @@
                 success: function(response) {
                     //console.log(response.products);      
                     //console.log(response.price);
-                    loadPriceDetailElements(response.priceDetail);
-                    loadCartCountElements(response.priceDetail['totalQuantity']);
-                    loadOrderListElements(response.items);
-                    loadCheckoutMenuElement(response.priceDetail['totalQuantity']);
+                    var html = loadPriceDetailElements(response.priceDetail);
+                    $('#pricedetail').html(html);
+                    var html = loadCartCountElements(response.priceDetail['totalQuantity']);
+                    $('#cartCount').html(html);
+                    var html = loadOrderListElements(response.items);
+                    $('#orderlist').html(html);
+                    var html = loadCheckoutMenuElement(response.priceDetail['totalQuantity']);
+                    $('#checkoutMenu').html(html);
                 }
             });
         }
