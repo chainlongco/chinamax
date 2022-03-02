@@ -30,9 +30,6 @@
     <script src="/js/ChoiceSelection.js"></script>
     <script src="/js/choiceitem.js"></script>
 
-    <link href={{ asset('css/jquery.nice-number.css') }} rel="stylesheet">
-	<script src={{ asset('js/jquery.nice-number.js') }}></script>
-
     <style>
         .footer-dark {
             padding:50px 0;
