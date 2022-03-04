@@ -273,7 +273,7 @@ $(document).ready(function(){
             var sideId = retrieveId("sideQuantityPlus", this.id);
             sideMaxQuantity = $("#sideMaxQuantity").val();
             choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, +1, sideMaxQuantity);
-            choiceSelection.showSelected();
+            choiceSelection.showSelected($);
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
             enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
@@ -286,7 +286,7 @@ $(document).ready(function(){
             var sideId = retrieveId("sideQuantityMinus", this.id);
             sideMaxQuantity = $("#sideMaxQuantity").val();
             choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, -1, sideMaxQuantity);
-            choiceSelection.showSelected();
+            choiceSelection.showSelected($);
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
             enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
@@ -318,7 +318,7 @@ $(document).ready(function(){
             var entreeId = retrieveId("entreeQuantityPlus", this.id);
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, +1, entreeMaxQuantity);
-            choiceSelection.showSelected();
+            choiceSelection.showSelected($);
             sideMaxQuantity = $("#sideMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
             enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
@@ -331,7 +331,7 @@ $(document).ready(function(){
             var entreeId = retrieveId("entreeQuantityMinus", this.id);
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, -1, entreeMaxQuantity);
-            choiceSelection.showSelected();
+            choiceSelection.showSelected($);
             sideMaxQuantity = $("#sideMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
             enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
@@ -358,7 +358,7 @@ $(document).ready(function(){
             var drinkId = retrieveId("choiceItemDrink", this.id);
             drinkMaxQuantity = $('#drinkMaxQuantity').val();
             choiceSelection = new ChoiceSelection("drink", "drinkSelected", "choiceItemDrink", drinkId, 0, drinkMaxQuantity);
-            choiceSelection.showSelected();
+            choiceSelection.showSelected($);
             sideMaxQuantity = $("#sideMaxQuantity").val();
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
@@ -383,7 +383,7 @@ $(document).ready(function(){
             var drinkId = retrieveId("comboDrink", this.id);
             drinkMaxQuantity = $('#drinkMaxQuantity').val();
             choiceSelection = new ChoiceSelection("drink", "drinkSelected", "choiceItemDrinkWithSelect", drinkId, 0, drinkMaxQuantity);
-            choiceSelection.showSelected();
+            choiceSelection.showSelected($);
             sideMaxQuantity = $("#sideMaxQuantity").val();
             entreeMaxQuantity = $("#entreeMaxQuantity").val();
             drinkMaxQuantity = $("#drinkMaxQuantity").val();
@@ -479,10 +479,10 @@ function checkSelectedSideItem(sideId) {
         sideMaxQuantity = $("#sideMaxQuantity").val();
         if (sideMaxQuantity == 1) { // Using sideSelected element to display Half/One Selected
             choiceSelection = new ChoiceSelection("side", "sideSelected", "choiceItemSide", sideId, 0, sideMaxQuantity);
-            choiceSelection.showSelected();
+            choiceSelection.showSelected($);
         } else {    // Using sideQuantity element to display the number of sides selected
             choiceSelection = new ChoiceSelection("side", "sideQuantity", "choiceItemSide", sideId, 0, sideMaxQuantity);
-            choiceSelection.showSelected();
+            choiceSelection.showSelected($);
         }
         
         entreeMaxQuantity = $("#entreeMaxQuantity").val();
@@ -499,10 +499,10 @@ function checkSelectedEntreeItem(entreeId) {
         entreeMaxQuantity = $("#entreeMaxQuantity").val();
         if (entreeMaxQuantity == 1) {   // Using entreeSelected to dispaly One Selected
             choiceSelection = new ChoiceSelection("entree", "entreeSelected", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
-            choiceSelection.showSelected();
+            choiceSelection.showSelected($);
         } else {    // Using entreeQuantity to display the number of entrees selected
             choiceSelection = new ChoiceSelection("entree", "entreeQuantity", "choiceItemEntree", entreeId, 0, entreeMaxQuantity);
-            choiceSelection.showSelected();
+            choiceSelection.showSelected($);
         }
    
         sideMaxQuantity = $("#sideMaxQuantity").val();
