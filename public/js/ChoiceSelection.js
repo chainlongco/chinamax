@@ -101,25 +101,6 @@ class ChoiceSelection {
             this.changeFromHalfToOneSelectedSide($);
             this.enableAllChoices($);
         }
-
-        /*if ($("#sideSelected" + sideId).text() == "One Selected") {
-            $("#sideSelected" + sideId).text("");
-            $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
-        } else if ($("#sideSelected" + sideId).text() == "") {
-            if (findOneSelectedSideAndChangeToHalf($)) {
-                $("#sideSelected" + sideId).text("Half Selected");
-                $("#choiceItemSide" + sideId).css("border","5px solid red");
-                disableRestOfSideChoices($);
-            } else {
-                $("#sideSelected" + sideId).text("One Selected");
-                $("#choiceItemSide" + sideId).css("border","5px solid red");
-            }
-        } else if ($("#sideSelected" + sideId).text() == "Half Selected") {
-            $("#sideSelected" + sideId).text("");
-            $("#choiceItemSide" + sideId).css("border","3px solid lightgray");
-            changeFromHalfToOneSelectedSide($);
-            enableAllChoices($);
-        }*/
     }
 
     handleMaxOneEntreeSelected($) {
@@ -152,20 +133,6 @@ class ChoiceSelection {
         return isOneSelected;
     }
 
-    /*function findOneSelectedSideAndChangeToHalf() {
-            var isOneSelected = false;
-            var sideElements = $(".choiceItemSide").toArray();
-            sideElements.forEach(function(sideElement) {
-                var commonFunction = new CommonFunction();
-                var sideId = commonFunction.retrieveId("choiceItemSide", sideElement.id);
-                if ($("#sideSelected" + sideId).text() == "One Selected") {
-                    $("#sideSelected" + sideId).text("Half Selected");
-                    isOneSelected = true;
-                }
-            });
-            return isOneSelected;
-        }*/
-
     changeFromHalfToOneSelectedSide($) {
         var sideElements = $("." + this.divElementIdPrefix).toArray();
         var divElementName = this.divElementIdPrefix;
@@ -177,15 +144,6 @@ class ChoiceSelection {
                 $("#" + elementName + sideId).text("One Selected");
             }
         });
-
-        /*var sideElements = $(".choiceItemSide").toArray()
-        sideElements.forEach(function(sideElement) {
-            var commonFunction = new CommonFunction();
-            var sideId = commonFunction.retrieveId("choiceItemSide", sideElement.id);
-            if ($("#sideSelected" + sideId).text() == "Half Selected") {
-                $("#sideSelected" + sideId).text("One Selected");
-            }
-        });*/
     }   
 
     disableRestOfSideChoices($) {
@@ -340,31 +298,6 @@ class ChoiceSelection {
                 this.enableAllChoices($);    // Only for 3 entrees all of them have 1 quantity
             }
         }
-
-        /*if ($("#sideQuantity" + this.id).val() == 0) {
-            // None of side is selected
-            if (this.isAllZeroQuantity($)) {
-                $("#sideQuantityIncrementDiv" + this.id).css("display", "block");
-                $("#sideQuantity" + this.id).val(maxQuantity);
-                $("#choiceItemSide" + this.id).css("border", "5px solid red");
-            } else if (this.doesOneChoiceHaveThree($)) {  // One of side is selected == 3
-                $("#sideQuantityIncrementDiv" + this.id).css("display", "block");
-                $("#sideQuantity" + this.id).val(1);
-                $("#choiceItemSide" + this.id).css("border", "5px solid red");
-            } else if (this.doesOneChoiceHaveTwoAndOneChoiceHaveOne($)) {    // two of side/entree are selected, one is 2, one is 1
-                $("#sideQuantityIncrementDiv" + this.id).css("display", "block");
-                $("#sideQuantity" + this.id).val(1);
-                $("#choiceItemSide" + this.id).css("border", "5px solid red");
-            }
-        } else if ($("#sideQuantity" + this.id).val() != 0) {
-            var sideQuantity = $("#sideQuantity" + this.id).val();
-            if (sideQuantity != 3) {
-                this.addSideQuantityToOther(sideQuantity, this.id);
-            } 
-            $("#sideQuantityIncrementDiv" + this.id).css("display", "none");    
-            $("#sideQuantity" + this.id).val(0);   
-            $("#choiceItemSide" + this.id).css("border", "3px solid lightgray");
-        }*/
     }
 
     isAllZeroQuantity($) {
