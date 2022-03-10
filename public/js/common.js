@@ -746,6 +746,63 @@ function loadMessage($message) {
     return html;
 }
 
+function retrieveSubItemsForCombo($) {   // This is for Combo
+    var subItems = [];
+
+    // For side
+    var sideElements = $(".choiceItemSide").toArray()
+    sideElements.forEach(function(sideElement) {
+        var sideId = retrieveId("choiceItemSide", sideElement.id);
+        var quantityValue = Number($("#sideQuantity" + sideId).val());
+        if ($("#sideSelected" + sideId).text() == "Half Selected") {
+            sideArray = {'category':'Side', 'id':sideId, 'quantity':0.5};
+            subItems.push(sideArray);
+        } else if ($("#sideSelected" + sideId).text() == "One Selected") {
+            sideArray = {'category':'Side', 'id':sideId, 'quantity':1};
+            subItems.push(sideArray);
+        } else if (quantityValue != 0) {
+            sideArray = {'category':'Side', 'id':sideId, 'quantity':quantityValue};
+            subItems.push(sideArray);
+        }
+    });
+
+    // For entree
+    var entreeElements = $(".choiceItemEntree").toArray()
+    entreeElements.forEach(function(entreeElement) {
+        var entreeId = retrieveId("choiceItemEntree", entreeElement.id);
+        var quantityValue = Number($("#entreeQuantity" + entreeId).val());
+        if ($("#entreeSelected" + entreeId).text() == "One Selected") {
+            entreeArray = {'category':'Entree', 'id':entreeId, 'quantity':1};
+            subItems.push(entreeArray);
+        } else if (quantityValue != 0) {
+            entreeArray = {'category':'Entree', 'id':entreeId, 'quantity':quantityValue};
+            subItems.push(entreeArray);
+        }
+    });
+
+    // For Drink
+    if ($("#drinkMaxQuantity").val() != undefined) {
+        var drinkElements = $(".choiceItemDrink").toArray()
+        drinkElements.forEach(function(drinkElement) {
+            var drinkId = retrieveId("choiceItemDrink", drinkElement.id);
+            if ($("#drinkSelected" + drinkId).text() == "One Selected") {
+                drinkArray = {'category':'Drink', 'id':drinkId, 'quantity':1};
+                subItems.push(drinkArray);
+            }
+        });
+        var drinkWithSelectElements = $(".choiceItemDrinkWithSelect").toArray()
+        drinkWithSelectElements.forEach(function(drinkWithSelectElement) {
+            var drinkId = retrieveId("choiceItemDrinkWithSelect", drinkWithSelectElement.id);
+            if ($("#drinkSelected" + drinkId).text() == "One Selected") {
+                selectBoxId = $("#comboDrink" + drinkId).val();
+                drinkArray = {'category':'Drink', 'id':drinkId, 'quantity':1, 'selectBoxId':selectBoxId};
+                subItems.push(drinkArray);
+            }
+        });
+    }
+    return JSON.stringify(subItems);
+}
+
 if (typeof module !== 'undefined') module.exports = {
 //module.exports = {
     retrieveId,
@@ -770,6 +827,7 @@ if (typeof module !== 'undefined') module.exports = {
     loadEditModalForSingleSideEntree,
     loadEditModalForCombo,
     loadMessage,
+    retrieveSubItemsForCombo,
     //test111,
     //test222,
 };

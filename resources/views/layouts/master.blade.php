@@ -29,6 +29,8 @@
     <script src="/js/common.js"></script>
     <script src="/js/ChoiceSelection.js"></script>
     <script src="/js/choiceitem.js"></script>
+    <script src="/js/ajaxAddNewItemToCart.js"></script>
+    <script src="/js/ajaxRetrieveChoices.js"></script>
 
     <style>
         .footer-dark {

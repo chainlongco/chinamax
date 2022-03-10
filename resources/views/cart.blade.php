@@ -353,7 +353,7 @@
             if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {    // This if for Combo
                 // retrieveSubItemsForCombo method is under choiceitem.js -- This return JSON format. Therefore, we need to convert back to array. 
                 // We need to convert to JSON format when pass data from javascript to PHP.
-                var subItems = (retrieveSubItemsForCombo());
+                var subItems = (retrieveSubItemsForCombo($));
             }
             updateCart(serialNumber, productId, quantity, subItems);
         });

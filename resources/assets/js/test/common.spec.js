@@ -1,5 +1,6 @@
 //const { fn } = require('jquery');
 const commonFunctions = require('../../../../public/js/common');
+const { ChoiceSelection } = require('../../../../public/js/ChoiceSelection');
 //const commonFunctionsForMock = require('../../../../public/js/common');
 //const $ = require('../../../../node_modules/jquery/dist/jquery.min.js');
 //import {retrieveId} from '../../../../public/js/common';
@@ -436,10 +437,10 @@ describe('retrieveTotalEntreeQuantity Function', () => {
 describe('retrieveTotalDrinkQuantity Function', () => {
   test('Retrieve Total Drink Quantity from menu where users choose the drink they like -- Using choiceItemDrink elements not choiceItemDrinkWithSelect elements', () => {
     document.body.innerHTML = 
-      '<div class="choiceItemDrink" id="choiceItemDrink1">' +
-      '<h3 class="drinkSelected" id="drinkSelected1">One Selected</h3>' + 
+      '<div class="choiceItemDrinkWithSelect" id="choiceItemDrinkWithSelect1">' +
+      '<h3 class="drinkSelected" id="drinkSelected1"></h3>' +
       '<div class="choiceItemDrink" id="choiceItemDrink2">' +
-      '<h3 class="drinkSelected" id="drinkSelected2"></h3>';
+      '<h3 class="drinkSelected" id="drinkSelected2">One Selected</h3>';
 
       const $ = require('../../../../node_modules/jquery/dist/jquery.min.js');
       var totalDrinkQuantity = commonFunctions.retrieveTotalDrinkQuantity($);
@@ -449,9 +450,9 @@ describe('retrieveTotalDrinkQuantity Function', () => {
   test('Retrieve Total Drink Quantity from menu where users choose the drink they like -- Using choiceItemDrinkWithSelect elements not choiceItemDrink elements', () => {
     document.body.innerHTML = 
       '<div class="choiceItemDrinkWithSelect" id="choiceItemDrinkWithSelect1">' +
-      '<h3 class="drinkSelected" id="drinkSelected1">One Selected</h3>' + 
+      '<h3 class="drinkSelected" id="drinkSelected1"></h3>'+
       '<div class="choiceItemDrinkWithSelect" id="choiceItemDrinkWithSelect2">' +
-      '<h3 class="drinkSelected" id="drinkSelected2"></h3>';
+      '<h3 class="drinkSelected" id="drinkSelected2">One Selected</h3>';
 
       const $ = require('../../../../node_modules/jquery/dist/jquery.min.js');
       var totalDrinkQuantity = commonFunctions.retrieveTotalDrinkQuantity($);
@@ -723,4 +724,106 @@ describe('loadMessage Function', () => {
       expect(html).toMatch("Great Job");
       expect(html).toMatchInlineSnapshot(`"<div class=\\"modal-body\\"><div class=\\"col-md-12 text-center\\"><h5>Great Jobs</h5></div></div><div class=\\"modal-footer\\"><button type=\\"button\\" class=\\"btn btn-primary okModal\\" data-bs-dismiss=\\"modal\\">OK</button></div>"`);
     });
+});
+
+describe('retrieveSubItemsForCombo Function', () => {
+  const $ = require('../../../../node_modules/jquery/dist/jquery.min.js');
+
+  describe('Retrieve SubItems for Combo --For Side', () => {
+    test("Half/Half Selected", () => {
+      document.body.innerHTML =
+      '<div class="choiceItemSide" id="choiceItemSide1">' +
+      '<h3 class="sideSelected" id="sideSelected1">Half Selected</h3>' + 
+      '<input type="text" class="form-control w-25 d-inline text-center sideQuantity" value="0" id="sideQuantity1" disabled>' +
+      '<div class="choiceItemSide" id="choiceItemSide2">' +
+      '<h3 class="sideSelected" id="sideSelected2">Half Selected</h3>' +
+      '<input type="text" class="form-control w-25 d-inline text-center sideQuantity" value="0" id="sideQuantity2" disabled>';
+  
+      var json = commonFunctions.retrieveSubItemsForCombo($);
+      expect(json).toBe("[{\"category\":\"Side\",\"id\":\"1\",\"quantity\":0.5},{\"category\":\"Side\",\"id\":\"2\",\"quantity\":0.5}]");
+    });
+  
+    test("One Selected", () => {
+      document.body.innerHTML =
+      '<div class="choiceItemSide" id="choiceItemSide1">' +
+      '<h3 class="sideSelected" id="sideSelected1">One Selected</h3>' + 
+      '<input type="text" class="form-control w-25 d-inline text-center sideQuantity" value="0" id="sideQuantity1" disabled>' +
+      '<div class="choiceItemSide" id="choiceItemSide2">' +
+      '<h3 class="sideSelected" id="sideSelected2"></h3>' +
+      '<input type="text" class="form-control w-25 d-inline text-center sideQuantity" value="0" id="sideQuantity2" disabled>';
+  
+      var json = commonFunctions.retrieveSubItemsForCombo($);
+      expect(json).toBe("[{\"category\":\"Side\",\"id\":\"1\",\"quantity\":1}]");
+    });
+  
+    test("Quantity != 0", () => {
+      document.body.innerHTML =
+      '<div class="choiceItemSide" id="choiceItemSide1">' +
+      '<h3 class="sideSelected" id="sideSelected1"></h3>' + 
+      '<input type="text" class="form-control w-25 d-inline text-center sideQuantity" value="1" id="sideQuantity1" disabled>' +
+      '<div class="choiceItemSide" id="choiceItemSide2">' +
+      '<h3 class="sideSelected" id="sideSelected2"></h3>' +
+      '<input type="text" class="form-control w-25 d-inline text-center sideQuantity" value="2" id="sideQuantity2" disabled>';
+  
+      var json = commonFunctions.retrieveSubItemsForCombo($);
+      expect(json).toBe("[{\"category\":\"Side\",\"id\":\"1\",\"quantity\":1},{\"category\":\"Side\",\"id\":\"2\",\"quantity\":2}]");
+    });
+  });
+  
+  describe('Retrieve SubItems for Combo --For Entree', () => {
+    test("One Selected", () => {
+      document.body.innerHTML =
+      '<div class="choiceItemEntree" id="choiceItemEntree1">' +
+      '<h3 class="entreeSelected" id="entreeSelected1">One Selected</h3>' + 
+      '<input type="text" class="form-control w-25 d-inline text-center entreeQuantity" value="0" id="entreeQuantity1" disabled>' +
+      '<div class="choiceItemEntree" id="choiceItemEntree2">' +
+      '<h3 class="entreeSelected" id="entreeSelected2"></h3>' +
+      '<input type="text" class="form-control w-25 d-inline text-center entreeQuantity" value="0" id="entreeQuantity2" disabled>';
+
+      var json = commonFunctions.retrieveSubItemsForCombo($);
+      expect(json).toBe("[{\"category\":\"Entree\",\"id\":\"1\",\"quantity\":1}]");
+    });
+
+    test("quantity != 0", () => {
+      document.body.innerHTML =
+      '<div class="choiceItemEntree" id="choiceItemEntree1">' +
+      '<h3 class="entreeSelected" id="entreeSelected1"></h3>' + 
+      '<input type="text" class="form-control w-25 d-inline text-center entreeQuantity" value="1" id="entreeQuantity1" disabled>' +
+      '<div class="choiceItemEntree" id="choiceItemEntree2">' +
+      '<h3 class="entreeSelected" id="entreeSelected2"></h3>' +
+      '<input type="text" class="form-control w-25 d-inline text-center entreeQuantity" value="2" id="entreeQuantity2" disabled>';
+
+      var json = commonFunctions.retrieveSubItemsForCombo($);
+      expect(json).toBe("[{\"category\":\"Entree\",\"id\":\"1\",\"quantity\":1},{\"category\":\"Entree\",\"id\":\"2\",\"quantity\":2}]");
+    });
+  });  
+
+  describe('Retrieve SubItems for Combo --For Drink', () => {
+    test("Without Select -- Bottle Water", () => {
+      document.body.innerHTML =
+        '<input type="hidden" id="drinkMaxQuantity" value="1"/>' +
+        '<div class="choiceItemDrinkWithSelect" id="choiceItemDrinkWithSelect1">' +
+        '<h3 class="drinkSelected" id="drinkSelected1"></h3>' +
+        '<div class="choiceItemDrink" id="choiceItemDrink2">' +
+        '<h3 class="drinkSelected" id="drinkSelected2">One Selected</h3>';
+
+      var json = commonFunctions.retrieveSubItemsForCombo($);
+      expect(json).toBe("[{\"category\":\"Drink\",\"id\":\"2\",\"quantity\":1}]");
+    });
+
+    test("With Select -- Fountain Drink", () => {
+      document.body.innerHTML =
+        '<input type="hidden" id="drinkMaxQuantity" value="1"/>' +
+        '<div class="choiceItemDrinkWithSelect" id="choiceItemDrinkWithSelect1">' +
+        '<h3 class="drinkSelected" id="drinkSelected1">One Selected</h3>' +
+        '<select name="comboDrink" class="comboDrink" id="comboDrink1" style="height: 37px; padding: 4px 10px; margin: 0px 10px">' +
+            '<option value = "1" selected disable>Coke</option>' +
+        '</select>' +
+        '<div class="choiceItemDrink" id="choiceItemDrink2">' +
+        '<h3 class="drinkSelected" id="drinkSelected2"></h3>';
+
+      var json = commonFunctions.retrieveSubItemsForCombo($);
+      expect(json).toBe("[{\"category\":\"Drink\",\"id\":\"1\",\"quantity\":1,\"selectBoxId\":\"1\"}]");
+    });
+  });  
 });
