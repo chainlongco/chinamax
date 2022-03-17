@@ -341,7 +341,10 @@
             $(document).on('click', '.choiceItemSide', function(e){
                 e.preventDefault();
                 var sideId = retrieveId("choiceItemSide", this.id);
-                checkSelectedSideItem(sideId, $);
+                //var sideMaxQuantity = $("#sideMaxQuantity").val();
+                //choiceSelection = new ChoiceSelection("side", "sideSelected", "choiceItemSide", sideId, 0, sideMaxQuantity);
+                //checkSelectedSideItem(sideId, $, choiceSelection, enableAddToCartButtonForCombos);
+                checkSelectedSideItem(sideId, $, enableAddToCartButtonForCombos);
             });
             $(document).on('click','.sideQuantityPlus', function(e){
                 e.preventDefault();
@@ -386,7 +389,7 @@
             $(document).on('click', '.choiceItemEntree', function(e){
                 e.preventDefault();
                 var entreeId = retrieveId("choiceItemEntree", this.id);
-                checkSelectedEntreeItem(entreeId);
+                checkSelectedEntreeItem(entreeId, $, enableAddToCartButtonForCombos);
             });
             $(document).on('click','.entreeQuantityPlus', function(e){
                 e.preventDefault();
