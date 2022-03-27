@@ -37,7 +37,7 @@
                         </div>-->   
                         <div>
                             <div style="float:left; display:block;">               
-                                <a href="{{ route('auth.register') }}">I don't have an account, create new</a>
+                                <a id="noUserAccount" href="{{ route('auth.register') }}">I don't have an account, create new</a>
                             </div>
                             <div style="float:right; display:block;">               
                                 <button type="submit" class="btn btn-primary" id="submitLogin">Sign In</button>
