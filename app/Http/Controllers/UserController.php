@@ -210,7 +210,7 @@ class UserController extends Controller
                             $("#usersDatatable").DataTable({
                                 scrollCollapse: true,
                                 "columnDefs": [{
-                                    targets: [6],
+                                    targets: [2, 3, 4, 5],
                                     orderable: false
                                 }]
                             });
