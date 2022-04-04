@@ -266,6 +266,16 @@
 
 
             /* Appetizers Start */
+            $(document).on('mouseover', '.choiceItem', function(e){
+                e.preventDefault();
+                var productId = retrieveId("choiceItem", this.id);
+                $("#choiceItemName" + productId).css("text-decoration","underline");
+            });
+            $(document).on('mouseout', '.choiceItem', function(e){
+                e.preventDefault();
+                var productId = retrieveId("choiceItem", this.id);
+                $("#choiceItemName" + productId).css("text-decoration","none");
+            });
             $(document).on('click', '.addToCart', function(e){  // For Appetizers
                 var productId = retrieveId("addToCart", this.id);
                 var quantityElementId = "#quantity" + productId;

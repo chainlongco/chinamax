@@ -129,10 +129,10 @@ class MenuController extends Controller
         $html .= "<div class=\"row\">";
         foreach ($products as $product) {
             $html .= "<div class=\"col-md-4 text-center\">";
-                $html .= "<div class=\"choiceItem\">";
+                $html .= "<div class=\"choiceItem\" id=\"choiceItem" .$product->id ."\">";
                     $html .= "<img src=\"\\images\\" .$product->gallery ."\" style=\"width:60%\">";
                     $html .= "<br>";
-                    $html .= "<span class=\"choiceItemName\">" .$product->name ."</span>";
+                    $html .= "<span class=\"choiceItemName\" id=\"choiceItemName" .$product->id ."\">" .$product->name ."</span>";
                     $html .= "<br>";
                     $html .= "<span class=\"choiceItemPrice\">$" .$product->price ."</span>";
                     $html .= "<br>";
