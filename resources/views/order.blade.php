@@ -112,6 +112,7 @@
                 $(".singleItem").css("border","3px solid lightgray");
                 //retrieveChoices(menuId);
                 ajaxRetrieveChoices.retrieveChoices($, menuId);
+                window.scrollTo(0, 0);
             });
 
             $(document).on('mouseover', '.productItem', function(e){
@@ -133,6 +134,7 @@
                 $(".singleItem").css("border","3px solid lightgray");
                 //retrieveChoices(productId + "p");
                 ajaxRetrieveChoices.retrieveChoices($,productId + "p");
+                window.scrollTo(0, 0);
             });
 
             $(document).on('mouseover', '.singleItem', function(e){
@@ -159,6 +161,7 @@
                 var menuId = retrieveId(parentClassName, parentIdName);
                 //retrieveChoices(singleId + "s", menuId);
                 ajaxRetrieveChoices.retrieveChoices($, singleId + "s", menuId);
+                window.scrollTo(0, 0);
             });
             /* Menu End */
 
