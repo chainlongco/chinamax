@@ -206,9 +206,11 @@
                 }
 
                 // For Drink Only 
-                if ($(".addToCartForDrinkOnly").text() != "") {
+                //if ($(".addToCartForDrinkOnly").text() != "") {
+                if ($(".addToCartForDrinkOnly").length > 0) {    
                     var drinkId = retrieveId("quantityPlus", this.id);
                     enableAddToCartButtonForDrinkOnly(drinkId, $);
+                    changeColorAddToCartButtonForDrinkOnly(drinkId, $);
                 }
 
             });
@@ -258,6 +260,7 @@
                 if ($(".addToCartForDrinkOnly").text() != "") {
                     var drinkId = retrieveId("quantityMinus", this.id);
                     enableAddToCartButtonForDrinkOnly(drinkId, $);
+                    changeColorAddToCartButtonForDrinkOnly(drinkId, $);
                 }
             });
 
@@ -514,6 +517,7 @@
             $(document).on('change', '.selectDrink', function(e){
                 var drinkId = retrieveId("selectDrink", this.id);
                 enableAddToCartButtonForDrinkOnly(drinkId, $);
+                changeColorAddToCartButtonForDrinkOnly(drinkId, $);
             });
             /* Drink Only End */
 

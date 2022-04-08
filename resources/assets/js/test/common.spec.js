@@ -526,6 +526,72 @@ describe('enableAddToCartButtonForDrinkOnly Function', () => {
   });
 });
 
+describe('changeColorAddToCartButtonForDrinkOnly Function', () => {
+  test('Change color for Add To Cart Button For Drink Only -- Button is red: selectDrink1 is undefined like water and bottle water AND quantity is not 0', () => {
+    document.body.innerHTML =
+      '<input type="text" class="form-control w-25 d-inline text-center quantity" value="1" id="quantity1" disabled>' +
+      '<button type="button" class="btn bg-light border addToCartForDrinkOnly" id="addToCartForDrinkOnly1" disabled>Add to Cart</button>';
+    
+    const $ = require('../../../../node_modules/jquery/dist/jquery.min.js');
+    commonFunctions.changeColorAddToCartButtonForDrinkOnly(1, $);
+    var buttonColor = $("#addToCartForDrinkOnly1").css('color');
+    expect(buttonColor).toBe('red');
+  });
+
+  test('Change color for Add To Cart Button For Drink Only -- Button is gray: selectDrink1 is undefined like water and bottle water AND quantity is 0', () => {
+    document.body.innerHTML =
+      '<input type="text" class="form-control w-25 d-inline text-center quantity" value="0" id="quantity1" disabled>' +
+      '<button type="button" class="btn bg-light border addToCartForDrinkOnly" id="addToCartForDrinkOnly1" disabled>Add to Cart</button>';
+     
+    const $ = require('../../../../node_modules/jquery/dist/jquery.min.js');
+    commonFunctions.changeColorAddToCartButtonForDrinkOnly(1, $);
+    var buttonColor = $("#addToCartForDrinkOnly1").css('color');
+    expect(buttonColor).toBe('gray');  
+  });
+
+  test('Change color for Add To Cart Button For Drink Only -- Button is red: selectDrink1 has been selected like canned, fountain and fresh juice AND quantity is 1', () => {
+    document.body.innerHTML =
+      '<select name="selectDrink" class="selectDrink" id="selectDrink1" style="height: 37px; padding: 0px 10px; ">' +
+        '<option value ="1" disable>Coke</option>' +
+      '</select>' +
+      '<input type="text" class="form-control w-25 d-inline text-center quantity" value="1" id="quantity1" disabled>' +
+      '<button type="button" class="btn bg-light border addToCartForDrinkOnly" id="addToCartForDrinkOnly1" disabled>Add to Cart</button>';
+     
+    const $ = require('../../../../node_modules/jquery/dist/jquery.min.js');
+    commonFunctions.changeColorAddToCartButtonForDrinkOnly(1, $);
+    var buttonColor = $("#addToCartForDrinkOnly1").css('color');
+    expect(buttonColor).toBe('red');  
+  });
+
+  test('Change color for Add To Cart Button For Drink Only -- Button is gray: selectDrink1 is been selected like water and bottle water AND quantity is 0', () => {
+    document.body.innerHTML =
+      '<select name="selectDrink" class="selectDrink" id="selectDrink1" style="height: 37px; padding: 0px 10px; ">' +
+        '<option value ="1" disable>Coke</option>' +
+      '</select>' +
+      '<input type="text" class="form-control w-25 d-inline text-center quantity" value="0" id="quantity1" disabled>' +
+      '<button type="button" class="btn bg-light border addToCartForDrinkOnly" id="addToCartForDrinkOnly1" disabled>Add to Cart</button>';
+     
+    const $ = require('../../../../node_modules/jquery/dist/jquery.min.js');
+    commonFunctions.changeColorAddToCartButtonForDrinkOnly(1, $);
+    var buttonColor = $("#addToCartForDrinkOnly1").css('color');
+    expect(buttonColor).toBe('gray');  
+  });
+
+  test('Change color for Add To Cart Button For Drink Only -- Button is gray: selectDrink1 is NOT been select like water and bottle water', () => {
+    document.body.innerHTML =
+      '<select name="selectDrink" class="selectDrink" id="selectDrink1" style="height: 37px; padding: 0px 10px; ">' +
+        '<option value ="0" disable>Coke</option>' +
+      '</select>' +
+      '<input type="text" class="form-control w-25 d-inline text-center quantity" value="1" id="quantity1" disabled>' +
+      '<button type="button" class="btn bg-light border addToCartForDrinkOnly" id="addToCartForDrinkOnly1" disabled>Add to Cart</button>';
+     
+    const $ = require('../../../../node_modules/jquery/dist/jquery.min.js');
+    commonFunctions.changeColorAddToCartButtonForDrinkOnly(1, $);
+    var buttonColor = $("#addToCartForDrinkOnly1").css('color');
+    expect(buttonColor).toBe('gray');  
+  });
+});
+
 describe('loadEditModalForAppetizers Function', () => {
   test('Load Edit Modal For Appetizers', () => {
     var productItem = {"id":1, "name":"Egg Roll(5)", "price":4.59, "description":"5 egg rolls", "gallery":"EggRoll.jpg", "menu_id":1};

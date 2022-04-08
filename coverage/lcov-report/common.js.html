@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>524/524</span>
+                <span class='fraction'>533/533</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">98.31% </span>
+                <span class="strong">98.42% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>117/119</span>
+                <span class='fraction'>125/127</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>45/45</span>
+                <span class='fraction'>46/46</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>523/523</span>
+                <span class='fraction'>532/532</span>
             </div>
         
             
@@ -895,7 +895,28 @@
 <a name='L830'></a><a href='#L830'>830</a>
 <a name='L831'></a><a href='#L831'>831</a>
 <a name='L832'></a><a href='#L832'>832</a>
-<a name='L833'></a><a href='#L833'>833</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L833'></a><a href='#L833'>833</a>
+<a name='L834'></a><a href='#L834'>834</a>
+<a name='L835'></a><a href='#L835'>835</a>
+<a name='L836'></a><a href='#L836'>836</a>
+<a name='L837'></a><a href='#L837'>837</a>
+<a name='L838'></a><a href='#L838'>838</a>
+<a name='L839'></a><a href='#L839'>839</a>
+<a name='L840'></a><a href='#L840'>840</a>
+<a name='L841'></a><a href='#L841'>841</a>
+<a name='L842'></a><a href='#L842'>842</a>
+<a name='L843'></a><a href='#L843'>843</a>
+<a name='L844'></a><a href='#L844'>844</a>
+<a name='L845'></a><a href='#L845'>845</a>
+<a name='L846'></a><a href='#L846'>846</a>
+<a name='L847'></a><a href='#L847'>847</a>
+<a name='L848'></a><a href='#L848'>848</a>
+<a name='L849'></a><a href='#L849'>849</a>
+<a name='L850'></a><a href='#L850'>850</a>
+<a name='L851'></a><a href='#L851'>851</a>
+<a name='L852'></a><a href='#L852'>852</a>
+<a name='L853'></a><a href='#L853'>853</a>
+<a name='L854'></a><a href='#L854'>854</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1286,6 +1307,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1727,6 +1768,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">//const test = require('./test');
 &nbsp;
 function retrieveId(elementClass, elementClassId)
@@ -2136,6 +2178,26 @@ function enableAddToCartButtonForDrinkOnly(drinkId, $) {
             }
         } else {
             $("#addToCartForDrinkOnly" + drinkId).prop('disabled', true);
+        }
+    }
+}
+&nbsp;
+function changeColorAddToCartButtonForDrinkOnly(drinkId, $) {
+    if ($("#selectDrink" + drinkId).val() == undefined) {
+        if ($("#quantity" + drinkId).val() &gt; 0) {
+            $("#addToCartForDrinkOnly" + drinkId).css('color', 'red');
+        } else {
+            $("#addToCartForDrinkOnly" + drinkId).css('color', 'gray');
+        }
+    } else {
+        if ($("#selectDrink" + drinkId).val() &gt; 0) {
+            if ($("#quantity" + drinkId).val() &gt; 0) {
+                $("#addToCartForDrinkOnly" + drinkId).css('color', 'red');
+            } else {
+                $("#addToCartForDrinkOnly" + drinkId).css('color', 'gray');
+            }
+        } else {
+            $("#addToCartForDrinkOnly" + drinkId).css('color', 'gray');
         }
     }
 }
@@ -2550,6 +2612,7 @@ function retrieveSubItemsForCombo($) {   // This is for Combo
     retrieveTotalEntreeQuantity,
     retrieveTotalDrinkQuantity,
     enableAddToCartButtonForDrinkOnly,
+    changeColorAddToCartButtonForDrinkOnly,
     loadEditModalForAppetizers,
     loadEditModalForDrinksWithoutSelectBox,
     loadEditModalForDrinksWithSelectDrinksOrSelectSizes,
@@ -2566,7 +2629,7 @@ function retrieveSubItemsForCombo($) {   // This is for Combo
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Thu Mar 17 2022 11:05:09 GMT-0500 (Central Daylight Time)
+                at Thu Apr 07 2022 09:38:56 GMT-0500 (Central Daylight Time)
             </div>
         <script src="prettify.js"></script>
         <script>

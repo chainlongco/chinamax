@@ -410,6 +410,26 @@ function enableAddToCartButtonForDrinkOnly(drinkId, $) {
         }
     }
 }
+
+function changeColorAddToCartButtonForDrinkOnly(drinkId, $) {
+    if ($("#selectDrink" + drinkId).val() == undefined) {
+        if ($("#quantity" + drinkId).val() > 0) {
+            $("#addToCartForDrinkOnly" + drinkId).css('color', 'red');
+        } else {
+            $("#addToCartForDrinkOnly" + drinkId).css('color', 'gray');
+        }
+    } else {
+        if ($("#selectDrink" + drinkId).val() > 0) {
+            if ($("#quantity" + drinkId).val() > 0) {
+                $("#addToCartForDrinkOnly" + drinkId).css('color', 'red');
+            } else {
+                $("#addToCartForDrinkOnly" + drinkId).css('color', 'gray');
+            }
+        } else {
+            $("#addToCartForDrinkOnly" + drinkId).css('color', 'gray');
+        }
+    }
+}
            
 function loadEditModalForAppetizers(serialNumber, product, quantity) {
     var html = "";
@@ -821,6 +841,7 @@ if (typeof module !== 'undefined') module.exports = {
     retrieveTotalEntreeQuantity,
     retrieveTotalDrinkQuantity,
     enableAddToCartButtonForDrinkOnly,
+    changeColorAddToCartButtonForDrinkOnly,
     loadEditModalForAppetizers,
     loadEditModalForDrinksWithoutSelectBox,
     loadEditModalForDrinksWithSelectDrinksOrSelectSizes,
