@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\RestaurantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,8 @@ Route::get('/customerLogin', [CustomerController::class, 'customerLogin'])->name
 Route::post('/customerLogin', [CustomerController::class, 'customerSignIn'])->name('customer-login-submit');
 Route::get('/customerLogout', [CustomerController::class, 'customerLogout']);
 
+Route::post('/restaurant', [RestaurantController::class, 'restaurantSubmit'])->name('restaurant-submit');
+
 Route::get('/restricted', function(){
     return view('restricted');
 });
@@ -76,6 +79,7 @@ Route::group(['middleware' => 'isManager'], function () {   // This means manage
     Route::get('/customers-list', [CustomerController::class, 'listCustomers']);
     Route::get('/customer/delete/{id}', [CustomerController::class, 'customerDelete']);
     Route::get('/customer/edit/{id}', [CustomerController::class, 'customerEdit']);
+    Route::get('/restaurant', [RestaurantController::class, 'restaurantInformation']);
 });
 
 Route::group(['middleware' => 'isAdmin'], function () {

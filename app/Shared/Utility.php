@@ -354,7 +354,12 @@
             $totalPrice = 0;
             $tax = 0;
             $total = 0;
-            $taxRate = 0.0825;
+            //$taxRate = 0.0825;
+            $taxRate = 0;
+            $restaurant = DB::table('restaurants')->first();
+            if ($restaurant) {
+                $taxRate = $restaurant->tax_rate;
+            }
             if (Session::has('cart')){
                 $cart = new Cart(Session::get('cart'));
                 $totalQuantity = $cart->totalQuantity;
@@ -370,7 +375,7 @@
             }
             $tax = round(($totalPrice * $taxRate), 2);
             $total = $totalPrice + $tax;
-            $priceDetail = array('totalQuantity'=>$totalQuantity, 'totalPrice'=>number_format($totalPrice, 2, '.', ','), 'tax'=>number_format($tax, 2, '.', ','), 'total'=>number_format($total, 2, '.', ','));
+            $priceDetail = array('totalQuantity'=>$totalQuantity, 'totalPrice'=>number_format($totalPrice, 2, '.', ','), 'tax'=>number_format($tax, 2, '.', ','), 'total'=>number_format($total, 2, '.', ','), 'taxRate'=>$taxRate);
             return $priceDetail;
         }
 
@@ -378,6 +383,7 @@
         {
             $priceDetail = $this->retrievePriceDetail();
             $element = "
+                <p hidden id='taxRate'>" .$priceDetail['taxRate'] ."</p>
                 <div class=\"row px-5\">
                     <div class=\"col-md-6 text-start\">
                         <h5>Subtotal (" .$priceDetail['totalQuantity'] ." items)</h5>
@@ -419,7 +425,7 @@
             $element = "
                 <div class=\"row px-5\">
                     <div class=\"col-md-12 text-start\">
-                        <p style=\"font-size: 20px\">Special Requests: " .$note ."</p>
+                        <p style=\"font-size: 20px\">Special Reqests: " .$note ."</p>
                     </div>
                 </div>
                 <hr>

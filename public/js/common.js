@@ -649,7 +649,7 @@ function loadEditModalForCombo(serialNumber, product, quantity, sides, chickenEn
     html +=                     '<br>';
     html +=                     '<span class="choiceItemEntreeName" id="choiceItemEntreeName' + beefEntree['id'] + '">' + beefEntree['name'] + '</span>';  
     html +=                 '</div>';
-    html +=                 '<div class="selectedDi\">';
+    html +=                 '<div class="selectedDiv">';
     html +=                     '<h3 class="entreeSelected" id="entreeSelected' + beefEntree['id'] + '"></h3>';
     html +=                     '<div class="entreeQuantityIncrementDiv mx-auto" id="entreeQuantityIncrementDiv' + beefEntree['id'] + '" style="display: none;">';
     html +=                        '<button type="button" class="btn bg-light border rounded-circle entreeQuantityMinus" id="entreeQuantityMinus' + beefEntree['id'] + '"><i class="fas fa-minus"></i></button>';

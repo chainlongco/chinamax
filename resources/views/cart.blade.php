@@ -102,6 +102,112 @@
 
 <script>
     $(document).ready(function(){
+        // ********** Same functions in order.blade.php start **********
+        // ***** For combo --Side start *****
+        $(document).on('mouseover', '.choiceItemSide', function(e){
+            e.preventDefault();
+
+            // from https://stackoverflow.com/questions/9421208/how-to-compare-colors-in-javascript
+            /*var compareHex = (hex) => {
+                var hexString = document.createElement('div')
+                hexString.style.backgroundColor = `${hex}`
+                return hexString.style.backgroundColor
+            }
+            var current_color = $("#choiceItemSide" + sideId).css("background-color");
+            if (current_color !== compareHex('#d3d3d3')) {*/
+
+            var sideId = retrieveId("choiceItemSide", this.id);
+            if ($("#choiceItemSide" + sideId).prop("disabled") != true) {
+                $("#choiceItemSideName" + sideId).css("text-decoration","underline");
+            }
+        });
+        $(document).on('mouseout', '.choiceItemSide', function(e){
+            e.preventDefault();
+            var sideId = retrieveId("choiceItemSide", this.id)
+            $("#choiceItemSideName" + sideId).css("text-decoration","none");
+        });
+        $(document).on('click', '.choiceItemSide', function(e){
+            e.preventDefault();
+            var sideId = retrieveId("choiceItemSide", this.id);
+            //var sideMaxQuantity = $("#sideMaxQuantity").val();
+            //choiceSelection = new ChoiceSelection("side", "sideSelected", "choiceItemSide", sideId, 0, sideMaxQuantity);
+            //checkSelectedSideItem(sideId, $, choiceSelection, enableAddToCartButtonForCombos);
+            checkSelectedSideItem(sideId, $, enableAddToCartButtonForCombos);
+        });
+        // ***** For combo --Side end *****
+        // ***** For combo --Entree start *****
+        $(document).on('mouseover', '.choiceItemEntree', function(e){
+            e.preventDefault();
+            var entreeId = retrieveId("choiceItemEntree", this.id);
+            if ($("#choiceItemEntree" + entreeId).prop("disabled") != true) {
+                $("#choiceItemEntreeName" + entreeId).css("text-decoration","underline");
+            }
+        });
+        $(document).on('mouseout', '.choiceItemEntree', function(e){
+            e.preventDefault();
+            var entreeId = retrieveId("choiceItemEntree", this.id);
+            $("#choiceItemEntreeName" + entreeId).css("text-decoration","none");
+        });
+        $(document).on('click', '.choiceItemEntree', function(e){
+            e.preventDefault();
+            var entreeId = retrieveId("choiceItemEntree", this.id);
+            checkSelectedEntreeItem(entreeId, $, enableAddToCartButtonForCombos);
+        });
+        // ***** For combo --Entree end *****
+        // ***** For combo --Drink start *****
+        $(document).on('mouseover', '.choiceItemDrink', function(e){
+            e.preventDefault();
+            var drinkId = retrieveId("choiceItemDrink", this.id);
+            if ($("#choiceItemDrink" + drinkId).prop("") != true) {
+                $("#choiceItemDrinkName" + drinkId).css("text-decoration","underline");
+            }
+        });
+        $(document).on('mouseout', '.choiceItemDrink', function(e){
+            e.preventDefault();
+            var drinkId = retrieveId("choiceItemDrink", this.id)
+            $("#choiceItemDrinkName" + drinkId).css("text-decoration","none");
+        });
+        $(document).on('click', '.choiceItemDrink', function(e){
+            e.preventDefault();
+            if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                var drinkId = retrieveId("choiceItemDrink", this.id);
+                drinkMaxQuantity = $('#drinkMaxQuantity').val();
+                choiceSelection = new ChoiceSelection("drink", "drinkSelected", "choiceItemDrink", drinkId, 0, drinkMaxQuantity);
+                choiceSelection.showSelected($);
+                sideMaxQuantity = $("#sideMaxQuantity").val();
+                entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
+            }
+        });
+        $(document).on('mouseover', '.choiceItemDrinkWithSelect', function(e){
+            e.preventDefault();
+            var drinkId = retrieveId("choiceItemDrinkWithSelect", this.id);
+            if ($("#choiceItemDrinkWithSelect" + drinkId).prop("disabled") != true) {
+                $("#choiceItemDrinkName" + drinkId).css("text-decoration","underline");
+            }
+        });
+        $(document).on('mouseout', '.choiceItemDrinkWithSelect', function(e){
+            e.preventDefault();
+            var drinkId = retrieveId("choiceItemDrinkWithSelect", this.id);
+            $("#choiceItemDrinkName" + drinkId).css("text-decoration","none");
+        });
+        $(document).on('change', '.comboDrink', function(e){
+            e.preventDefault();
+            if (($("#sideMaxQuantity").val() != undefined) && ($("#entreeMaxQuantity").val() != undefined)) {
+                var drinkId = retrieveId("comboDrink", this.id);
+                drinkMaxQuantity = $('#drinkMaxQuantity').val();
+                choiceSelection = new ChoiceSelection("drink", "drinkSelected", "choiceItemDrinkWithSelect", drinkId, 0, drinkMaxQuantity);
+                choiceSelection.showSelected($);
+                sideMaxQuantity = $("#sideMaxQuantity").val();
+                entreeMaxQuantity = $("#entreeMaxQuantity").val();
+                drinkMaxQuantity = $("#drinkMaxQuantity").val();
+                enableAddToCartButtonForCombos(sideMaxQuantity, entreeMaxQuantity, drinkMaxQuantity, $);
+            }
+        });
+        // ***** For combo --Drink end *****
+        // ********** Same functions in order.blade.php end **********
+
         function saveNoteToSession(){
             var note = $('#ordernote').val();
             //alert(note);

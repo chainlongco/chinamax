@@ -88,6 +88,11 @@
                         <a class="nav-link active" id="navbarUser" aria-current="page" href="/user/list">User</a>
                     </li>
                 </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="navbarRestaurant" aria-current="page" href="/restaurant">Restaurant</a>
+                    </li>
+                </ul>
             @endif
             
             <div class="nav navbar-nav ms-auto">

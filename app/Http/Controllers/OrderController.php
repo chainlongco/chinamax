@@ -91,7 +91,12 @@ class OrderController extends Controller
     }
 
     public function listOrders() {
-        $taxRate = 0.0825;
+        //$taxRate = 0.0825;
+        $taxRate = 0;
+        $restaurant = DB::table('restaurants')->first();
+        if ($restaurant) {
+            $taxRate = $restaurant->tax_rate;
+        }
         //$customers = DB::table('customers')->get();
         $orders = DB::table('orders')
                     ->select('orders.id', 'orders.customer_id', 'orders.quantity', 'orders.total', 'orders.note', 'orders.created_at', 'orders.updated_at', 'customers.first_name', 'customers.last_name', 'customers.phone', 'customers.email')
@@ -294,6 +299,9 @@ class OrderController extends Controller
             $product = $item['productItem'];
             $quantity = $item['quantity'];
             $subItems = $item['subItems'];
+            //echo '<script>';
+            //echo 'console.log('. $request .')';
+            //echo '</script>';
             //$totalPricePerProductItem = $item['totalPricePerProductItem'];
             if ($product->menu_id == 1) {   // Appetizers
                 return response()->json(['serialNumber'=>$serialNumber, 'product'=>$product, 'quantity'=>$quantity]);

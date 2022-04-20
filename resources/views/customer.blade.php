@@ -22,7 +22,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="lastname" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" name="lastname" id="firstname" value="{{ ($customer)? $customer->last_name: "" }}">
+                                <input type="text" class="form-control" name="lastname" id="lastname" value="{{ ($customer)? $customer->last_name: "" }}">
                                 <span class="text-danger error-text lastname_error"></span>
                             </div>
                         </div>

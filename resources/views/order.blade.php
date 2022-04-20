@@ -67,7 +67,7 @@
         $(document).ready(function(e){
             //$("#productItem13").trigger('click');
 
-            /* Menu Start */
+            /* Menu (on the lefthand side) Start */
             $(document).on('mouseover', '.eachMenuForCombo', function(e){
                 e.preventDefault();
 
@@ -163,7 +163,7 @@
                 ajaxRetrieveChoices.retrieveChoices($, singleId + "s", menuId);
                 window.scrollTo(0, 0);
             });
-            /* Menu End */
+            /* Menu (on the lefthand side) End */
 
             /* Shared Start */    
             $(document).on('click','.quantityPlus', function(e){
@@ -331,7 +331,7 @@
             });
             /* Single End */
 
-            /* Side Start */
+            /* Side Start -- Same functions(mouseover, mouseout, and click on class: choiceItemSide) in cart.blade.php for Modal popup */
             $(document).on('mouseover', '.choiceItemSide', function(e){
                 e.preventDefault();
 
@@ -389,7 +389,7 @@
             });
             /* Side End */
 
-            /* Entree Start */
+            /* Entree Start -- Same functions(mouseover, mouseout, and click on class: choiceItemEntree) in cart.blade.php for Modal popup*/
             $(document).on('mouseover', '.choiceItemEntree', function(e){
                 e.preventDefault();
                 var entreeId = retrieveId("choiceItemEntree", this.id);
@@ -434,7 +434,7 @@
             });
             /* Entree End */
 
-            /* Drink Start */
+            /* Drink Start - Same functions in cart.blade.php for Modal popup */
             $(document).on('mouseover', '.choiceItemDrink', function(e){
                 e.preventDefault();
                 var drinkId = retrieveId("choiceItemDrink", this.id);
