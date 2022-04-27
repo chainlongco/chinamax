@@ -425,7 +425,7 @@
             $element = "
                 <div class=\"row px-5\">
                     <div class=\"col-md-12 text-start\">
-                        <p style=\"font-size: 20px\">Special Reqests: " .$note ."</p>
+                        <p style=\"font-size: 20px\">Special Requests: " .$note ."</p>
                     </div>
                 </div>
                 <hr>
