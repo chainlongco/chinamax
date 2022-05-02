@@ -433,4 +433,22 @@
             ";
             echo $element;
         }
+
+        public function loadCustomerDropDown()
+        {
+            $html = "";
+            if (Session::has('customer')) {
+                $html .= "<a class=\"nav-link active dropdown-toggle\" href=\"#\" id=\"navbarDropdownCustomerLoginned\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">" .Session::get('customer')->first_name ." " .Session::get('customer')->last_name ."</a>
+                <ul class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownCustomerLoginned\">
+                    <li><a class=\"dropdown-item\" href=\"/customerLogout\">Logout</a></li>
+                </ul>";
+            } else {
+                $html .= "<a class=\"nav-link active dropdown-toggle\" href=\"#\" id=\"navbarDropdownCustomerNotLoginned\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">Customer</a>
+                <ul class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownCustomerNotLoginned\">
+                    <li><a class=\"dropdown-item\" href=\"/customerLogin\">Login</a></li>
+                    <li><a class=\"dropdown-item\" href=\"/customerRegister\">Register</a></li>
+                </ul>";
+            }
+            return $html;
+        }
     }

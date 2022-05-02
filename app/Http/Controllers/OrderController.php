@@ -234,6 +234,7 @@ class OrderController extends Controller
         Session::forget('customer');
         $customer = DB::table('customers')->where('id', $customerId)->first();
         if ($customer) {
+            // After add customer into session, the customer information will be loaded in header.blade.php
             Session::put('customer', $customer);
         }
     }
@@ -389,11 +390,19 @@ class OrderController extends Controller
     }
 
     public function emptyCart() {
+        $cart = new Cart(Session::get('cart'));
+        $orderId = $cart->orderId;
+        if ($orderId != null) {
+            // This means the order is from database, when the existing order loaded, it will log this customer in at
+            // orderEdit -> loadOrderToSession -> loginAsCustomer
+            Session::forget('customer');
+        }
         Session::forget('cart');
         $utility = new Utility();
         $priceDetail = $utility->retrievePriceDetail();
         $items = [];
-        return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items]);
+        $customerDropdown = $utility->loadCustomerDropdown();
+        return response()->json(['priceDetail'=>$priceDetail, 'items'=>$items, 'customerDropdown'=>$customerDropdown]);
     }
 
     public function cartNote(Request $request) {

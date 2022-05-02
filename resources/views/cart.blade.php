@@ -23,7 +23,7 @@
                                     }
                                 }
                             ?>
-                            <h4>{{ $title }}</h4>
+                            <h4 id="cartTitle">{{ $title }}</h4>
                         </div>
                         <div class="col-md-7 text-center">
                             <button style="width: 45%" type="button" class="btn btn-primary addMoreItems">Add More Items</button>
@@ -244,6 +244,8 @@
                     url: '/empty-cart',
                     data: {},
                     success: function(response) {
+                        $('#cartTitle').html('My Cart')
+                        $('#customerLogin').html(response.customerDropdown)
                         $('#ordernote').val("");
                         var html = loadPriceDetailElements(response.priceDetail);
                         $('#pricedetail').html(html);
@@ -253,6 +255,8 @@
                         $('#orderlist').html(html);
                         var html = loadCheckoutMenuElement(response.priceDetail['totalQuantity']);
                         $('#checkoutMenu').html(html);
+                        const base_path = '{{ url('/') }}\/';
+                        window.location.href = base_path + 'cart';
                     }
                 });
             }
