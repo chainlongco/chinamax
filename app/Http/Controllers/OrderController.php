@@ -515,9 +515,9 @@ class OrderController extends Controller
             // ToDo -- Send email to customer
             Session::forget('cart');
             if ($orderId != null) {
-                return response()->json(['status'=>1, 'msg'=>'Your order has been submitted succussfully.', 'editOrder'=>true]);
+                return response()->json(['status'=>1, 'msg'=>'Your order has been submitted successfully.', 'editOrder'=>true]);
             } else {
-                return response()->json(['status'=>2, 'msg'=>'Your order has been submitted succussfully.']);
+                return response()->json(['status'=>2, 'msg'=>'Your order has been submitted successfully.']);
             }
         } else {
             return response()->json(['status'=>3, 'msg'=>$exception->getMessage()]);

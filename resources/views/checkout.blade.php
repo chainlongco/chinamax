@@ -25,7 +25,7 @@
                                         }
                                     }
                                 ?>
-                                <h4>{{ $title }}</h4>
+                                <h4 id="checkoutTitle">{{ $title }}</h4>
                             </div>
                             <?php
                                 $customer = null;
@@ -63,30 +63,30 @@
                         <div class="py-4">
                             <div class="card">
                                 <div class="card-header text-center">
-                                    <h5>Guess Information</h5>
+                                    <h5 id="customerInformation">Customer Information</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row"> 
                                         <div class="mb-3 col-md-6">
-                                            <label for="firstname" class="form-label">First Name*</label>            
+                                            <label id="firstnameLabel" for="firstname" class="form-label">First Name*</label>            
                                             <input type="text" class="form-control" name="firstname" id="firstname" value="{{ $customer?$customer->first_name:"" }}">
                                             <span class="text-danger error-text firstname_error"></span>  
                                         </div>
                                         <div class="mb-3 col-md-6">     
-                                            <label for="lastname" class="form-label">Last Name*</label>                                
+                                            <label id="lastnameLabel" for="lastname" class="form-label">Last Name*</label>                                
                                             <input type="text" class="form-control" name="lastname" id="lastname" value="{{ $customer?$customer->last_name:"" }}">
                                             <span class="text-danger error-text lastname_error"></span>
                                         </div>       
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <label for="phone" class="form-label">Phone*</label>
+                                            <label id="phoneLabel" for="phone" class="form-label">Phone*</label>
                                             <input type="text" class="form-control" name="phone" id="phone" value="{{ $customer?$phoneNumber:"" }}">
                                             <input type="text" id="phone1" class="form-control" style="display: none;">
                                             <span class="text-danger error-text phone_error"></span>
                                         </div> 
                                         <div class="col-md-6">
-                                            <label for="email" class="form-label">Email Address*</label>
+                                            <label id="emailLabel" for="email" class="form-label">Email Address*</label>
                                             <input type="email" class="form-control" name="email" id="email" value="{{ $customer?$customer->email:"" }}">
                                             <span class="text-danger error-text email_error"></span>
                                         </div>
@@ -98,18 +98,18 @@
                         <div class="py-4">
                             <div class="card">
                                 <div class="card-header text-center">
-                                    <h5>Credit Card Information</h5>
+                                    <h5 id="creditCardInformation">Credit Card Information</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="mb-3 col-md-6">
-                                            <label for="card" class="form-label">Card Number*</label>
+                                            <label id="cardLabel" for="card" class="form-label">Card Number*</label>
                                             <input type="text" class="form-control" name="card" id="card" value="{{ $customer?$cardNumber:"" }}">
                                             <input type="text" id="card1" class="form-control" style="display: none;">
                                             <span class="text-danger error-text card_error"></span>
                                         </div>
                                         <div class="mb-3 col-md-6">
-                                            <label for="expired" class="form-label">Expiration Month/Year*</label>
+                                            <label id="expiredLabel" for="expired" class="form-label">Expiration Month/Year*</label>
                                             <input type="text" class="form-control" name="expired" id="expired" value="{{ $customer?$expired:"" }}">
                                             <input type="text" id="expired1" class="form-control" style="display: none;">
                                             <span class="text-danger error-text expired_error"></span>
@@ -117,12 +117,12 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <label for="cvv" class="form-label">CVV*</label>
+                                            <label id="cvvLabel" for="cvv" class="form-label">CVV*</label>
                                             <input type="text" class="form-control" name="cvv" id="cvv" value="{{ ($customer)?$customer->cvv:"" }}">
                                             <span class="text-danger error-text cvv_error"></span>
                                         </div> 
                                         <div class="col-md-6">
-                                            <label for="zip" class="form-label">Zip Code*</label>
+                                            <label id="zipLabel" for="zip" class="form-label">Zip Code*</label>
                                             <input type="text" class="form-control" name="zip" id="zip" value="{{ ($customer)?$customer->zip:"" }}">
                                             <span class="text-danger error-text zip_error"></span>
                                         </div>

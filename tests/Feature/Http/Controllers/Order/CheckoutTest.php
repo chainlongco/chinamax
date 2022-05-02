@@ -415,7 +415,7 @@ class CheckoutTest extends TestCase
         $status = $response->json()['status'];
         $this->assertEquals(2, $status);
         $message = $response->json()['msg'];
-        $this->assertEquals('Your order has been submitted succussfully.', $message);
+        $this->assertEquals('Your order has been submitted successfully.', $message);
         
         // $orderIdNew = $this->saveOrderTable($customerId, $totalQuantity, $totalPrice, $note, $created);
         $order = DB::table('orders')->where('id', 1)->first();
@@ -467,7 +467,7 @@ class CheckoutTest extends TestCase
         $status = $response->json()['status'];
         $this->assertEquals(1, $status);
         $message = $response->json()['msg'];
-        $this->assertEquals('Your order has been submitted succussfully.', $message);
+        $this->assertEquals('Your order has been submitted successfully.', $message);
         $editOrder = $response->json()['editOrder'];
         $this->assertEquals(true, $editOrder);
         
@@ -532,7 +532,7 @@ class CheckoutTest extends TestCase
         $status = $response->json()['status'];
         $this->assertEquals(2, $status);
         $message = $response->json()['msg'];
-        $this->assertEquals('Your order has been submitted succussfully.', $message);
+        $this->assertEquals('Your order has been submitted successfully.', $message);
         
         // $orderIdNew = $this->saveOrderTable($customerId, $totalQuantity, $totalPrice, $note, $created);
         $order = DB::table('orders')->where('id', 1)->first();
@@ -581,7 +581,7 @@ class CheckoutTest extends TestCase
         $status = $response->json()['status'];
         $this->assertEquals(2, $status);
         $message = $response->json()['msg'];
-        $this->assertEquals('Your order has been submitted succussfully.', $message);
+        $this->assertEquals('Your order has been submitted successfully.', $message);
         
         $afterUpdatedCustomer = DB::table('customers')->where('id', 2)->first();
         $this->assertEquals('76034', $afterUpdatedCustomer->zip);
@@ -613,7 +613,7 @@ class CheckoutTest extends TestCase
         $status = $response->json()['status'];
         $this->assertEquals(2, $status);
         $message = $response->json()['msg'];
-        $this->assertEquals('Your order has been submitted succussfully.', $message);
+        $this->assertEquals('Your order has been submitted successfully.', $message);
         
         $orderSide = DB::table('order_sides')->first();
         $this->assertEquals(1, $orderSide->order_product_id);
@@ -642,7 +642,7 @@ class CheckoutTest extends TestCase
         $status = $response->json()['status'];
         $this->assertEquals(2, $status);
         $message = $response->json()['msg'];
-        $this->assertEquals('Your order has been submitted succussfully.', $message);
+        $this->assertEquals('Your order has been submitted successfully.', $message);
         
         $orderEntree = DB::table('order_entrees')->first();
         $this->assertEquals(1, $orderEntree->order_product_id);
@@ -672,7 +672,7 @@ class CheckoutTest extends TestCase
         $status = $response->json()['status'];
         $this->assertEquals(2, $status);
         $message = $response->json()['msg'];
-        $this->assertEquals('Your order has been submitted succussfully.', $message);
+        $this->assertEquals('Your order has been submitted successfully.', $message);
         
         $orderDrink = DB::table('order_drinks')->first();
         $this->assertEquals(1, $orderDrink->order_product_id);
@@ -707,7 +707,7 @@ class CheckoutTest extends TestCase
         $status = $response->json()['status'];
         $this->assertEquals(2, $status);
         $message = $response->json()['msg'];
-        $this->assertEquals('Your order has been submitted succussfully.', $message);
+        $this->assertEquals('Your order has been submitted successfully.', $message);
         
         $orderSubSide = DB::table('order_sub_sides')->first();
         $this->assertEquals(1, $orderSubSide->order_product_id);
