@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Add Customer')
+@section('title', ($customer)? "Edit Customer": "New Customer")
 @section('content')
 <br>
 
