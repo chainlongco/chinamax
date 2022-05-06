@@ -205,7 +205,7 @@
 
     function destroyMaskForCard(string) {
         //console.log(string)
-        return string.replace(/\D/g, '').substring(0, 17);
+        return string.replace(/\D/g, '').substring(0, 16);
     }
     // ***** Credit Card Number End *****
 
@@ -225,5 +225,15 @@
         return string.replace(/\D/g, '').substring(0, 4);
     }
     // ***** Expiration Date End *****
+
+    // ***** CVV Start *****
+    $("input[id='cvv']").on("input", function () {
+        $("input[id='cvv']").val(destroyMaskForCVV(this.value));
+    })
+    function destroyMaskForCVV(string) {
+        //console.log(string)
+        return string.replace(/\D/g, '').substring(0, 3);
+    }
+    // ***** CVV End *****
 </script>
 @endsection

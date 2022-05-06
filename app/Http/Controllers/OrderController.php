@@ -592,7 +592,7 @@ class OrderController extends Controller
         $subItemsSummary = $utility->retrieveSummary($subItems);
         $totalPriceDisplay = $utility->retrieveTotalPriceDisplay($product, $subItems, $totalPricePerProductItem);
 
-        $productSummary .= $product->name ." (" .$product->description .")\n";
+        $productSummary .= $product->name .": " .$product->description ."\n";
         if ($subItemsSummary != "") {
             $productSummary .= $subItemsSummary ."\n";
         }    

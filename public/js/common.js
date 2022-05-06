@@ -132,7 +132,7 @@ function orderListElement(key, product, quantity, subItems, totalPricePerProduct
     html +=                    '<img src="\\images\\' + image + '" style="width: 100%">';
     html +=                '</div>';
     html +=                '<div class="col-md-6">';
-    html +=                    '<h5 class="pt-2">' + product['name'] + ' <small> (' + product['description'] + ')</small> </h5>';
+    html +=                    '<h5 class="pt-2">' + product['name'] + ' <small>: ' + product['description'] + '</small> </h5>';
     html +=                    '<h5><small style="color:red">' + orderSummary + '</small> </h5>';
     html +=                    '<h5 class=\"pt-1\">' + totalPriceDisplay + '</h5>';
     html +=                    '<div class="pb-1">';
