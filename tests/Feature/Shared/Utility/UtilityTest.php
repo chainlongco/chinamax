@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Session;
 use App\Models\Menu;
 use App\Models\Product;
 use App\Models\Single;
+use App\Models\Restaurant;
 use App\Http\Controllers\OrderController;
 use App\Shared\Utility;
 
@@ -317,6 +318,10 @@ class UtilityTest extends TestCase
         DB::table('juices')->insert([
             ['name'=>'Orange'], ['name'=>'Kiwi'], ['name'=>'Watermelon'], ['name'=>'Strawberry']
         ]);
+
+        Restaurant::create([
+            'name'=>'Chinamax', 'tax_rate'=>0.0825
+        ]);
     }
 
     public function test_cartElement_for_image_without_subItem()
@@ -400,5 +405,13 @@ class UtilityTest extends TestCase
         $this->expectOutputRegex($expected);
         $utility = new Utility();
         $response = $utility->orderNoteDivElementForCheckout();
+    }
+
+    public function test_loadCustomerDropDown()
+    {
+        $utility = new Utility();
+        $html = $utility->loadCustomerDropDown();
+        $expect = '<a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownCustomerNotLoginned" role="button" data-bs-toggle="dropdown" aria-expanded="false">Customer</a><ul class="dropdown-menu" aria-labelledby="navbarDropdownCustomerNotLoginned"><li><a class="dropdown-item" href="/customerLogin">Login</a></li><li><a class="dropdown-item" href="/customerRegister">Register</a></li></ul>';
+        $this->assertEquals($expect, $html);
     }
 }

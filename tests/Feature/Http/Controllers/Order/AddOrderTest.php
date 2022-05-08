@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Session;
 use App\Models\Menu;
 use App\Models\Product;
 use App\Models\Single;
+use App\Models\Restaurant;
 use App\Http\Controllers\OrderController;
 
 class AddOrderTest extends TestCase
@@ -315,6 +316,10 @@ class AddOrderTest extends TestCase
 
         DB::table('juices')->insert([
             ['name'=>'Orange'], ['name'=>'Kiwi'], ['name'=>'Watermelon'], ['name'=>'Strawberry']
+        ]);
+
+        Restaurant::create([
+            'name'=>'Chinamax', 'tax_rate'=>0.0825
         ]);
     }
 

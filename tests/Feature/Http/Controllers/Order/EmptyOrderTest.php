@@ -8,6 +8,8 @@ use Tests\TestCase;
 
 class EmptyOrderTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_empty_order()
     {
         $response = $this->call('GET', '/cart');

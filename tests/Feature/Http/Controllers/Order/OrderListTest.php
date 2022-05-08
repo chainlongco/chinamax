@@ -12,6 +12,7 @@ use App\Models\Customer;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Restaurant;
 use App\Http\Controllers\OrderController;
 
 class OrderListTest extends TestCase
@@ -51,6 +52,11 @@ class OrderListTest extends TestCase
             'quantity'=>3,
             'total'=>'13.77',
             'note'=>'Mild spicy'
+        ]);
+
+        Restaurant::create([
+            'name'=>'Chinamax',
+            'tax_rate'=>0.0825
         ]);
     }
 
