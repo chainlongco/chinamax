@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1649342336251" clover="3.2.0">
-  <project timestamp="1649342336251" name="All files">
+<coverage generated="1652026656833" clover="3.2.0">
+  <project timestamp="1652026656833" name="All files">
     <metrics statements="854" coveredstatements="849" conditionals="255" coveredconditionals="233" methods="95" coveredmethods="94" elements="1204" coveredelements="1176" complexity="0" loc="854" ncloc="854" packages="1" files="6" classes="6"/>
     <file name="ChoiceSelection.js" path="C:\xampp\htdocs\chinamax\public\js\ChoiceSelection.js">
       <metrics statements="254" coveredstatements="254" conditionals="110" coveredconditionals="97" methods="31" coveredmethods="31"/>
